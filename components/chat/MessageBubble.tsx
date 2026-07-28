@@ -4,8 +4,9 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { IconRobot, IconCopy, IconEdit } from "@tabler/icons-react";
 import { ComponentPropsWithoutRef } from "react";
 import { Button } from "@/components/ui/button";
-import ReactMarkdown from "react-markdown";
+import handleCopy from "@/functions/handleCopy";
 import { Message } from "@/types/message.type";
+import ReactMarkdown from "react-markdown";
 import { useTheme } from "next-themes";
 import remarkGfm from "remark-gfm";
 import Image from "next/image";
@@ -14,10 +15,6 @@ import {
   vscDarkPlus,
   prism,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
-
-const handleCopy = (text: string) => {
-  navigator.clipboard.writeText(text);
-};
 
 type MessageBubbleProps = ComponentPropsWithoutRef<"div"> & {
   message: Message;

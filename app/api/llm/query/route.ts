@@ -49,13 +49,6 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("Processing query:", {
-      provider,
-      model,
-      question:
-        question.substring(0, 100) + (question.length > 100 ? "..." : ""),
-    });
-
     if (!process.env.RAG_URL) {
       return new Response(
         JSON.stringify({

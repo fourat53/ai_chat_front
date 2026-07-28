@@ -27,7 +27,7 @@ export async function createConversation(data: {
 
   const now = new Date();
   const doc = new ConversationModel({
-    userId,
+    userId: userId,
     title: data.title,
     providerId: data.providerId,
     modelId: data.modelId,

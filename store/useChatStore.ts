@@ -12,10 +12,16 @@ interface ChatState {
   setSelectedConversation: (conversation: Conversation | null) => void;
 
   // Providers
+  providers: Provider[];
+  setProviders: (providers: Provider[]) => void;
+
   selectedProvider: Provider | null;
   setSelectedProvider: (provider: Provider | null) => void;
 
   // Models
+  models: Model[];
+  setModels: (models: Model[]) => void;
+
   selectedModel: Model | null;
   setSelectedModel: (model: Model | null) => void;
 
@@ -38,6 +44,9 @@ const useChatStore = create<ChatState>((set) => ({
     ),
 
   // Providers
+  providers: [],
+  setProviders: (providers: Provider[]) => set({ providers }),
+
   selectedProvider: null,
   setSelectedProvider: (provider: Provider | null) =>
     set((state) =>
@@ -47,6 +56,9 @@ const useChatStore = create<ChatState>((set) => ({
     ),
 
   // Models
+  models: [],
+  setModels: (models: Model[]) => set({ models }),
+
   selectedModel: null,
   setSelectedModel: (model: Model | null) =>
     set((state) =>

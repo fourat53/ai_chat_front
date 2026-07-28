@@ -3,12 +3,10 @@
 import { LogoutButton } from "@/components/reusable/logout-button";
 import ThemeSwitch from "@/components/reusable/ThemeSwitch";
 import { useChatStore } from "@/store/useChatStore";
-import { Provider } from "@/types/provider.type";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect } from "react";
 import { Message } from "@/types/message.type";
-import { Model } from "@/types/model.type";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,28 +31,22 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
-import MainLoader from "../reusable/loader/loader";
 
 interface ChatSidebarProps {
   setMessages: (messages: Message[]) => void;
-  providers: Provider[];
-  models: Model[];
   session: any;
 }
 
-export function ChatSidebar({
-  setMessages,
-  providers,
-  models,
-  session,
-}: ChatSidebarProps) {
+export function ChatSidebar({ setMessages, session }: ChatSidebarProps) {
   const {
+    models,
+    setSelectedModel,
+    providers,
+    setSelectedProvider,
     conversations,
     setConversations,
     selectedConversation,
     setSelectedConversation,
-    setSelectedProvider,
-    setSelectedModel,
   } = useChatStore();
 
   const {
@@ -68,9 +60,8 @@ export function ChatSidebar({
   });
 
   useEffect(() => {
-    if (dataConversations) {
-      setConversations(dataConversations);
-    }
+    if (!dataConversations) return;
+    setConversations(dataConversations);
   }, [dataConversations, setConversations]);
 
   const handleSelectConversation = useCallback(

@@ -4,67 +4,20 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { updateConversation } from "@/actions/conversation.action";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
-import { Message, ChatRole } from "@/types/message.type";
-import { getProviders } from "@/actions/provider.action";
 import { ChatInput } from "@/components/chat/ChatInput";
 import ChatHeader from "@/components/chat/ChatHeader";
 import { useChatStore } from "@/store/useChatStore";
+import mapToMessage from "@/functions/mapToMessage";
 import { useEffect, useMemo, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/lib/auth-client";
+import { Message } from "@/types/message.type";
 import { TextStreamChatTransport } from "ai";
-import { Model } from "@/types/model.type";
 import { useChat } from "@ai-sdk/react";
-
-export function mapToMessage(msg: Message): Message {
-  const fromParts = Array.isArray(msg.parts)
-    ? msg.parts
-        .filter((p) => p.type === "text")
-        .map((p) => (p.type === "text" ? p.text : ""))
-        .join("")
-    : "";
-  const legacyContent = (msg as { content?: string }).content ?? "";
-  return {
-    id: msg.id,
-    role: msg.role as ChatRole,
-    parts: msg.parts,
-    content: fromParts || legacyContent,
-  };
-}
 
 export default function HomePage() {
   const { data: session } = useSession();
-  const { selectedConversation, selectedProvider } = useChatStore();
+  const { selectedConversation } = useChatStore();
   const lastMessageLength = useRef(0);
-
-  const {
-    data: providers = [],
-    isLoading: loadingProviders,
-    error: errorProviders,
-  } = useQuery({
-    queryKey: ["providers"],
-    queryFn: () => getProviders(),
-  });
-
-  const {
-    data: models = [],
-    isLoading: loadingModels,
-    error: errorModels,
-  } = useQuery({
-    queryKey: ["models", selectedProvider],
-    queryFn: async () => {
-      if (!selectedProvider) return [];
-
-      const models_url = `/api/llm/models?providerId=${selectedProvider.label}`;
-      const response = await fetch(models_url);
-
-      if (!response.ok) throw new Error("Failed to load models");
-      const data = await response.json();
-
-      return (data.models || []) as Model[];
-    },
-    enabled: !!selectedProvider,
-  });
 
   const transport = useMemo(() => {
     return new TextStreamChatTransport({
@@ -105,15 +58,10 @@ export default function HomePage() {
 
   return (
     <SidebarProvider className="flex overflow-hidden w-full h-screen bg-background">
-      <ChatSidebar
-        setMessages={setMessages}
-        providers={providers}
-        models={models}
-        session={session}
-      />
+      <ChatSidebar setMessages={setMessages} session={session} />
 
       <SidebarInset className="flex relative flex-col flex-1 h-full bg-transparent">
-        <ChatHeader providers={providers} />
+        <ChatHeader />
         <div className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 rounded-t-xl border border-b-0 border-border bg-background">
           {messages.length > 0 ? (
             (messages as Message[]).map((msg, index) => (
@@ -140,10 +88,7 @@ export default function HomePage() {
           <ChatInput
             stop={stop}
             status={status}
-            models={models}
             session={session}
-            errorModels={errorModels}
-            loadingModels={loadingModels}
             sendMessage={sendMessage}
           />
 

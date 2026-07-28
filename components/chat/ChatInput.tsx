@@ -2,10 +2,10 @@
 
 import { IconSend, IconLink, IconSearch } from "@tabler/icons-react";
 import { createConversation } from "@/actions/conversation.action";
-import { useChatStore } from "@/store/useChatStore";
-import { Provider } from "@/types/provider.type";
-import { Button } from "@/components/ui/button";
 import { Conversation } from "@/types/conversation.type";
+import { useChatStore } from "@/store/useChatStore";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import { Model } from "@/types/model.type";
 import { useEffect } from "react";
 import {
@@ -21,9 +21,6 @@ import { ChatStatus } from "ai";
 
 interface ChatInputProps {
   stop?: () => void;
-  models: Model[];
-  errorModels: Error | null;
-  loadingModels: boolean;
   status: ChatStatus;
   session: any;
   sendMessage: (
@@ -35,23 +32,42 @@ interface ChatInputProps {
 export function ChatInput({
   stop,
   status,
-  models,
-  errorModels,
-  loadingModels,
   session,
   sendMessage,
 }: ChatInputProps) {
   const {
     input,
     setInput,
+    models,
+    setModels,
     conversations,
     setConversations,
     selectedModel,
     setSelectedModel,
     selectedProvider,
-    selectedConversation,
     setSelectedConversation,
   } = useChatStore();
+
+  const {
+    data: dataModels,
+    isLoading: loadingModels,
+    error: errorModels,
+  } = useQuery({
+    queryKey: ["models", selectedProvider],
+    queryFn: async () => {
+      if (!selectedProvider) return [];
+      const models_url = `/api/llm/models?providerId=${selectedProvider.label}`;
+      const response = await fetch(models_url);
+      const data = await response.json();
+      return data.models as Model[];
+    },
+    enabled: !!selectedProvider,
+  });
+
+  useEffect(() => {
+    if (!dataModels) return;
+    setModels(dataModels);
+  }, [dataModels, setModels, selectedProvider]);
 
   useEffect(() => {
     if (!models) return;
@@ -73,46 +89,32 @@ export function ChatInput({
     e.preventDefault();
     if (!input.trim() || !selectedProvider || !selectedModel) return;
 
-    let convId: string | undefined = selectedConversation?.id;
-    if (convId) return;
     const title = input.slice(0, 50) + (input.length > 50 ? "..." : "");
-    const providerId = selectedProvider.id;
-    const modelId = selectedModel.id;
     let newConversation: Conversation;
     if (session?.user) {
       try {
         const created = await createConversation({
           title,
-          providerId,
-          modelId,
+          providerId: selectedProvider.id,
+          modelId: selectedModel.id,
         });
 
         if (!created._id) return;
 
-        convId = created._id;
-
-        newConversation = {
-          id: created._id,
-          userId: created.userId || "",
-          title,
-          messages: [],
-          providerId,
-          modelId,
-        };
+        newConversation = { ...created, id: created._id, title };
         setConversations([newConversation, ...conversations]);
       } catch (_err) {
         console.error("Failed to create conversation:", _err);
         return;
       }
     } else {
-      convId = crypto.randomUUID();
+      const convId = crypto.randomUUID();
       newConversation = {
         id: convId,
-        userId: session?.user?.id || "",
+        userId: `guest-${convId}`,
+        providerId: selectedProvider.id,
+        modelId: selectedModel.id,
         title,
-        messages: [],
-        providerId,
-        modelId,
       };
       setConversations([newConversation, ...conversations]);
     }
@@ -190,7 +192,7 @@ export function ChatInput({
             {loadingModels ? (
               <div className="w-32 sm:w-48 h-8 bg-muted rounded-full animate-pulse" />
             ) : errorModels ? (
-              <div className="w-32 sm:w-48 h-8 text-xs text-red-500 flex items-center px-2">
+              <div className="w-32 sm:w-48 h-8 text-xs text-foreground-muted flex items-center px-2">
                 Failed to load models
               </div>
             ) : (
@@ -201,7 +203,7 @@ export function ChatInput({
                   setSelectedModel(models.find((m) => m.id === val) ?? null);
                 }}
               >
-                <SelectTrigger className="w-32 sm:w-48 h-8 bg-transparent border-none shadow-none text-xs hover:bg-accent hover:text-white focus-visible:ring-0">
+                <SelectTrigger className="w-32 sm:w-48 h-8 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0">
                   <SelectValue
                     placeholder={models.length === 0 ? "No models" : "Model"}
                   >

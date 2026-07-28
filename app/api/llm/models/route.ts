@@ -32,6 +32,8 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
+    // console.log("Models Data: \n", JSON.stringify(data, null, 2));
+
     return NextResponse.json({ models: data.models || [] });
   } catch (error) {
     console.error(`Error fetching models for ${providerId}:`, error);
