@@ -1,23 +1,23 @@
 "use client";
 
-import { IconSend, IconLink, IconSearch } from "@tabler/icons-react";
-import { createConversation } from "@/actions/conversation.action";
-import { Conversation } from "@/types/conversation.type";
-import { useChatStore } from "@/store/useChatStore";
+import { IconLink, IconSearch, IconSend } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Model } from "@/types/model.type";
+import type { ChatStatus } from "ai";
 import { useEffect } from "react";
+import { createConversation } from "@/actions/conversation.action";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectLabel,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
 } from "@/components/ui/select";
-import { ChatStatus } from "ai";
+import { useChatStore } from "@/store/useChatStore";
+import type { Conversation } from "@/types/conversation.type";
+import type { Model } from "@/types/model.type";
 
 interface ChatInputProps {
   stop?: () => void;
