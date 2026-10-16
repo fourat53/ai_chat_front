@@ -1,6 +1,7 @@
 # AI Chat & PDF Viewer Frontend
 
 ## Overview
+
 This project is a modern Next.js frontend application featuring an integrated AI chat interface and PDF document viewer. Built with React, Tailwind CSS, Shadcn UI, and Framer Motion, it serves as the user-facing client for the AI Microservice backend, enabling Retrieval-Augmented Generation (RAG) and local LLM interactions.
 
 ## Installation
@@ -25,10 +26,13 @@ This project is a modern Next.js frontend application featuring an integrated AI
 3. You can now interact with the chat interface and upload or view PDF documents. The application requires the backend microservice to be running to handle RAG and AI requests.
 
 ## Licensing
+
 This project is licensed under the MIT License.
 
 ## Contributing
+
 We welcome contributions! Please follow these steps:
+
 1. Fork the repository.
 2. Create a new branch for your feature or bugfix (`git checkout -b feature/my-feature`).
 3. Commit your changes (`git commit -m 'Add some feature'`).

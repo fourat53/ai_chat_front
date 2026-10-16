@@ -18,23 +18,16 @@ import {
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Model } from "@/types/model.type";
+import { SessionType } from "@/lib/auth-client";
 
 interface ChatInputProps {
   stop?: () => void;
   status: ChatStatus;
-  session: any;
-  sendMessage: (
-    message: { text: string },
-    options?: { body?: object },
-  ) => Promise<void>;
+  session: SessionType;
+  sendMessage: (message: { text: string }, options?: { body?: object }) => Promise<void>;
 }
 
-export function ChatInput({
-  stop,
-  status,
-  session,
-  sendMessage,
-}: ChatInputProps) {
+export function ChatInput({ stop, status, session, sendMessage }: ChatInputProps) {
   const {
     input,
     setInput,
@@ -65,7 +58,7 @@ export function ChatInput({
   });
 
   useEffect(() => {
-    if (!dataModels) return;
+    if (!dataModels || !selectedProvider) return;
     setModels(dataModels);
   }, [dataModels, setModels, selectedProvider]);
 
@@ -85,12 +78,12 @@ export function ChatInput({
     }
   }, [models, selectedModel, setSelectedModel]);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitMessage = async () => {
     if (!input.trim() || !selectedProvider || !selectedModel) return;
 
     const title = input.slice(0, 50) + (input.length > 50 ? "..." : "");
     let newConversation: Conversation;
+
     if (session?.user) {
       try {
         const created = await createConversation({
@@ -103,12 +96,13 @@ export function ChatInput({
 
         newConversation = { ...created, id: created._id, title };
         setConversations([newConversation, ...conversations]);
-      } catch (_err) {
-        console.error("Failed to create conversation:", _err);
+      } catch (err) {
+        console.error("Failed to create conversation:", err);
         return;
       }
     } else {
       const convId = crypto.randomUUID();
+
       newConversation = {
         id: convId,
         userId: `guest-${convId}`,
@@ -116,20 +110,28 @@ export function ChatInput({
         modelId: selectedModel.id,
         title,
       };
+
       setConversations([newConversation, ...conversations]);
     }
+
     setSelectedConversation(newConversation);
 
     await sendMessage(
       { text: input.trim() },
       {
         body: {
-          provider: selectedProvider?.label,
+          provider: selectedProvider.label,
           model: selectedModel.id,
         },
       },
     );
+
     setInput("");
+  };
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    void submitMessage();
   };
 
   const isLoading = status === "submitted" || status === "streaming";
@@ -204,21 +206,16 @@ export function ChatInput({
                 }}
               >
                 <SelectTrigger className="w-32 sm:w-48 h-8 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0">
-                  <SelectValue
-                    placeholder={models.length === 0 ? "No models" : "Model"}
-                  >
+                  <SelectValue placeholder={models.length === 0 ? "No models" : "Model"}>
                     {selectedModel?.name}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Models</SelectLabel>
-                    {models?.map((m, index) => (
-                      <SelectItem key={index} value={m.id}>
-                        <p
-                          title={m.name}
-                          className="truncate max-w-26 sm:max-w-38"
-                        >
+                    {models?.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        <p title={m.name} className="truncate max-w-26 sm:max-w-38">
                           {m.name}
                         </p>
                       </SelectItem>
