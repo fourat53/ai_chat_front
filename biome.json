@@ -27,7 +27,13 @@
 				"useTemplate": "off"
 			},
 			"suspicious": {
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noDocumentCookie": "off"
+			},
+			"a11y": {
+				"noLabelWithoutControl": "off",
+				"useSemanticElements": "off",
+				"useKeyWithClickEvents": "off"
 			},
 			"correctness": {
 				"noUnknownPseudoClass": {
