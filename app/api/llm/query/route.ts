@@ -13,24 +13,45 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
+	type HistoryTurn = { role: "user" | "assistant"; content: string };
+
+	const textOf = (m: unknown): string => {
+		const msg = m as {
+			parts?: { type?: string; text?: string }[];
+			content?: string;
+		};
+		if (Array.isArray(msg?.parts)) {
+			return msg.parts
+				.filter((p) => p?.type === "text")
+				.map((p) => p?.text ?? "")
+				.join("");
+		}
+		return msg?.content ?? "";
+	};
+
 	try {
 		const body = await req.json();
 		const { messages, provider, model, question: directQuestion } = body;
 
-		const lastUserMessage = Array.isArray(messages)
-			? [...messages].reverse().find((m) => m?.role === "user")
-			: undefined;
+		const turns: HistoryTurn[] = Array.isArray(messages)
+			? messages.flatMap((m: unknown) => {
+					const role = (m as { role?: string })?.role;
+					const content = textOf(m);
+					if (role !== "user" && role !== "assistant") return [];
+					if (!content) return [];
+					return [{ role, content }];
+				})
+			: [];
 
-		const questionFromParts =
-			lastUserMessage?.parts && Array.isArray(lastUserMessage.parts)
-				? lastUserMessage.parts
-						.filter((p: { type?: string }) => p?.type === "text")
-						.map((p: { text?: string }) => p?.text ?? "")
-						.join("")
-				: "";
+		const lastUserIndex = turns.reduce<number>(
+			(acc, turn, i) => (turn.role === "user" ? i : acc),
+			-1,
+		);
 
 		const question =
-			directQuestion || questionFromParts || lastUserMessage?.content || "";
+			directQuestion ??
+			(lastUserIndex >= 0 ? (turns[lastUserIndex]?.content ?? "") : "");
+		const history = lastUserIndex >= 0 ? turns.slice(0, lastUserIndex) : [];
 
 		if (!question) {
 			return new Response(JSON.stringify({ error: "No question provided" }), {
@@ -66,7 +87,7 @@ export async function POST(req: Request) {
 			const response = await fetch(`${process.env.RAG_URL}/llm/query`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ provider, model, question }),
+				body: JSON.stringify({ provider, model, question, history }),
 				signal: controller.signal,
 			});
 
