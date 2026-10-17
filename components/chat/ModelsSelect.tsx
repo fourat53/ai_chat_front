@@ -1,3 +1,3 @@
 export default function ModelsSelect() {
-  return <div></div>
+	return <div></div>;
 }

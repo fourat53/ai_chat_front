@@ -38,3 +38,14 @@ We welcome contributions! Please follow these steps:
 3. Commit your changes (`git commit -m 'Add some feature'`).
 4. Push to the branch (`git push origin feature/my-feature`).
 5. Open a Pull Request for review.
+
+Tasks to do:
+
+1. Add Stop Streaming response functionality (message should not save).
+2. Add update query to User message bubble deleting all the next messages to the old updated query.
+3. MCP server (google calendar, docs, sheets, etc).
+4. Remove all models that are not available with the current api key (depricated, priced, etc).
+5. Add Search button.
+6. Add Think button.
+7. Add Files with RAG capability using vector search and BM5 keyword search.
+8. Add api key selection for users.
