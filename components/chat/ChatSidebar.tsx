@@ -122,33 +122,21 @@ export function ChatSidebar({ setMessages, session }: ChatSidebarProps) {
 			</SidebarHeader>
 			<div className="mx-2 border-b border-border" />
 			<SidebarContent className="px-1">
-				<SidebarGroup>
-					<div className="py-2 group-data-[collapsible=icon]:hidden">
-						<Button
-							variant="default"
-							iconPosition="end"
-							icon={<IconPlus size={18} />}
-							className="flex gap-2 justify-start items-center w-full"
-							onClick={() => handleSelectConversation("")}
-						>
-							New Chat
-						</Button>
-					</div>
-					<div className="py-2 hidden group-data-[collapsible=icon]:flex justify-center">
-						<Button
-							variant="default"
-							size="icon"
-							className="w-8 h-8 rounded-full"
-							onClick={() => handleSelectConversation("")}
-						>
-							<IconPlus size={18} />
-						</Button>
-					</div>
-
-					<SidebarGroupContent>
-						<SidebarMenu>
+				<SidebarGroup className="h-full">
+					<SidebarGroupContent className="h-full">
+						<SidebarMenu className="h-full">
+							<Button
+								variant="default"
+								icon={<IconPlus size={18} />}
+								className="my-1 flex gap-2 justify-start items-center w-full"
+								onClick={() => handleSelectConversation("")}
+							>
+								New Chat
+							</Button>
 							{loadingConversations ? (
-								<IconLoader2 className="animate-spin w-full mt-20" />
+								<div className="h-full w-full flex justify-center items-center">
+									<IconLoader2 className="animate-spin" />
+								</div>
 							) : errorConversations ? (
 								<div className="p-4 pt-20 text-center text-sm text-foreground-muted">
 									Failed to load conversations

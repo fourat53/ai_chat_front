@@ -43,17 +43,20 @@ export default function ChatHeader() {
 	}, [providers, setSelectedProvider]);
 
 	return (
-		<div className="pb-2 flex justify-between items-center px-4 w-full h-14">
-			<div className="flex gap-2 items-center">
+		<div className="w-full lg:pb-2 flex justify-between items-center px-2 sm:px-4 h-12">
+			<div className="w-full flex gap-2 items-center">
 				<SidebarTrigger className="size-9" />
-				<span className="ml-2 text-lg font-semibold">
+				<span
+					title={selectedConversation?.title || "New Chat"}
+					className="ml-2 sm:text-lg font-medium truncate min-w-0 max-w-1/2"
+				>
 					{selectedConversation?.title || "New Chat"}
 				</span>
 			</div>
 			{loadingProviders ? (
-				<div className="w-40 h-8 bg-muted rounded-full animate-pulse" />
+				<div className="w-40 h-7 bg-muted rounded-full animate-pulse" />
 			) : errorProviders ? (
-				<div className="w-40 h-8 text-xs text-foreground-muted flex items-center px-2">
+				<div className="w-40 h-7 text-xs text-foreground-muted flex items-center px-2">
 					Failed to load providers
 				</div>
 			) : (
@@ -63,7 +66,10 @@ export default function ChatHeader() {
 						setSelectedProvider(providers.find((p) => p.id === val) ?? null);
 					}}
 				>
-					<SelectTrigger className="w-40 h-8 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0">
+					<SelectTrigger
+						size="sm"
+						className="w-32 sm:w-40 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
+					>
 						<SelectValue>{selectedProvider?.name}</SelectValue>
 					</SelectTrigger>
 					<SelectContent>

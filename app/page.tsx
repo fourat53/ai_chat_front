@@ -64,7 +64,7 @@ export default function HomePage() {
 
 			<SidebarInset className="flex relative flex-col flex-1 h-full bg-transparent">
 				<ChatHeader />
-				<div className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 rounded-t-xl border border-b-0 border-border bg-background">
+				<div className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 border-border bg-background">
 					{messages.length > 0 ? (
 						(messages as Message[]).map((msg) => (
 							<MessageBubble
@@ -86,7 +86,7 @@ export default function HomePage() {
 					)}
 				</div>
 
-				<div className="relative mb-4 w-full rounded-b-xl border border-t-0 border-border bg-background">
+				<div className="relative lg:mb-4 w-full lg:rounded-b-xl border border-t-0 border-border bg-background">
 					<ChatInput
 						stop={stop}
 						status={status}

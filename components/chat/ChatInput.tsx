@@ -157,7 +157,7 @@ export function ChatInput({
 	};
 
 	return (
-		<div className="px-4 sm:px-8 md:px-4 lg:px-8 md:mx-auto md:max-w-2xl lg:max-w-3xl">
+		<div className="px-2 sm:px-4 md:px-0 lg:px-4 md:mx-auto md:max-w-2xl lg:max-w-3xl">
 			<form
 				onSubmit={handleSubmit}
 				className="pt-2 rounded-3xl border shadow-xl transition-all bg-sidebar border-border focus-within:ring-2 focus-within:ring-ring/50"
@@ -177,8 +177,8 @@ export function ChatInput({
 					}}
 				/>
 
-				<div className="pt-1 flex flex-wrap gap-2 justify-between items-center p-2">
-					<div className="flex flex-wrap gap-2 items-center">
+				<div className="z-10 pt-1 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2">
+					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
 						<Button
 							variant="ghost"
 							size="icon"
@@ -200,9 +200,9 @@ export function ChatInput({
 						<div className="mx-px w-px h-4 bg-border" />
 
 						{loadingModels ? (
-							<div className="w-32 sm:w-48 h-8 bg-muted rounded-full animate-pulse" />
+							<div className="w-32 sm:w-48 h-7 bg-muted rounded-full animate-pulse" />
 						) : errorModels ? (
-							<div className="w-32 sm:w-48 h-8 text-xs text-foreground-muted flex items-center px-2">
+							<div className="w-32 sm:w-48 h-7 text-xs text-foreground-muted flex items-center px-2">
 								Failed to load models
 							</div>
 						) : (
@@ -213,21 +213,29 @@ export function ChatInput({
 									setSelectedModel(models.find((m) => m.id === val) ?? null);
 								}}
 							>
-								<SelectTrigger className="w-32 sm:w-48 h-8 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0">
+								<SelectTrigger
+									size="sm"
+									className="w-40 sm:w-52 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
+								>
 									<SelectValue
 										placeholder={models.length === 0 ? "No models" : "Model"}
 									>
 										{selectedModel?.name}
 									</SelectValue>
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent
+									side="top"
+									sideOffset={-10}
+									align="start"
+									className="h-full"
+								>
 									<SelectGroup>
 										<SelectLabel>Models</SelectLabel>
 										{models?.map((m) => (
 											<SelectItem key={m.id} value={m.id}>
 												<p
 													title={m.name}
-													className="truncate max-w-26 sm:max-w-38"
+													className="truncate max-w-28 sm:max-w-40"
 												>
 													{m.name}
 												</p>
@@ -245,7 +253,7 @@ export function ChatInput({
 						loading={isLoading}
 						icon={<IconSend size={16} />}
 						size="icon"
-						className="rounded-full size-9"
+						className="rounded-full size-8 sm:size-9"
 					/>
 				</div>
 			</form>
