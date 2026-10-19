@@ -4,7 +4,7 @@ const model = z.object({
 	id: z.string(),
 	name: z.string(),
 	providerId: z.string(),
-	description: z.string().optional(),
+	context: z.number().int().optional(),
 });
 
 type Model = z.infer<typeof model>;

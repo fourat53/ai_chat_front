@@ -1,24 +1,16 @@
 "use client";
 
-import { IconLink, IconSearch, IconSend } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import {
+	// IconLink, IconSearch,
+	IconSend,
+} from "@tabler/icons-react";
 import type { ChatStatus } from "ai";
-import { useEffect } from "react";
 import { createConversation } from "@/actions/conversation.action";
 import { Button } from "@/components/ui/button";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import type { SessionType } from "@/lib/auth-client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
-import type { Model } from "@/types/model.type";
+import ModelsSelect from "./ModelsSelect";
 
 interface ChatInputProps {
 	stop?: () => void;
@@ -39,52 +31,12 @@ export function ChatInput({
 	const {
 		input,
 		setInput,
-		models,
-		setModels,
 		conversations,
 		setConversations,
 		selectedModel,
-		setSelectedModel,
 		selectedProvider,
 		setSelectedConversation,
 	} = useChatStore();
-
-	const {
-		data: dataModels,
-		isLoading: loadingModels,
-		error: errorModels,
-	} = useQuery({
-		queryKey: ["models", selectedProvider],
-		queryFn: async () => {
-			if (!selectedProvider) return [];
-			const models_url = `/api/llm/models?providerId=${selectedProvider.label}`;
-			const response = await fetch(models_url);
-			const data = await response.json();
-			return data.models as Model[];
-		},
-		enabled: !!selectedProvider,
-	});
-
-	useEffect(() => {
-		if (!dataModels || !selectedProvider) return;
-		setModels(dataModels);
-	}, [dataModels, setModels, selectedProvider]);
-
-	useEffect(() => {
-		if (!models) return;
-
-		const isCurrentModelValid = models.some((m) => m.id === selectedModel?.id);
-
-		if (models.length > 0) {
-			if (!selectedModel || !isCurrentModelValid) {
-				setSelectedModel(models[0]);
-			}
-		} else {
-			if (selectedModel !== null) {
-				setSelectedModel(null);
-			}
-		}
-	}, [models, selectedModel, setSelectedModel]);
 
 	const submitMessage = async () => {
 		if (!input.trim() || !selectedProvider || !selectedModel) return;
@@ -179,16 +131,14 @@ export function ChatInput({
 
 				<div className="z-10 pt-1 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2">
 					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-						<Button
+						{/* <Button
 							variant="ghost"
 							size="icon"
 							className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
 						>
 							<IconLink size={20} />
 						</Button>
-
 						<div className="mx-px w-px h-4 bg-border" />
-
 						<Button
 							variant="ghost"
 							size="icon"
@@ -196,55 +146,8 @@ export function ChatInput({
 						>
 							<IconSearch size={20} />
 						</Button>
-
-						<div className="mx-px w-px h-4 bg-border" />
-
-						{loadingModels ? (
-							<div className="w-32 sm:w-48 h-7 bg-muted rounded-full animate-pulse" />
-						) : errorModels ? (
-							<div className="w-32 sm:w-48 h-7 text-xs text-foreground-muted flex items-center px-2">
-								Failed to load models
-							</div>
-						) : (
-							<Select
-								value={selectedModel?.id ?? ""}
-								disabled={models.length === 0}
-								onValueChange={(val) => {
-									setSelectedModel(models.find((m) => m.id === val) ?? null);
-								}}
-							>
-								<SelectTrigger
-									size="sm"
-									className="w-40 sm:w-52 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
-								>
-									<SelectValue
-										placeholder={models.length === 0 ? "No models" : "Model"}
-									>
-										{selectedModel?.name}
-									</SelectValue>
-								</SelectTrigger>
-								<SelectContent
-									side="top"
-									sideOffset={-10}
-									align="start"
-									className="h-full"
-								>
-									<SelectGroup>
-										<SelectLabel>Models</SelectLabel>
-										{models?.map((m) => (
-											<SelectItem key={m.id} value={m.id}>
-												<p
-													title={m.name}
-													className="truncate max-w-28 sm:max-w-40"
-												>
-													{m.name}
-												</p>
-											</SelectItem>
-										))}
-									</SelectGroup>
-								</SelectContent>
-							</Select>
-						)}
+						<div className="mx-px w-px h-4 bg-border" /> */}
+						<ModelsSelect />
 					</div>
 
 					<Button

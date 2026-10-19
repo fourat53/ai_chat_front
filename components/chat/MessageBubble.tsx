@@ -4,7 +4,7 @@ import { IconCopy, IconEdit } from "@tabler/icons-react";
 import clsx from "clsx";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useEffect, type ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
@@ -25,9 +25,6 @@ type MessageBubbleProps = ComponentPropsWithoutRef<"div"> & {
 export function MessageBubble({ message, session }: MessageBubbleProps) {
 	const { theme } = useTheme();
 	const isUser = message.role === "user";
-	useEffect(() => {
-		console.log("message", message);
-	}, [message]);
 	return (
 		<div className="px-4 sm:px-8 md:px-4 lg:px-8 md:mx-auto md:max-w-2xl lg:max-w-3xl flex flex-col gap-1 w-full rounded-2xl transition-colors group">
 			<div className="flex-1 space-y-2 min-w-0">
@@ -100,7 +97,7 @@ export function MessageBubble({ message, session }: MessageBubbleProps) {
 											);
 										}
 										return (
-											<div className="my-2 border shadow-sm border-border">
+											<div className="my-2 shadow-sm border border-border">
 												<div className="px-3 py-2 dark:bg-sidebar/40">
 													<code>{codeContent}</code>
 												</div>
@@ -131,9 +128,7 @@ export function MessageBubble({ message, session }: MessageBubbleProps) {
 									},
 									strong({ children }) {
 										return (
-											<strong className="font-bold text-[1.05em]">
-												{children}
-											</strong>
+											<strong className="font-semibold">{children}</strong>
 										);
 									},
 								}}
