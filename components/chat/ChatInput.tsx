@@ -114,14 +114,14 @@ export function ChatInput({
 		<div className="px-2 sm:px-4 md:px-0 lg:px-4 md:mx-auto md:max-w-2xl lg:max-w-3xl">
 			<form
 				onSubmit={handleSubmit}
-				className="pt-2 rounded-3xl border shadow-xl transition-all bg-sidebar border-border focus-within:ring-2 focus-within:ring-ring/50"
+				className="rounded-3xl border shadow-xl transition-all bg-sidebar border-border focus-within:ring-2 focus-within:ring-ring/50"
 			>
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder="Ask anything..."
-					className="w-full max-h-96 min-h-15 resize-none p-4 outline-none text-sm placeholder:text-muted-foreground"
+					className="w-full max-h-96 min-h-12 resize-none p-4 pb-2 outline-none text-sm placeholder:text-muted-foreground rounded-t-3xl"
 					rows={1}
 					style={{ height: "auto" }}
 					onInput={(e) => {
@@ -131,36 +131,27 @@ export function ChatInput({
 					}}
 				/>
 
-				<div className="z-10 pt-1 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2">
+				<div className="z-10 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2 pt-0">
 					<ModelsSelect />
 
-					{/*
-					 * Two separate buttons: Base UI Button always renders
-					 * type="button" unless overridden, and `loading` implies
-					 * `disabled` — which would make the send button impossible
-					 * to click. While streaming it becomes a clickable stop
-					 * control instead of a disabled spinner.
-					 */}
-					{isLoading ? (
-						<Button
-							type="button"
-							size="icon"
-							className="rounded-full size-8 sm:size-9"
-							onClick={(event) => {
-								event.preventDefault();
-								stop?.();
-							}}
-							icon={<IconLoader2 className="animate-spin" />}
-						/>
-					) : (
-						<Button
-							type="submit"
-							size="icon"
-							className="rounded-full size-8 sm:size-9"
-							disabled={!input || input.trim() === ""}
-							icon={<IconSend size={16} />}
-						/>
-					)}
+					<Button
+						size="icon"
+						type="submit"
+						className="rounded-full size-8 sm:size-9"
+						disabled={!isLoading && (!input || input.trim() === "")}
+						icon={
+							isLoading ? (
+								<IconLoader2 className="animate-spin" />
+							) : (
+								<IconSend />
+							)
+						}
+						onClick={(event) => {
+							if (!isLoading) return;
+							event.preventDefault();
+							stop?.();
+						}}
+					/>
 				</div>
 			</form>
 		</div>

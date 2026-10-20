@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCopy, IconEdit } from "@tabler/icons-react";
+import { IconCopy } from "@tabler/icons-react";
 import clsx from "clsx";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -142,18 +142,9 @@ export function MessageBubble({ message, session }: MessageBubbleProps) {
 			<div
 				className={clsx(
 					"shrink-0 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity",
-					isUser ? "pb-3" : "-mt-2 pb-4 mr-4",
+					isUser ? "pb-3" : "-mt-2 pb-4",
 				)}
 			>
-				{isUser && (
-					<Button
-						variant="ghost"
-						size="icon"
-						className="size-8 p-0.5 hover:bg-secondary/80 dark:hover:bg-secondary/70"
-					>
-						<IconEdit size={16} />
-					</Button>
-				)}
 				<Button
 					variant="ghost"
 					size="icon"

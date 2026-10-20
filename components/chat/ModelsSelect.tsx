@@ -8,46 +8,11 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
 import { useChatStore } from "@/store/useChatStore";
 import type { Model } from "@/types/model.type";
-
-function SearchField({
-	value,
-	onChange,
-}: {
-	value: string;
-	onChange: (value: string) => void;
-}) {
-	const ref = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		const frame = requestAnimationFrame(() => ref.current?.focus());
-		return () => cancelAnimationFrame(frame);
-	}, []);
-
-	return (
-		<div className="relative z-20 flex gap-2 items-center px-3 py-2 border-b border-border/60 bg-popover">
-			<IconSearch
-				size={14}
-				className="pointer-events-none shrink-0 text-muted-foreground"
-			/>
-			<input
-				ref={ref}
-				value={value}
-				onChange={(event) => onChange(event.target.value)}
-				onKeyDown={(event) => {
-					if (event.key.length === 1) event.stopPropagation();
-				}}
-				placeholder="Search models..."
-				className="w-full min-w-0 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
-			/>
-		</div>
-	);
-}
 
 export default function ModelsSelect() {
 	const {
@@ -62,7 +27,6 @@ export default function ModelsSelect() {
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["models", selectedProvider],
-		refetchInterval: 60_000,
 		queryFn: async () => {
 			if (!selectedProvider) return [];
 			const params = new URLSearchParams({
@@ -108,7 +72,7 @@ export default function ModelsSelect() {
 
 	if (isLoading || !selectedProvider)
 		return (
-			<div className="w-32 sm:w-48 h-7 bg-muted rounded-full animate-pulse" />
+			<div className="w-32 sm:w-48 h-7 text-xs bg-muted rounded-full animate-pulse" />
 		);
 
 	if (error)
@@ -131,21 +95,17 @@ export default function ModelsSelect() {
 		>
 			<SelectTrigger
 				size="sm"
-				className="w-40 sm:w-52 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
+				className="w-40 sm:w-52 h-7 text-xs bg-transparent border-none shadow-none hover:bg-accent focus-visible:ring-0"
 			>
 				<SelectValue placeholder={models.length === 0 ? "No models" : "Model"}>
 					{selectedModel?.name}
 				</SelectValue>
 			</SelectTrigger>
 			<SelectContent
-				side="top"
-				sideOffset={-10}
-				align="start"
-				className="h-full"
+				className="h-90 min-h-90 max-h-90 text-xs overflow-y-hidden"
 				listHeader={<SearchField value={search} onChange={setSearch} />}
 			>
-				<SelectGroup>
-					<SelectLabel>Models</SelectLabel>
+				<SelectGroup className="h-80 min-h-80 max-h-80 overflow-y-auto">
 					{filteredModels?.map((m) => (
 						<SelectItem key={m.id} value={m.id}>
 							<p title={m.name} className="truncate max-w-28 sm:max-w-40">
@@ -155,11 +115,43 @@ export default function ModelsSelect() {
 					))}
 				</SelectGroup>
 				{filteredModels.length === 0 && (
-					<div className="px-3 pb-2 text-xs text-muted-foreground">
-						No models found
-					</div>
+					<div className="px-3 pb-2 text-muted-foreground">No models found</div>
 				)}
 			</SelectContent>
 		</Select>
+	);
+}
+
+function SearchField({
+	value,
+	onChange,
+}: {
+	value: string;
+	onChange: (value: string) => void;
+}) {
+	const ref = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		const frame = requestAnimationFrame(() => ref.current?.focus());
+		return () => cancelAnimationFrame(frame);
+	}, []);
+
+	return (
+		<div className="h-10 relative z-20 flex gap-2 items-center px-3 py-2 border-b border-border/60 bg-popover">
+			<IconSearch
+				size={14}
+				className="pointer-events-none shrink-0 text-muted-foreground"
+			/>
+			<input
+				ref={ref}
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				onKeyDown={(event) => {
+					if (event.key.length === 1) event.stopPropagation();
+				}}
+				placeholder="Search models..."
+				className="w-full min-w-0 bg-transparent outline-none placeholder:text-muted-foreground"
+			/>
+		</div>
 	);
 }
