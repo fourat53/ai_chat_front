@@ -28,8 +28,11 @@ export default function ModelsSelect() {
 		refetchInterval: 60_000,
 		queryFn: async () => {
 			if (!selectedProvider) return [];
-			const models_url = `/api/llm/models?providerId=${selectedProvider.label}`;
-			const response = await fetch(models_url);
+			const params = new URLSearchParams({
+				providerId: selectedProvider.label,
+				baseUrl: selectedProvider.baseUrl,
+			});
+			const response = await fetch(`/api/llm/models?${params.toString()}`);
 			const data = await response.json();
 			return data.models as Model[];
 		},
@@ -42,14 +45,17 @@ export default function ModelsSelect() {
 	}, [data, setModels, selectedProvider]);
 
 	useEffect(() => {
-		if (!models) return;
-
-		if (models.length > 0) {
-			if (selectedModel) return;
-			setSelectedModel(models[0]);
-		} else {
-			if (!selectedModel) return;
+		if (models.length === 0) {
 			setSelectedModel(null);
+			return;
+		}
+
+		const currentModelExists = models.some(
+			(model) => model.id === selectedModel?.id,
+		);
+
+		if (!currentModelExists) {
+			setSelectedModel(models[0]);
 		}
 	}, [models, selectedModel, setSelectedModel]);
 

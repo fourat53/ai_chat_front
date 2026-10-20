@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);
 	const providerId = searchParams.get("providerId");
+	const baseUrl = searchParams.get("baseUrl");
 
 	if (!providerId) {
 		return NextResponse.json(
@@ -11,14 +12,16 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
+	if (!baseUrl) {
+		return NextResponse.json({ error: "baseUrl is required" }, { status: 400 });
+	}
+
 	try {
 		const response = await fetch(
-			`${process.env.RAG_URL}/models/${providerId}`,
+			`${process.env.RAG_URL}/models/${encodeURIComponent(providerId)}?base_url=${encodeURIComponent(baseUrl)}`,
 			{
 				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				cache: "no-store",
 			},
 		);

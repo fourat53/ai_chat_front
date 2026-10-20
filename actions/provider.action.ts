@@ -6,10 +6,13 @@ import type { Provider } from "@/types/provider.type";
 
 export async function getProviders(): Promise<Provider[]> {
 	await connectDB();
-	const providers = await ProviderModel.find({}, {}).lean();
-	const serialized = JSON.parse(JSON.stringify(providers));
-	return serialized.map((p: { _id: string; [key: string]: unknown }) => ({
+
+	const providers = await ProviderModel.find({
+		label: { $nin: ["local-ollama", "lm-studio"] },
+	}).lean();
+
+	return providers.map(({ _id, ...p }) => ({
 		...p,
-		id: p._id,
+		id: _id.toString(),
 	})) as Provider[];
 }

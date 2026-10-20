@@ -82,6 +82,7 @@ export function ChatInput({
 				body: {
 					provider: selectedProvider.label,
 					model: selectedModel.id,
+					baseUrl: selectedProvider.baseUrl,
 				},
 			},
 		);
@@ -130,25 +131,7 @@ export function ChatInput({
 				/>
 
 				<div className="z-10 pt-1 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2">
-					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-						{/* <Button
-							variant="ghost"
-							size="icon"
-							className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
-						>
-							<IconLink size={20} />
-						</Button>
-						<div className="mx-px w-px h-4 bg-border" />
-						<Button
-							variant="ghost"
-							size="icon"
-							className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
-						>
-							<IconSearch size={20} />
-						</Button>
-						<div className="mx-px w-px h-4 bg-border" /> */}
-						<ModelsSelect />
-					</div>
+					<ModelsSelect />
 
 					<Button
 						onClick={isLoading ? stop : undefined}
@@ -163,3 +146,22 @@ export function ChatInput({
 		</div>
 	);
 }
+
+// <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+// <Button
+// 		variant="ghost"
+// 		size="icon"
+// 		className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
+// 	>
+// 		<IconLink size={20} />
+// 	</Button>
+// 	<div className="mx-px w-px h-4 bg-border" />
+// 	<Button
+// 		variant="ghost"
+// 		size="icon"
+// 		className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
+// 	>
+// 		<IconSearch size={20} />
+// 	</Button>
+// 	<div className="mx-px w-px h-4 bg-border" />
+// </div>

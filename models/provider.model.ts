@@ -4,7 +4,7 @@ import type { Provider } from "@/types/provider.type";
 const providerSchema = new Schema<Provider>({
 	label: String,
 	name: String,
-	models: Schema.Types.Mixed,
+	baseUrl: String,
 });
 
 export const ProviderModel =

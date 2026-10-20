@@ -31,7 +31,13 @@ export async function POST(req: Request) {
 
 	try {
 		const body = await req.json();
-		const { messages, provider, model, question: directQuestion } = body;
+		const {
+			messages,
+			provider,
+			model,
+			question: directQuestion,
+			baseUrl,
+		} = body;
 
 		const turns: HistoryTurn[] = Array.isArray(messages)
 			? messages.flatMap((m: unknown) => {
@@ -87,7 +93,13 @@ export async function POST(req: Request) {
 			const response = await fetch(`${process.env.RAG_URL}/llm/query`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ provider, model, question, history }),
+				body: JSON.stringify({
+					provider,
+					model,
+					question,
+					history,
+					base_url: baseUrl,
+				}),
 				signal: controller.signal,
 			});
 
