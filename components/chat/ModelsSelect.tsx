@@ -1,7 +1,8 @@
 "use client";
 
+import { IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -14,6 +15,40 @@ import {
 import { useChatStore } from "@/store/useChatStore";
 import type { Model } from "@/types/model.type";
 
+function SearchField({
+	value,
+	onChange,
+}: {
+	value: string;
+	onChange: (value: string) => void;
+}) {
+	const ref = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		const frame = requestAnimationFrame(() => ref.current?.focus());
+		return () => cancelAnimationFrame(frame);
+	}, []);
+
+	return (
+		<div className="relative z-20 flex gap-2 items-center px-3 py-2 border-b border-border/60 bg-popover">
+			<IconSearch
+				size={14}
+				className="pointer-events-none shrink-0 text-muted-foreground"
+			/>
+			<input
+				ref={ref}
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				onKeyDown={(event) => {
+					if (event.key.length === 1) event.stopPropagation();
+				}}
+				placeholder="Search models..."
+				className="w-full min-w-0 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+			/>
+		</div>
+	);
+}
+
 export default function ModelsSelect() {
 	const {
 		models,
@@ -22,6 +57,8 @@ export default function ModelsSelect() {
 		setSelectedModel,
 		selectedProvider,
 	} = useChatStore();
+
+	const [search, setSearch] = useState("");
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["models", selectedProvider],
@@ -59,6 +96,16 @@ export default function ModelsSelect() {
 		}
 	}, [models, selectedModel, setSelectedModel]);
 
+	const filteredModels = useMemo(() => {
+		const query = search.trim().toLowerCase();
+		if (!query) return models;
+		return models.filter(
+			(model) =>
+				model.name.toLowerCase().includes(query) ||
+				model.id.toLowerCase().includes(query),
+		);
+	}, [models, search]);
+
 	if (isLoading || !selectedProvider)
 		return (
 			<div className="w-32 sm:w-48 h-7 bg-muted rounded-full animate-pulse" />
@@ -75,6 +122,9 @@ export default function ModelsSelect() {
 		<Select
 			value={selectedModel?.id ?? ""}
 			disabled={models.length === 0}
+			onOpenChange={(open) => {
+				if (open) setSearch("");
+			}}
 			onValueChange={(val) => {
 				setSelectedModel(models.find((m) => m.id === val) ?? null);
 			}}
@@ -92,10 +142,11 @@ export default function ModelsSelect() {
 				sideOffset={-10}
 				align="start"
 				className="h-full"
+				listHeader={<SearchField value={search} onChange={setSearch} />}
 			>
 				<SelectGroup>
 					<SelectLabel>Models</SelectLabel>
-					{models?.map((m) => (
+					{filteredModels?.map((m) => (
 						<SelectItem key={m.id} value={m.id}>
 							<p title={m.name} className="truncate max-w-28 sm:max-w-40">
 								{m.name}
@@ -103,6 +154,11 @@ export default function ModelsSelect() {
 						</SelectItem>
 					))}
 				</SelectGroup>
+				{filteredModels.length === 0 && (
+					<div className="px-3 pb-2 text-xs text-muted-foreground">
+						No models found
+					</div>
+				)}
 			</SelectContent>
 		</Select>
 	);

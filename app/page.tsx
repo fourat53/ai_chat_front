@@ -8,6 +8,7 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import WaitingDots from "@/components/chat/WaitingDots";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import mapToMessage from "@/functions/mapToMessage";
 import { useSession } from "@/lib/auth-client";
@@ -66,13 +67,17 @@ export default function HomePage() {
 				<ChatHeader />
 				<div className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 border-border bg-background">
 					{messages.length > 0 ? (
-						(messages as Message[]).map((msg) => (
-							<MessageBubble
-								key={msg.id}
-								message={mapToMessage(msg)}
-								session={session}
-							/>
-						))
+						<>
+							{(messages as Message[]).map((msg) => (
+								<MessageBubble
+									key={msg.id}
+									message={mapToMessage(msg)}
+									session={session}
+								/>
+							))}
+
+							{status === "submitted" && <WaitingDots />}
+						</>
 					) : (
 						<div className="flex flex-col justify-center items-center px-2 mx-auto space-y-4 max-w-md h-full text-center">
 							<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">

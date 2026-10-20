@@ -2,6 +2,7 @@
 
 import {
 	// IconLink, IconSearch,
+	IconLoader2,
 	IconSend,
 } from "@tabler/icons-react";
 import type { ChatStatus } from "ai";
@@ -133,14 +134,33 @@ export function ChatInput({
 				<div className="z-10 pt-1 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2">
 					<ModelsSelect />
 
-					<Button
-						onClick={isLoading ? stop : undefined}
-						disabled={!input || input.trim() === ""}
-						loading={isLoading}
-						icon={<IconSend size={16} />}
-						size="icon"
-						className="rounded-full size-8 sm:size-9"
-					/>
+					{/*
+					 * Two separate buttons: Base UI Button always renders
+					 * type="button" unless overridden, and `loading` implies
+					 * `disabled` — which would make the send button impossible
+					 * to click. While streaming it becomes a clickable stop
+					 * control instead of a disabled spinner.
+					 */}
+					{isLoading ? (
+						<Button
+							type="button"
+							size="icon"
+							className="rounded-full size-8 sm:size-9"
+							onClick={(event) => {
+								event.preventDefault();
+								stop?.();
+							}}
+							icon={<IconLoader2 className="animate-spin" />}
+						/>
+					) : (
+						<Button
+							type="submit"
+							size="icon"
+							className="rounded-full size-8 sm:size-9"
+							disabled={!input || input.trim() === ""}
+							icon={<IconSend size={16} />}
+						/>
+					)}
 				</div>
 			</form>
 		</div>
