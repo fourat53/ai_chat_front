@@ -85,6 +85,8 @@ export async function updateConversation(
 	data: {
 		title?: string;
 		messages?: Message[];
+		providerId?: string;
+		modelId?: string;
 	},
 ) {
 	const userId = await getUserId();
@@ -96,6 +98,8 @@ export async function updateConversation(
 	};
 	if (data.title !== undefined) update.title = data.title;
 	if (data.messages !== undefined) update.messages = data.messages;
+	if (data.providerId !== undefined) update.providerId = data.providerId;
+	if (data.modelId !== undefined) update.modelId = data.modelId;
 
 	await ConversationModel.updateOne({ _id, userId }, { $set: update });
 

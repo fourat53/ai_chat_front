@@ -6,11 +6,11 @@ import {
 	IconSend,
 } from "@tabler/icons-react";
 import type { ChatStatus } from "ai";
-import { createConversation } from "@/actions/conversation.action";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { createNewConversation } from "@/functions/conversation";
 import type { SessionType } from "@/lib/auth-client";
 import { useChatStore } from "@/store/useChatStore";
-import type { Conversation } from "@/types/conversation.type";
 import ModelsSelect from "./ModelsSelect";
 
 interface ChatInputProps {
@@ -32,63 +32,44 @@ export function ChatInput({
 	const {
 		input,
 		setInput,
-		conversations,
-		setConversations,
 		selectedModel,
 		selectedProvider,
-		setSelectedConversation,
+		selectedConversation,
+		setPendingMeta,
 	} = useChatStore();
+	const sendingRef = useRef(false);
 
 	const submitMessage = async () => {
-		if (!input.trim() || !selectedProvider || !selectedModel) return;
+		if (sendingRef.current) return;
+		const text = input.trim();
+		if (!text || !selectedProvider || !selectedModel) return;
+		if (status === "submitted" || status === "streaming") return;
 
-		const title = input.slice(0, 50) + (input.length > 50 ? "..." : "");
-		let newConversation: Conversation;
+		sendingRef.current = true;
+		try {
+			const conversation =
+				selectedConversation ?? (await createNewConversation(!!session?.user));
+			if (!conversation) return;
 
-		if (session?.user) {
-			try {
-				const created = await createConversation({
-					title,
-					providerId: selectedProvider.id,
-					modelId: selectedModel.id,
-				});
+			setPendingMeta({
+				providerName: selectedProvider.name,
+				modelName: selectedModel.name,
+			});
+			setInput("");
 
-				if (!created._id) return;
-
-				newConversation = { ...created, id: created._id, title };
-				setConversations([newConversation, ...conversations]);
-			} catch (err) {
-				console.error("Failed to create conversation:", err);
-				return;
-			}
-		} else {
-			const convId = crypto.randomUUID();
-
-			newConversation = {
-				id: convId,
-				userId: `guest-${convId}`,
-				providerId: selectedProvider.id,
-				modelId: selectedModel.id,
-				title,
-			};
-
-			setConversations([newConversation, ...conversations]);
-		}
-
-		setSelectedConversation(newConversation);
-
-		await sendMessage(
-			{ text: input.trim() },
-			{
-				body: {
-					provider: selectedProvider.label,
-					model: selectedModel.id,
-					baseUrl: selectedProvider.baseUrl,
+			await sendMessage(
+				{ text },
+				{
+					body: {
+						provider: selectedProvider.label,
+						model: selectedModel.id,
+						baseUrl: selectedProvider.baseUrl,
+					},
 				},
-			},
-		);
-
-		setInput("");
+			);
+		} finally {
+			sendingRef.current = false;
+		}
 	};
 
 	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -101,10 +82,9 @@ export function ChatInput({
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			setInput("");
 			if (isLoading && stop) {
 				stop();
-			} else if (input) {
+			} else if (input.trim()) {
 				handleSubmit(e as unknown as React.SubmitEvent<HTMLFormElement>);
 			}
 		}
@@ -114,7 +94,7 @@ export function ChatInput({
 		<div className="px-2 sm:px-4 md:px-0 lg:px-4 md:mx-auto md:max-w-2xl lg:max-w-3xl">
 			<form
 				onSubmit={handleSubmit}
-				className="rounded-3xl border shadow-xl transition-all bg-sidebar border-border focus-within:ring-2 focus-within:ring-ring/50"
+				className="rounded-3xl border shadow-xl transition-all bg-sidebar focus-within:ring-2 focus-within:ring-ring/50"
 			>
 				<textarea
 					value={input}

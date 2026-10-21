@@ -15,16 +15,24 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import handleCopy from "@/functions/handleCopy";
 import type { SessionType } from "@/lib/auth-client";
-import type { Message } from "@/types/message.type";
+import type { Message, MessageMeta } from "@/types/message.type";
+import { LoaderDots } from "./WaitingDots";
 
 type MessageBubbleProps = ComponentPropsWithoutRef<"div"> & {
 	message: Message;
 	session: SessionType;
+	meta?: MessageMeta | null;
 };
 
-export function MessageBubble({ message, session }: MessageBubbleProps) {
-	const { theme } = useTheme();
+export function MessageBubble({ message, session, meta }: MessageBubbleProps) {
+	const { resolvedTheme } = useTheme();
 	const isUser = message.role === "user";
+	const resolvedMeta = meta
+		? meta
+		: message.providerName && message.modelName
+			? { providerName: message.providerName, modelName: message.modelName }
+			: undefined;
+	const isEmptyContent = message.content.trim().length === 0;
 	return (
 		<div className="px-4 sm:px-8 md:px-4 lg:px-8 md:mx-auto md:max-w-2xl lg:max-w-3xl flex flex-col gap-1 w-full rounded-2xl transition-colors group">
 			<div className="flex-1 space-y-2 min-w-0">
@@ -47,94 +55,131 @@ export function MessageBubble({ message, session }: MessageBubbleProps) {
 									)
 								)}
 							</div>
-							<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-3.5 bg-sidebar shadow-sm border-2 border-border rounded-2xl">
+							<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-3.5 bg-sidebar shadow-sm border-2  rounded-2xl">
 								{message.content}
 							</div>
 						</div>
 					) : (
-						<div className="w-full">
-							<ReactMarkdown
-								remarkPlugins={[remarkGfm]}
-								components={{
-									pre({ children }) {
-										const codeEl = children as React.ReactElement;
-										const codeProps: ComponentPropsWithoutRef<"code"> =
-											codeEl.props ?? {};
-										const codeClassName = codeProps.className ?? "";
-										const codeContent =
-											typeof codeProps.children === "string"
-												? codeProps.children.replace(/\n$/, "")
-												: "";
-										const match = /language-(\w+)/.exec(codeClassName);
-										if (match) {
-											return (
-												<div className="overflow-hidden my-4 rounded-lg border border-border">
-													<div className="flex justify-between items-center py-0.5 pr-0.5 pl-3 text-muted-foreground bg-sidebar">
-														<>Code</>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="size-8 p-0.5 hover:bg-secondary/80 dark:hover:bg-secondary/70"
-															onClick={() => handleCopy(codeContent)}
+						<div className="w-full font-light">
+							{resolvedMeta && (
+								<div
+									title={`${resolvedMeta.providerName} · ${resolvedMeta.modelName}`}
+									className="pb-2 flex flex-wrap gap-1.5 items-center text-xs text-muted-foreground"
+								>
+									<span>{resolvedMeta.providerName}</span>
+									<span>·</span>
+									<span className="font-medium">{resolvedMeta.modelName}</span>
+								</div>
+							)}
+							{isEmptyContent ? (
+								<LoaderDots />
+							) : (
+								<ReactMarkdown
+									remarkPlugins={[remarkGfm]}
+									components={{
+										pre({ children }) {
+											const codeEl = children as React.ReactElement;
+											const codeProps: ComponentPropsWithoutRef<"code"> =
+												codeEl.props ?? {};
+											const codeClassName = codeProps.className ?? "";
+											const codeContent =
+												typeof codeProps.children === "string"
+													? codeProps.children.replace(/\n$/, "")
+													: "";
+											const match = /language-(\w+)/.exec(codeClassName);
+											if (match) {
+												return (
+													<div className="overflow-hidden my-4 rounded-lg border">
+														<div className="flex justify-between items-center py-0.5 pr-0.5 pl-3 text-muted-foreground bg-sidebar border-b">
+															Code
+															<Button
+																variant="ghost"
+																size="icon"
+																className="size-8 p-0.5 hover:bg-secondary/80 dark:hover:bg-secondary/70"
+																onClick={() => handleCopy(codeContent)}
+															>
+																<IconCopy size={16} />
+															</Button>
+														</div>
+														<SyntaxHighlighter
+															PreTag="div"
+															language={match[1]}
+															style={
+																resolvedTheme === "dark" ? vscDarkPlus : prism
+															}
+															customStyle={{
+																margin: 0,
+																padding: "1rem",
+																fontWeight: 100,
+																fontSize: "0.85rem",
+																background:
+																	resolvedTheme === "dark"
+																		? "#090c0d"
+																		: "#eaf7f7",
+															}}
 														>
-															<IconCopy size={16} />
-														</Button>
+															{codeContent}
+														</SyntaxHighlighter>
 													</div>
-													<SyntaxHighlighter
-														PreTag="div"
-														language={match[1]}
-														style={theme === "dark" ? vscDarkPlus : prism}
-														customStyle={{
-															margin: 0,
-															padding: "1rem",
-															background: "transparent",
-															fontSize: "0.85rem",
-														}}
-													>
-														{codeContent}
-													</SyntaxHighlighter>
+												);
+											}
+											return (
+												<div className="my-2 shadow-sm border">
+													<div className="px-3 py-2 dark:bg-sidebar/40">
+														<code>{codeContent}</code>
+													</div>
 												</div>
 											);
-										}
-										return (
-											<div className="my-2 shadow-sm border border-border">
-												<div className="px-3 py-2 dark:bg-sidebar/40">
-													<code>{codeContent}</code>
-												</div>
-											</div>
-										);
-									},
-									code({
-										inline,
-										className,
-										children,
-										...rest
-									}: ComponentPropsWithoutRef<"code"> & {
-										inline?: boolean;
-										node?: unknown;
-									}) {
-										if (inline) {
+										},
+										code({
+											inline,
+											className,
+											children,
+											...rest
+										}: ComponentPropsWithoutRef<"code"> & {
+											inline?: boolean;
+											node?: unknown;
+										}) {
+											if (inline) {
+												return (
+													<code className={className} {...rest}>
+														{JSON.stringify(children)}
+													</code>
+												);
+											}
 											return (
 												<code className={className} {...rest}>
 													{JSON.stringify(children)}
 												</code>
 											);
-										}
-										return (
-											<code className={className} {...rest}>
-												{JSON.stringify(children)}
-											</code>
-										);
-									},
-									strong({ children }) {
-										return (
-											<strong className="font-semibold">{children}</strong>
-										);
-									},
-								}}
-							>
-								{message.content}
-							</ReactMarkdown>
+										},
+										table({ children }) {
+											return (
+												<div className="my-4 overflow-x-auto">
+													<table className="w-full border-t border-l border-collapse text-sm">
+														{children}
+													</table>
+												</div>
+											);
+										},
+										tr({ children }) {
+											return <tr className="border-b">{children}</tr>;
+										},
+										th({ children }) {
+											return (
+												<th className="border-r px-3 py-2 text-left font-medium bg-sidebar">
+													{children}
+												</th>
+											);
+										},
+										td({ children }) {
+											return <td className="border-r px-3 py-2">{children}</td>;
+										},
+									}}
+								>
+									{message.content}
+								</ReactMarkdown>
+							)}
 						</div>
 					)}
 				</div>

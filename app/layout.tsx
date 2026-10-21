@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "ChatAI",
+	title: "Chat AI",
 	description: "Your personal AI companion",
 };
 

@@ -137,7 +137,7 @@ function SearchField({
 	}, []);
 
 	return (
-		<div className="h-10 relative z-20 flex gap-2 items-center px-3 py-2 border-b border-border/60 bg-popover">
+		<div className="h-10 relative z-20 flex gap-2 items-center px-3 py-2 border-b /60 bg-popover">
 			<IconSearch
 				size={14}
 				className="pointer-events-none shrink-0 text-muted-foreground"
