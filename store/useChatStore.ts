@@ -35,6 +35,10 @@ interface ChatState {
 	// Pending Model Metadata
 	pendingMeta: MessageMeta | null;
 	setPendingMeta: (pendingMeta: MessageMeta | null) => void;
+
+	// Input
+	input: string;
+	setInput: (input: string) => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
@@ -107,6 +111,10 @@ const useChatStore = create<ChatState>((set) => ({
 		set((state) =>
 			state.pendingMeta === pendingMeta ? state : { pendingMeta },
 		),
+
+	// Input
+	input: "",
+	setInput: (input: string) => set({ input }),
 }));
 
 export { useChatStore };

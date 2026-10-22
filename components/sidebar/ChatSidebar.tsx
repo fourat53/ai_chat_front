@@ -102,7 +102,7 @@ export default function ChatSidebar() {
 							</Button>
 							{sessionPending || isLoading ? (
 								<div className="absolute h-full w-full flex justify-center items-center">
-									<MainLoader scale="small" />
+									<MainLoader />
 								</div>
 							) : error ? (
 								<div className="p-4 pt-20 text-center text-sm text-foreground-muted">

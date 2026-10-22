@@ -1,20 +1,6 @@
+import { cn } from "@/lib/utils";
 import styles from "./MainLoader.module.css";
 
-interface MainLoaderProps {
-	className?: string;
-	scale?: "small" | "medium" | "large";
-}
-
-export default function MainLoader({
-	className = "",
-	scale = "medium",
-}: MainLoaderProps) {
-	const scaleStyles = {
-		small: "scale-75",
-		medium: "scale-100",
-		large: "scale-150",
-	};
-	return (
-		<span className={`${styles.loader} ${scaleStyles[scale]} ${className}`} />
-	);
+export default function MainLoader({ className = "" }: { className?: string }) {
+	return <span className={cn(styles.loader, className)} />;
 }

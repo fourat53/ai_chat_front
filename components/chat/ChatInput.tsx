@@ -1,7 +1,7 @@
 "use client";
 
 import { IconLoader2, IconPaperclip, IconSend } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import ModelsSelect from "@/components/fields/ModelsSelect";
 import { Button } from "@/components/ui/button";
@@ -13,19 +13,21 @@ import { useChatStore } from "@/store/useChatStore";
 export default function ChatInput() {
 	const { data: session } = useSession();
 	const { sendMessage, status, stop } = useChat();
-	const [input, setInput] = useState("");
-
 	const {
 		selectedModel,
 		selectedProvider,
 		selectedConversation,
 		setPendingMeta,
+		input,
+		setInput,
 	} = useChatStore(
 		useShallow((state) => ({
 			selectedModel: state.selectedModel,
 			selectedProvider: state.selectedProvider,
 			selectedConversation: state.selectedConversation,
 			setPendingMeta: state.setPendingMeta,
+			input: state.input,
+			setInput: state.setInput,
 		})),
 	);
 
