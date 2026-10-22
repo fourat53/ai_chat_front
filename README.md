@@ -41,7 +41,13 @@ We welcome contributions! Please follow these steps:
 
 Tasks to do:
 
-fix model search (remove one key selection that interupts search and make sure on select open the seach input is focused and verify that the search is fluid, no stturring or waiting)
+fix model search (remove one key selection that interupts search and make sure on select open the seach input is focused and verify that the search is fluid, no stturring or waiting).
+
+make the ChatMessage component two components UserMessage and AssistantMessage since they don't have much in commun.
+
+scroll down in ChatMessages right after a new user message is submitted, to see the start of the response.
+
+try unifing the loading section (use meta section and loading only once for consistency).
 
 2. Add update query to User message bubble deleting all the next messages to the old updated query.
 3. MCP server (google calendar, docs, sheets, etc).

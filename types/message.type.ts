@@ -16,9 +16,5 @@ const message = z.object({
 
 type Message = z.infer<typeof message> & UIMessage;
 type MessageBody = Omit<Message, "id">;
-type MessageMeta = {
-	providerName: string;
-	modelName: string;
-};
 
-export { ChatRole, type Message, type MessageBody, type MessageMeta, message };
+export { ChatRole, type Message, type MessageBody, message };

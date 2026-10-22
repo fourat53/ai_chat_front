@@ -1,9 +1,6 @@
-import type { ChatRole, Message, MessageMeta } from "@/types/message.type";
+import type { Message } from "@/types/message.type";
 
-export default function mapToMessage(
-	msg: Message,
-	meta?: MessageMeta,
-): Message {
+export default function mapToMessage(msg: Message): Message {
 	const fromParts = Array.isArray(msg.parts)
 		? msg.parts
 				.filter((p) => p.type === "text")
@@ -11,14 +8,8 @@ export default function mapToMessage(
 				.join("")
 		: "";
 	const legacyContent = (msg as { content?: string }).content ?? "";
-	const providerName = msg.providerName ?? meta?.providerName;
-	const modelName = msg.modelName ?? meta?.modelName;
 	return {
-		id: msg.id,
-		role: msg.role as ChatRole,
-		parts: msg.parts,
+		...msg,
 		content: fromParts || legacyContent,
-		providerName,
-		modelName,
 	};
 }
