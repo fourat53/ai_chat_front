@@ -1,35 +1,18 @@
 import type { Message } from "@/types/message.type";
 
-const TITLE_TURN_LENGTH = 2000;
+const TITLE_MESSAGE_LENGTH = 2000;
 
 export default async function generateTitle(
 	messages: Message[],
-	previousTitle: string,
 	signal: AbortSignal,
 ): Promise<string | null> {
-	const isFirstExchange = previousTitle.trim().length === 0;
-	const pick = isFirstExchange ? "first" : "last";
-	const userTurn =
-		pick === "first"
-			? messages.find((m) => m.role === "user" && m.content.trim().length > 0)
-			: messages.findLast(
-					(m) => m.role === "user" && m.content.trim().length > 0,
-				);
-	const assistantTurn =
-		pick === "first"
-			? messages.find(
-					(m) => m.role === "assistant" && m.content.trim().length > 0,
-				)
-			: messages.findLast(
-					(m) => m.role === "assistant" && m.content.trim().length > 0,
-				);
-
-	if (!userTurn || !assistantTurn) return null;
+	const firstUserMessage = messages.find(
+		(m) => m.role === "user" && m.content.trim().length > 0,
+	);
+	if (!firstUserMessage) return null;
 
 	const payload = {
-		title: previousTitle,
-		userMessage: userTurn.content.trim().slice(0, TITLE_TURN_LENGTH),
-		assistantResponse: assistantTurn.content.trim().slice(0, TITLE_TURN_LENGTH),
+		userMessage: firstUserMessage.content.trim().slice(0, TITLE_MESSAGE_LENGTH),
 	};
 
 	try {

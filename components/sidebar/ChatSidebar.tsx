@@ -48,12 +48,12 @@ export default function ChatSidebar() {
 	}, [data, setConversations]);
 
 	const handleSelectConversation = (id: string) => {
-		selectConversation(id, { setMessages, stop });
+		void selectConversation(id, { setMessages, stop });
 	};
 
 	const handleNewChat = async () => {
 		if (selectedConversation) {
-			selectConversation(null, { setMessages, stop });
+			void selectConversation(null, { setMessages, stop });
 		}
 		const conversation = await createNewConversation(!!session?.user);
 		if (!conversation) return;
@@ -68,7 +68,7 @@ export default function ChatSidebar() {
 			setConversations(conversations.filter((c) => c.id !== id));
 		}
 		if (selectedConversation?.id === id) {
-			selectConversation(null, { setMessages, stop });
+			void selectConversation(null, { setMessages, stop });
 		}
 	};
 

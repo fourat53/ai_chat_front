@@ -1,4 +1,7 @@
-import { createConversation } from "@/actions/conversation.action";
+import {
+	createConversation,
+	getConversation,
+} from "@/actions/conversation.action";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
@@ -8,10 +11,25 @@ interface SelectConversationOptions {
 	stop?: () => void;
 }
 
-export function selectConversation(
+let selectionToken = 0;
+
+function toUiMessages(messages: Conversation["messages"]): Message[] {
+	return (messages ?? []).map(
+		(m) =>
+			({
+				id: m.id,
+				role: m.role,
+				parts: [{ type: "text", text: m.content }],
+				...(m.providerName ? { providerName: m.providerName } : {}),
+				...(m.modelName ? { modelName: m.modelName } : {}),
+			}) as unknown as Message,
+	);
+}
+
+export async function selectConversation(
 	id: string | null,
 	{ setMessages, stop }: SelectConversationOptions,
-): boolean {
+): Promise<boolean> {
 	const {
 		conversations,
 		providers,
@@ -24,6 +42,7 @@ export function selectConversation(
 	} = useChatStore.getState();
 
 	if (!id) {
+		selectionToken++;
 		stop?.();
 		setSelectedConversation(null);
 		setPendingMeta(null);
@@ -39,27 +58,32 @@ export function selectConversation(
 		return false;
 	}
 
+	const token = ++selectionToken;
 	stop?.();
-	setSelectedConversation(conversation);
-	setMessages(
-		(conversation.messages ?? []).map(
-			(m) =>
-				({
-					id: m.id,
-					role: m.role,
-					parts: [{ type: "text", text: m.content }],
-					...(m.providerName ? { providerName: m.providerName } : {}),
-					...(m.modelName ? { modelName: m.modelName } : {}),
-				}) as Message,
-		),
-	);
-	setSelectedProvider(
-		providers.find((p) => p.id === conversation.providerId) ?? null,
-	);
-	setSelectedModel(models.find((m) => m.id === conversation.modelId) ?? null);
+	setLoadingConversation(true);
 	setPendingMeta(null);
-	setLoadingConversation(false);
-	return true;
+	setSelectedConversation(conversation);
+	setMessages([]);
+
+	try {
+		const full = await getConversation(id);
+		if (token !== selectionToken) return false;
+		const resolved = full ?? conversation;
+		setSelectedConversation(resolved);
+		setSelectedProvider(
+			providers.find((p) => p.id === resolved.providerId) ?? null,
+		);
+		setSelectedModel(models.find((m) => m.id === resolved.modelId) ?? null);
+		setMessages(toUiMessages(full?.messages));
+		return true;
+	} catch (error) {
+		console.error("Failed to load conversation:", error);
+		return false;
+	} finally {
+		if (token === selectionToken) {
+			setLoadingConversation(false);
+		}
+	}
 }
 
 export async function createNewConversation(

@@ -53,6 +53,7 @@ export async function getConversations(): Promise<Conversation[]> {
 
 	const docs = await ConversationModel.find({ userId })
 		.sort({ updatedAt: -1 })
+		.select("userId title providerId modelId updatedAt")
 		.lean();
 
 	const serialized = JSON.parse(JSON.stringify(docs));

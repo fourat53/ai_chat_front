@@ -25,11 +25,8 @@ function isAutoRouterModel(model: {
 	);
 }
 
-function buildTitleInstruction(previousTitle: string): string {
-	if (!previousTitle) {
-		return "You are naming a chat conversation between a user and an assistant from their first exchange: the user's message and the assistant's reply are given in the conversation history. Write a very short title that captures the subject or goal the user is working toward. Do not simply quote or repeat the user's message, and ignore greetings and small talk. Reply in the same language as the user's message, with the title text only, without quotes or a closing period.";
-	}
-	return `You are updating the title of an ongoing chat conversation between a user and an assistant. The conversation's current title is "${previousTitle}". Since it was written, the user sent a new message and received the assistant's reply given in the conversation history. Write an updated, very short title that still captures the conversation's overall subject, changing the current title only if the new exchange materially shifts the topic. Reply in the same language as the user's messages, with the title text only, without quotes or a closing period.`;
+function buildTitleInstruction(): string {
+	return "You are naming a chat conversation from the user's first request. The user's message is given in the conversation history. Write a very short title that captures what the user is asking about or wants to accomplish. Do not simply quote or repeat the user's message, and ignore greetings and small talk. Reply in the same language as the user's message, with the title text only, without quotes or a closing period.";
 }
 
 function formatTitle(raw: string): string {
@@ -57,34 +54,20 @@ export async function POST(req: NextRequest) {
 	}
 
 	const parsed = (body ?? {}) as {
-		title?: unknown;
 		userMessage?: unknown;
-		assistantResponse?: unknown;
 	};
-	const previousTitle =
-		typeof parsed.title === "string"
-			? parsed.title.trim().slice(0, TITLE_MAX_LENGTH)
-			: "";
 	const userMessage =
 		typeof parsed.userMessage === "string" ? parsed.userMessage.trim() : "";
-	const assistantResponse =
-		typeof parsed.assistantResponse === "string"
-			? parsed.assistantResponse.trim()
-			: "";
 
-	if (!userMessage || !assistantResponse) {
+	if (!userMessage) {
 		return NextResponse.json(
-			{ error: "userMessage and assistantResponse are required" },
+			{ error: "userMessage is required" },
 			{ status: 400 },
 		);
 	}
 
 	const turns: TitleTurn[] = [
 		{ role: "user", content: userMessage.slice(0, TITLE_TURN_LENGTH) },
-		{
-			role: "assistant",
-			content: assistantResponse.slice(0, TITLE_TURN_LENGTH),
-		},
 	];
 
 	if (!process.env.RAG_URL) {
@@ -149,7 +132,7 @@ export async function POST(req: NextRequest) {
 				body: JSON.stringify({
 					provider: SUMMARY_PROVIDER_LABEL,
 					model: summarizerModel.id,
-					question: buildTitleInstruction(previousTitle),
+					question: buildTitleInstruction(),
 					history: turns,
 					base_url: summaryProvider.baseUrl,
 				}),

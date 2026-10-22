@@ -13,7 +13,7 @@ import {
 import { updateConversation } from "@/actions/conversation.action";
 import { selectConversation } from "@/functions/conversation";
 import mapToMessage from "@/functions/mapToMessage";
-import { useTitleRefresh } from "@/hooks/use-title-refresh";
+import { useTitle } from "@/hooks/use-title";
 import { useSession } from "@/lib/auth-client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
@@ -41,8 +41,6 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 		length: 0,
 	});
 
-	const scheduleTitleRefresh = useTitleRefresh();
-
 	const transport = useMemo(() => {
 		return new TextStreamChatTransport({
 			api: "/api/llm/query",
@@ -57,9 +55,15 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 			},
 		});
 
+	useTitle({ messages, status });
+
 	useEffect(() => {
-		if (!selectedConversation && conversations.length > 0) {
-			selectConversation(conversations[0].id, { setMessages, stop });
+		if (
+			convRef.current.id === "" &&
+			!selectedConversation &&
+			conversations.length > 0
+		) {
+			void selectConversation(conversations[0].id, { setMessages, stop });
 		}
 	}, [conversations, selectedConversation, setMessages, stop]);
 
@@ -106,8 +110,6 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 
 			setMessages(mapped);
 
-			scheduleTitleRefresh(convId, mapped, Boolean(session?.user));
-
 			if (!session?.user) return;
 			try {
 				await updateConversation(convId, {
@@ -121,14 +123,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 		};
 
 		void run();
-	}, [
-		selectedConversation,
-		scheduleTitleRefresh,
-		setMessages,
-		status,
-		messages,
-		session,
-	]);
+	}, [selectedConversation, setMessages, status, messages, session]);
 
 	const value = useMemo<ChatContextValue>(
 		() => ({ messages, setMessages, stop, sendMessage, status }),
