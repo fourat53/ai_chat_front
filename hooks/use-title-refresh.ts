@@ -5,8 +5,6 @@ import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
 
-const NEW_CHAT_TITLE = "New Chat";
-
 export function useTitleRefresh() {
 	const abortRef = useRef<AbortController | null>(null);
 
@@ -22,7 +20,7 @@ export function useTitleRefresh() {
 			const conversation = findConversation();
 			if (!conversation) return;
 			const previousTitle =
-				conversation.title === NEW_CHAT_TITLE ? "" : conversation.title;
+				conversation.title === "New Chat" ? "" : conversation.title;
 
 			const controller = new AbortController();
 			abortRef.current?.abort();

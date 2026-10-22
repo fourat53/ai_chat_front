@@ -20,11 +20,13 @@ export function selectConversation(
 		setSelectedProvider,
 		setSelectedModel,
 		setLoadingConversation,
+		setPendingMeta,
 	} = useChatStore.getState();
 
 	if (!id) {
 		stop?.();
 		setSelectedConversation(null);
+		setPendingMeta(null);
 		setMessages([]);
 		return true;
 	}
@@ -55,6 +57,7 @@ export function selectConversation(
 		providers.find((p) => p.id === conversation.providerId) ?? null,
 	);
 	setSelectedModel(models.find((m) => m.id === conversation.modelId) ?? null);
+	setPendingMeta(null);
 	setLoadingConversation(false);
 	return true;
 }

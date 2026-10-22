@@ -1,7 +1,7 @@
 "use client";
 
 import { IconLoader2, IconPaperclip, IconSend } from "@tabler/icons-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ModelsSelect from "@/components/fields/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
@@ -12,9 +12,8 @@ import { useChatStore } from "@/store/useChatStore";
 export default function ChatInput() {
 	const { data: session } = useSession();
 	const { sendMessage, status, stop } = useChat();
+	const [input, setInput] = useState("");
 	const {
-		input,
-		setInput,
 		selectedModel,
 		selectedProvider,
 		selectedConversation,
@@ -34,11 +33,15 @@ export default function ChatInput() {
 				selectedConversation ?? (await createNewConversation(!!session?.user));
 			if (!conversation) return;
 
-			setPendingMeta({
-				providerName: selectedProvider.name,
-				modelName: selectedModel.name,
-			});
 			setInput("");
+			setPendingMeta(
+				selectedProvider && selectedModel
+					? {
+							providerName: selectedProvider.name,
+							modelName: selectedModel.name,
+						}
+					: null,
+			);
 
 			await sendMessage(
 				{ text },

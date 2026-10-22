@@ -5,7 +5,7 @@ import type { Model } from "@/types/model.type";
 import type { Provider } from "@/types/provider.type";
 
 interface ChatState {
-	//Conversations
+	// Conversations
 	conversations: Conversation[];
 	setConversations: (
 		conversations: Conversation[] | ((prev: Conversation[]) => Conversation[]),
@@ -17,12 +17,6 @@ interface ChatState {
 
 	loadingConversation: boolean;
 	setLoadingConversation: (loading: boolean) => void;
-
-	pendingMeta: MessageMeta | null;
-	setPendingMeta: (meta: MessageMeta | null) => void;
-
-	assistantMeta: Record<string, MessageMeta>;
-	setAssistantMeta: (id: string, meta: MessageMeta) => void;
 
 	// Providers
 	providers: Provider[];
@@ -38,13 +32,13 @@ interface ChatState {
 	selectedModel: Model | null;
 	setSelectedModel: (model: Model | null) => void;
 
-	// Input
-	input: string;
-	setInput: (input: string) => void;
+	// Pending Model Metadata
+	pendingMeta: MessageMeta | null;
+	setPendingMeta: (pendingMeta: MessageMeta | null) => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
-	//Conversations
+	// Conversations
 	conversations: [],
 	setConversations: (conversations) =>
 		set((state) => ({
@@ -85,20 +79,6 @@ const useChatStore = create<ChatState>((set) => ({
 				: { loadingConversation: loading },
 		),
 
-	// Assistant metadata
-	assistantMeta: {},
-	setAssistantMeta: (id: string, meta: MessageMeta) =>
-		set((state) =>
-			state.assistantMeta[id]
-				? state
-				: { assistantMeta: { ...state.assistantMeta, [id]: meta } },
-		),
-	pendingMeta: null,
-	setPendingMeta: (meta: MessageMeta | null) =>
-		set((state) =>
-			state.pendingMeta === meta ? state : { pendingMeta: meta },
-		),
-
 	// Providers
 	providers: [],
 	setProviders: (providers: Provider[]) => set({ providers }),
@@ -121,10 +101,12 @@ const useChatStore = create<ChatState>((set) => ({
 			state.selectedModel?.id === model?.id ? state : { selectedModel: model },
 		),
 
-	// Input
-	input: "",
-	setInput: (input: string) =>
-		set((state) => (state.input === input ? state : { input })),
+	// Pending Model Metadata
+	pendingMeta: null,
+	setPendingMeta: (pendingMeta) =>
+		set((state) =>
+			state.pendingMeta === pendingMeta ? state : { pendingMeta },
+		),
 }));
 
 export { useChatStore };

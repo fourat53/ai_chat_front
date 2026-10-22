@@ -1,8 +1,7 @@
 "use client";
 
 import { useChat as useChatResponse } from "@ai-sdk/react";
-import type { ChatStatus } from "ai";
-import { TextStreamChatTransport } from "ai";
+import { type ChatStatus, TextStreamChatTransport } from "ai";
 import {
 	createContext,
 	type ReactNode,
@@ -34,10 +33,10 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export default function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
-	const selectedConversation = useChatStore((s) => s.selectedConversation);
-	const conversations = useChatStore((s) => s.conversations);
 
-	const persistedEntryRef = useRef<{ id: string; length: number }>({
+	const { conversations, selectedConversation } = useChatStore();
+
+	const convRef = useRef<{ id: string; length: number }>({
 		id: "",
 		length: 0,
 	});
@@ -65,60 +64,56 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 	}, [conversations, selectedConversation, setMessages, stop]);
 
 	useEffect(() => {
-		const last = messages[messages.length - 1];
-		if (last?.role !== "assistant") return;
-		if (status !== "submitted" && status !== "streaming") return;
-		const store = useChatStore.getState();
-		if (store.assistantMeta[last.id]) return;
-		const meta =
-			store.pendingMeta ??
-			(store.selectedProvider && store.selectedModel
-				? {
-						providerName: store.selectedProvider.name,
-						modelName: store.selectedModel.name,
-					}
-				: undefined);
-		if (meta) store.setAssistantMeta(last.id, meta);
-	}, [messages, status]);
-
-	useEffect(() => {
 		const run = async () => {
 			if (
 				status !== "ready" ||
 				messages.length === 0 ||
 				!selectedConversation?.id
-			) {
+			)
 				return;
-			}
+
 			const convId = selectedConversation.id;
 			if (
-				persistedEntryRef.current.id === convId &&
-				messages.length <= persistedEntryRef.current.length
-			) {
+				convRef.current.id === convId &&
+				messages.length <= convRef.current.length
+			)
 				return;
-			}
-			if (persistedEntryRef.current.id !== convId) {
+
+			if (convRef.current.id !== convId) {
 				const knownLength = selectedConversation.messages?.length ?? 0;
 				if (messages.length <= knownLength) {
-					persistedEntryRef.current = { id: convId, length: messages.length };
+					convRef.current = { id: convId, length: messages.length };
 					return;
 				}
 			}
-			persistedEntryRef.current = { id: convId, length: messages.length };
+			convRef.current = { id: convId, length: messages.length };
 
-			const store = useChatStore.getState();
-			const mapped = messages.map((m) =>
-				mapToMessage(m, store.assistantMeta[m.id]),
-			);
-			store.setPendingMeta(null);
+			const { selectedProvider, selectedModel, pendingMeta } =
+				useChatStore.getState();
+			const lastMessageIndex = messages.length - 1;
+			const mapped = messages.map((m, index) => {
+				const mappedMessage = mapToMessage(m);
+				if (
+					!pendingMeta ||
+					m.role !== "assistant" ||
+					index !== lastMessageIndex ||
+					(mappedMessage.providerName && mappedMessage.modelName)
+				) {
+					return mappedMessage;
+				}
+				return { ...mappedMessage, ...pendingMeta };
+			});
+
+			setMessages(mapped);
+
 			scheduleTitleRefresh(convId, mapped, Boolean(session?.user));
 
 			if (!session?.user) return;
 			try {
 				await updateConversation(convId, {
 					messages: mapped,
-					providerId: store.selectedProvider?.id ?? "",
-					modelId: store.selectedModel?.id ?? "",
+					providerId: selectedProvider?.id ?? "",
+					modelId: selectedModel?.id ?? "",
 				});
 			} catch (err) {
 				console.error("Failed to update conversation:", err);
@@ -126,7 +121,14 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 		};
 
 		void run();
-	}, [status, messages, session, selectedConversation, scheduleTitleRefresh]);
+	}, [
+		selectedConversation,
+		scheduleTitleRefresh,
+		setMessages,
+		status,
+		messages,
+		session,
+	]);
 
 	const value = useMemo<ChatContextValue>(
 		() => ({ messages, setMessages, stop, sendMessage, status }),

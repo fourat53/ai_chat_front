@@ -1,61 +1,53 @@
 "use client";
 
-import { ChatMessage } from "@/components/chat/ChatMessage";
+import { useEffect, useRef } from "react";
 import MainLoader from "@/components/loaders/MainLoader";
+import { AssistantMessage } from "@/components/messages/AssistantMessage";
+import { UserMessage } from "@/components/messages/UserMessage";
 import mapToMessage from "@/functions/mapToMessage";
-import { useSession } from "@/lib/auth-client";
 import { useChat } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
-import type { Message, MessageMeta } from "@/types/message.type";
-import { LoaderDots } from "../loaders/WaitingDots";
 
 export default function ChatMessages() {
 	const { messages, status } = useChat();
-	const { assistantMeta, pendingMeta, loadingConversation } = useChatStore();
-	const { data: session } = useSession();
+	const { loadingConversation } = useChatStore();
+	const scrollRef = useRef<HTMLDivElement>(null);
+	const scrolledUserIdRef = useRef<string | undefined>(undefined);
 
-	const resolveMeta = (msg: Message): MessageMeta | undefined => {
-		if (msg.providerName && msg.modelName) {
-			return { providerName: msg.providerName, modelName: msg.modelName };
+	useEffect(() => {
+		if (status !== "submitted" && status !== "streaming") return;
+		const lastUserMessageId = messages.findLast(
+			(message) => message.role === "user",
+		)?.id;
+		if (!lastUserMessageId || scrolledUserIdRef.current === lastUserMessageId) {
+			return;
 		}
-		if (assistantMeta[msg.id]) return assistantMeta[msg.id];
-		const last = messages[messages.length - 1];
-		if (
-			msg.id === last?.id &&
-			last.role === "assistant" &&
-			(status === "submitted" || status === "streaming")
-		) {
-			return pendingMeta ?? undefined;
-		}
-		return undefined;
-	};
+		scrolledUserIdRef.current = lastUserMessageId;
+		requestAnimationFrame(() => {
+			const container = scrollRef.current;
+			container?.scrollTo({ top: container.scrollHeight });
+		});
+	}, [messages, status]);
 
 	return (
-		<div className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background">
+		<div
+			ref={scrollRef}
+			className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background"
+		>
 			{messages.length > 0 ? (
-				<>
-					{messages.map((msg) => (
-						<ChatMessage
-							key={msg.id}
-							message={mapToMessage(msg)}
-							meta={resolveMeta(msg)}
-							session={session}
+				messages.map((msg, index) => {
+					const message = mapToMessage(msg);
+					return msg.role === "user" ? (
+						<UserMessage key={index} message={message} />
+					) : (
+						<AssistantMessage
+							key={index}
+							status={status}
+							message={message}
+							isLast={index === messages.length - 1}
 						/>
-					))}
-
-					{status === "submitted" && (
-						<div className="px-4 sm:px-8 md:px-4 lg:px-8 md:mx-auto md:max-w-2xl lg:max-w-3xl flex flex-col gap-1 w-full rounded-2xl">
-							{pendingMeta && (
-								<div className="flex flex-wrap gap-1.5 font-medium items-center text-xs text-muted-foreground">
-									<span>{pendingMeta.providerName}</span>
-									<span className="text-lg font-semibold">·</span>
-									<span>{pendingMeta.modelName}</span>
-								</div>
-							)}
-							<LoaderDots />
-						</div>
-					)}
-				</>
+					);
+				})
 			) : loadingConversation ? (
 				<div className="h-full w-full flex justify-center items-center">
 					<MainLoader />
