@@ -10,6 +10,7 @@ import {
 	useMemo,
 	useRef,
 } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
 import { selectConversation } from "@/functions/conversation";
 import mapToMessage from "@/functions/mapToMessage";
@@ -33,8 +34,12 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export default function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
-
-	const { conversations, selectedConversation } = useChatStore();
+	const { conversations, selectedConversation } = useChatStore(
+		useShallow((s) => ({
+			conversations: s.conversations,
+			selectedConversation: s.selectedConversation,
+		})),
+	);
 
 	const convRef = useRef<{ id: string; length: number }>({
 		id: "",

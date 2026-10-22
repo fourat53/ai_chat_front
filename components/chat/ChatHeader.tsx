@@ -5,7 +5,9 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useChatStore } from "@/store/useChatStore";
 
 export default function ChatHeader() {
-	const { selectedConversation } = useChatStore();
+	const selectedConversation = useChatStore(
+		(state) => state.selectedConversation,
+	);
 	return (
 		<div className="w-full lg:pb-2 flex justify-between items-center px-2 sm:px-4 h-12">
 			<div className="w-full flex gap-2 items-center">

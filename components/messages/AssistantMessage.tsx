@@ -27,7 +27,7 @@ export function AssistantMessage({
 			<div className="flex-1 space-y-2 min-w-0">
 				<div className="max-w-none prose prose-sm dark:prose-invert prose-pre:p-0 prose-pre:bg-transparent prose-p:leading-relaxed">
 					<div className="w-full font-light">
-						<AssistantMeta message={message} />
+						<AssistantMeta message={message} isLast={isLast} />
 						{isWaiting ? (
 							<LoaderDots />
 						) : (

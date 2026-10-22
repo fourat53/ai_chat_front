@@ -3,6 +3,7 @@
 import { IconMessage, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
 	deleteConversation,
 	getConversations,
@@ -34,7 +35,13 @@ export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
 	const { setMessages, stop } = useChat();
 	const { conversations, setConversations, selectedConversation } =
-		useChatStore();
+		useChatStore(
+			useShallow((s) => ({
+				conversations: s.conversations,
+				setConversations: s.setConversations,
+				selectedConversation: s.selectedConversation,
+			})),
+		);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["conversations"],

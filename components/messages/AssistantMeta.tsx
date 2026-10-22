@@ -3,16 +3,13 @@
 import { useChatStore } from "@/store/useChatStore";
 import type { Message, MessageMeta } from "@/types/message.type";
 
-interface AssistantContentProps {
+interface AssistantMetaProps {
 	message: Message;
 	isLast?: boolean;
 }
 
-export default function AssistantMeta({
-	message,
-	isLast,
-}: AssistantContentProps) {
-	const { pendingMeta } = useChatStore();
+export default function AssistantMeta({ message, isLast }: AssistantMetaProps) {
+	const pendingMeta = useChatStore((state) => state.pendingMeta);
 
 	function resolveMeta(): MessageMeta | null {
 		if (message.providerName && message.modelName) {

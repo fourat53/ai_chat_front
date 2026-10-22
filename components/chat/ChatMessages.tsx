@@ -7,10 +7,11 @@ import { UserMessage } from "@/components/messages/UserMessage";
 import mapToMessage from "@/functions/mapToMessage";
 import { useChat } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
+import type { Message } from "@/types/message.type";
 
 export default function ChatMessages() {
 	const { messages, status } = useChat();
-	const { loadingConversation } = useChatStore();
+	const loadingConversation = useChatStore((s) => s.loadingConversation);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const scrolledUserIdRef = useRef<string | undefined>(undefined);
 
@@ -29,22 +30,36 @@ export default function ChatMessages() {
 		});
 	}, [messages, status]);
 
+	const lastIsUser = messages[messages.length - 1]?.role === "user";
+	const displayMessages =
+		status === "submitted" && lastIsUser
+			? [
+					...messages,
+					{
+						id: "pending-assistant",
+						role: "assistant",
+						parts: [],
+						content: "",
+					} as Message,
+				]
+			: messages;
+
 	return (
 		<div
 			ref={scrollRef}
 			className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background"
 		>
 			{messages.length > 0 ? (
-				messages.map((msg, index) => {
+				displayMessages.map((msg, index) => {
 					const message = mapToMessage(msg);
 					return msg.role === "user" ? (
-						<UserMessage key={index} message={message} />
+						<UserMessage key={msg.id} message={message} />
 					) : (
 						<AssistantMessage
-							key={index}
+							key={msg.id}
 							status={status}
 							message={message}
-							isLast={index === messages.length - 1}
+							isLast={index === displayMessages.length - 1}
 						/>
 					);
 				})

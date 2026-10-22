@@ -2,6 +2,7 @@
 
 import { IconLoader2, IconPaperclip, IconSend } from "@tabler/icons-react";
 import { useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import ModelsSelect from "@/components/fields/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
@@ -13,12 +14,21 @@ export default function ChatInput() {
 	const { data: session } = useSession();
 	const { sendMessage, status, stop } = useChat();
 	const [input, setInput] = useState("");
+
 	const {
 		selectedModel,
 		selectedProvider,
 		selectedConversation,
 		setPendingMeta,
-	} = useChatStore();
+	} = useChatStore(
+		useShallow((state) => ({
+			selectedModel: state.selectedModel,
+			selectedProvider: state.selectedProvider,
+			selectedConversation: state.selectedConversation,
+			setPendingMeta: state.setPendingMeta,
+		})),
+	);
+
 	const sendingRef = useRef(false);
 
 	const submitMessage = async () => {

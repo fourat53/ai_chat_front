@@ -3,6 +3,7 @@
 import { IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
 	Select,
 	SelectContent,
@@ -15,15 +16,22 @@ import { useChatStore } from "@/store/useChatStore";
 import type { Model } from "@/types/model.type";
 
 export default function ModelsSelect() {
+	const [search, setSearch] = useState("");
 	const {
 		models,
 		setModels,
 		selectedModel,
 		setSelectedModel,
 		selectedProvider,
-	} = useChatStore();
-
-	const [search, setSearch] = useState("");
+	} = useChatStore(
+		useShallow((s) => ({
+			models: s.models,
+			setModels: s.setModels,
+			selectedModel: s.selectedModel,
+			setSelectedModel: s.setSelectedModel,
+			selectedProvider: s.selectedProvider,
+		})),
+	);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["models", selectedProvider],

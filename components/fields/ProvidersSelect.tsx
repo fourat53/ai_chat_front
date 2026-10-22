@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { getProviders } from "@/actions/provider.action";
 import {
 	Select,
@@ -16,7 +17,14 @@ import { useChatStore } from "@/store/useChatStore";
 
 export default function ProvidersSelect() {
 	const { providers, setProviders, selectedProvider, setSelectedProvider } =
-		useChatStore();
+		useChatStore(
+			useShallow((s) => ({
+				providers: s.providers,
+				setProviders: s.setProviders,
+				selectedProvider: s.selectedProvider,
+				setSelectedProvider: s.setSelectedProvider,
+			})),
+		);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["providers"],
