@@ -1,6 +1,6 @@
 "use client";
 
-import ProvidersSelect from "@/components/fields/ProvidersSelect";
+import ProvidersSelect from "@/components/selects/ProvidersSelect";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useChatStore } from "@/store/useChatStore";
 

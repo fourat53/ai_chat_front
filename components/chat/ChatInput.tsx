@@ -3,7 +3,7 @@
 import { IconLoader2, IconPaperclip, IconSend } from "@tabler/icons-react";
 import { useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
-import ModelsSelect from "@/components/fields/ModelsSelect";
+import ModelsSelect from "@/components/selects/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
 import { useSession } from "@/lib/auth-client";

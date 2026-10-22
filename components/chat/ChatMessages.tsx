@@ -12,8 +12,12 @@ import type { Message } from "@/types/message.type";
 export default function ChatMessages() {
 	const { messages, status } = useChat();
 	const loadingConversation = useChatStore((s) => s.loadingConversation);
+	const selectedConversationId = useChatStore(
+		(s) => s.selectedConversation?.id,
+	);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const scrolledUserIdRef = useRef<string | undefined>(undefined);
+	const scrolledConvRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (status !== "submitted" && status !== "streaming") return;
@@ -29,6 +33,21 @@ export default function ChatMessages() {
 			container?.scrollTo({ top: container.scrollHeight });
 		});
 	}, [messages, status]);
+
+	useEffect(() => {
+		if (
+			loadingConversation ||
+			!selectedConversationId ||
+			messages.length === 0 ||
+			scrolledConvRef.current === selectedConversationId
+		)
+			return;
+		scrolledConvRef.current = selectedConversationId;
+		requestAnimationFrame(() => {
+			const container = scrollRef.current;
+			container?.scrollTo({ top: container.scrollHeight });
+		});
+	}, [loadingConversation, messages, selectedConversationId]);
 
 	const lastIsUser = messages[messages.length - 1]?.role === "user";
 	const displayMessages =

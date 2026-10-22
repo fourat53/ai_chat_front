@@ -6,12 +6,18 @@ import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
 
-interface SelectConversationOptions {
-	setMessages: (messages: Message[]) => void;
-	stop?: () => void;
-}
-
 let selectionToken = 0;
+
+function setUrlHash(conversationId: string | null) {
+	if (typeof window === "undefined") return;
+	const hash = conversationId ? `#${conversationId}` : "";
+	if (window.location.hash === hash) return;
+	window.history.replaceState(
+		null,
+		"",
+		hash || window.location.pathname + window.location.search,
+	);
+}
 
 function toUiMessages(messages: Conversation["messages"]): Message[] {
 	return (messages ?? []).map(
@@ -26,7 +32,12 @@ function toUiMessages(messages: Conversation["messages"]): Message[] {
 	);
 }
 
-export async function selectConversation(
+interface SelectConversationOptions {
+	setMessages: (messages: Message[]) => void;
+	stop?: () => void;
+}
+
+async function selectConversation(
 	id: string | null,
 	{ setMessages, stop }: SelectConversationOptions,
 ): Promise<boolean> {
@@ -46,6 +57,7 @@ export async function selectConversation(
 		stop?.();
 		setSelectedConversation(null);
 		setPendingMeta(null);
+		setUrlHash(null);
 		setMessages([]);
 		return true;
 	}
@@ -63,6 +75,7 @@ export async function selectConversation(
 	setLoadingConversation(true);
 	setPendingMeta(null);
 	setSelectedConversation(conversation);
+	setUrlHash(id);
 	setMessages([]);
 
 	try {
@@ -86,7 +99,7 @@ export async function selectConversation(
 	}
 }
 
-export async function createNewConversation(
+async function createNewConversation(
 	isSignedIn: boolean,
 ): Promise<Conversation | null> {
 	const {
@@ -126,5 +139,8 @@ export async function createNewConversation(
 
 	setConversations([conversation, ...conversations]);
 	setSelectedConversation(conversation);
+	setUrlHash(conversation.id);
 	return conversation;
 }
+
+export { createNewConversation, selectConversation };

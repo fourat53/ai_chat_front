@@ -68,7 +68,14 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 			!selectedConversation &&
 			conversations.length > 0
 		) {
-			void selectConversation(conversations[0].id, { setMessages, stop });
+			const hashId = window.location.hash.replace(/^#/, "").trim();
+			const target = hashId
+				? conversations.find((c) => c.id === hashId)
+				: undefined;
+			void selectConversation(target?.id ?? conversations[0].id, {
+				setMessages,
+				stop,
+			});
 		}
 	}, [conversations, selectedConversation, setMessages, stop]);
 

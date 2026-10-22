@@ -4,15 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getProviders } from "@/actions/provider.action";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import Select from "@/components/selects/Select";
 import { useChatStore } from "@/store/useChatStore";
 
 export default function ProvidersSelect() {
@@ -54,27 +46,19 @@ export default function ProvidersSelect() {
 
 	return (
 		<Select
-			value={selectedProvider?.id ?? ""}
-			onValueChange={(val) => {
-				setSelectedProvider(providers.find((p) => p.id === val) ?? null);
+			items={providers.map((provider) => ({
+				value: provider.id,
+				label: provider.name,
+			}))}
+			value={selectedProvider?.id ?? null}
+			onValueChange={(id) => {
+				setSelectedProvider(providers.find((p) => p.id === id) ?? null);
 			}}
-		>
-			<SelectTrigger
-				size="sm"
-				className="w-32 sm:w-40 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
-			>
-				<SelectValue>{selectedProvider?.name}</SelectValue>
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
-					<SelectLabel>Providers</SelectLabel>
-					{providers.map((p) => (
-						<SelectItem key={p.id} value={p.id}>
-							{p.name}
-						</SelectItem>
-					))}
-				</SelectGroup>
-			</SelectContent>
-		</Select>
+			placeholder="Provider"
+			size="sm"
+			disabled={providers.length === 0}
+			triggerClassName="w-32 sm:w-40 h-7 bg-transparent border-none shadow-none text-xs hover:bg-accent focus-visible:ring-0"
+			searchable
+		/>
 	);
 }
