@@ -85,20 +85,18 @@ const useChatStore = create<ChatState>((set) => ({
 				: { loadingConversation: loading },
 		),
 
-	// Pending meta
-	pendingMeta: null,
-	setPendingMeta: (meta: MessageMeta | null) =>
-		set((state) =>
-			state.pendingMeta === meta ? state : { pendingMeta: meta },
-		),
-
-	// Assistant meta
+	// Assistant metadata
 	assistantMeta: {},
 	setAssistantMeta: (id: string, meta: MessageMeta) =>
 		set((state) =>
 			state.assistantMeta[id]
 				? state
 				: { assistantMeta: { ...state.assistantMeta, [id]: meta } },
+		),
+	pendingMeta: null,
+	setPendingMeta: (meta: MessageMeta | null) =>
+		set((state) =>
+			state.pendingMeta === meta ? state : { pendingMeta: meta },
 		),
 
 	// Providers

@@ -1,9 +1,9 @@
 "use client";
 
 import { IconCopy } from "@tabler/icons-react";
+import { useTheme } from "@wrksz/themes/client";
 import clsx from "clsx";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import type { ComponentPropsWithoutRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -12,19 +12,19 @@ import {
 	vscDarkPlus,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
+import { LoaderDots } from "@/components/loaders/WaitingDots";
 import { Button } from "@/components/ui/button";
 import handleCopy from "@/functions/handleCopy";
 import type { SessionType } from "@/lib/auth-client";
 import type { Message, MessageMeta } from "@/types/message.type";
-import { LoaderDots } from "./WaitingDots";
 
-type MessageBubbleProps = ComponentPropsWithoutRef<"div"> & {
+type ChatMessageProps = ComponentPropsWithoutRef<"div"> & {
 	message: Message;
 	session: SessionType;
 	meta?: MessageMeta | null;
 };
 
-export function MessageBubble({ message, session, meta }: MessageBubbleProps) {
+export function ChatMessage({ message, session, meta }: ChatMessageProps) {
 	const { resolvedTheme } = useTheme();
 	const isUser = message.role === "user";
 	const resolvedMeta = meta
@@ -64,11 +64,11 @@ export function MessageBubble({ message, session, meta }: MessageBubbleProps) {
 							{resolvedMeta && (
 								<div
 									title={`${resolvedMeta.providerName} · ${resolvedMeta.modelName}`}
-									className="pb-2 flex flex-wrap gap-1.5 items-center text-xs text-muted-foreground"
+									className="pb-2 font-medium flex flex-wrap gap-1.5 items-center text-xs text-muted-foreground"
 								>
 									<span>{resolvedMeta.providerName}</span>
-									<span>·</span>
-									<span className="font-medium">{resolvedMeta.modelName}</span>
+									<span className="text-lg font-semibold">·</span>
+									<span>{resolvedMeta.modelName}</span>
 								</div>
 							)}
 							{isEmptyContent ? (
@@ -187,7 +187,7 @@ export function MessageBubble({ message, session, meta }: MessageBubbleProps) {
 			<div
 				className={clsx(
 					"shrink-0 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity",
-					isUser ? "pb-3" : "-mt-2 pb-4",
+					!isUser && "-mt-2 pb-4",
 				)}
 			>
 				<Button

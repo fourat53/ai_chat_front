@@ -41,7 +41,8 @@ We welcome contributions! Please follow these steps:
 
 Tasks to do:
 
-1. Add Stop Streaming response functionality (message should not save).
+fix model search (remove one key selection that interupts search and make sure on select open the seach input is focused and verify that the search is fluid, no stturring or waiting)
+
 2. Add update query to User message bubble deleting all the next messages to the old updated query.
 3. MCP server (google calendar, docs, sheets, etc).
 4. Remove all models that are not available with the current api key (depricated, priced, etc).

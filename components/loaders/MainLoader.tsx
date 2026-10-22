@@ -1,4 +1,4 @@
-import styles from "./loader.module.css";
+import styles from "./MainLoader.module.css";
 
 interface MainLoaderProps {
 	className?: string;

@@ -7,8 +7,7 @@ export const runtime = "nodejs";
 
 type TitleTurn = { role: "user" | "assistant"; content: string };
 
-const TITLE_INSTRUCTION =
-	"Write a short title that summarizes this conversation. Reply with the title text only, without quotes or a closing period.";
+const TITLE_TURN_LENGTH = 2000;
 const SUMMARY_PROVIDER_LABEL = "openrouter";
 const AUTO_ROUTER_PATTERN = /auto[\s_-]*router/i;
 const AUTO_ROUTER_MODEL_ID = "openrouter/auto";
@@ -26,6 +25,13 @@ function isAutoRouterModel(model: {
 	);
 }
 
+function buildTitleInstruction(previousTitle: string): string {
+	if (!previousTitle) {
+		return "You are naming a chat conversation between a user and an assistant from their first exchange: the user's message and the assistant's reply are given in the conversation history. Write a very short title that captures the subject or goal the user is working toward. Do not simply quote or repeat the user's message, and ignore greetings and small talk. Reply in the same language as the user's message, with the title text only, without quotes or a closing period.";
+	}
+	return `You are updating the title of an ongoing chat conversation between a user and an assistant. The conversation's current title is "${previousTitle}". Since it was written, the user sent a new message and received the assistant's reply given in the conversation history. Write an updated, very short title that still captures the conversation's overall subject, changing the current title only if the new exchange materially shifts the topic. Reply in the same language as the user's messages, with the title text only, without quotes or a closing period.`;
+}
+
 function formatTitle(raw: string): string {
 	const singleLine = raw
 		.replace(/[\r\n]+/g, " ")
@@ -40,10 +46,9 @@ function formatTitle(raw: string): string {
 }
 
 export async function POST(req: NextRequest) {
-	let rawMessages: unknown;
+	let body: unknown;
 	try {
-		const body = await req.json();
-		rawMessages = body.messages;
+		body = await req.json();
 	} catch {
 		return NextResponse.json(
 			{ error: "Invalid request body" },
@@ -51,28 +56,36 @@ export async function POST(req: NextRequest) {
 		);
 	}
 
-	const turns: TitleTurn[] = Array.isArray(rawMessages)
-		? rawMessages
-				.map((m: unknown) => {
-					const msg = m as { role?: string; content?: string };
-					return {
-						role: msg?.role,
-						content: msg?.content ?? "",
-					};
-				})
-				.filter(
-					(turn): turn is TitleTurn =>
-						(turn.role === "user" || turn.role === "assistant") &&
-						turn.content.trim().length > 0,
-				)
-		: [];
+	const parsed = (body ?? {}) as {
+		title?: unknown;
+		userMessage?: unknown;
+		assistantResponse?: unknown;
+	};
+	const previousTitle =
+		typeof parsed.title === "string"
+			? parsed.title.trim().slice(0, TITLE_MAX_LENGTH)
+			: "";
+	const userMessage =
+		typeof parsed.userMessage === "string" ? parsed.userMessage.trim() : "";
+	const assistantResponse =
+		typeof parsed.assistantResponse === "string"
+			? parsed.assistantResponse.trim()
+			: "";
 
-	if (turns.length === 0) {
+	if (!userMessage || !assistantResponse) {
 		return NextResponse.json(
-			{ error: "messages with content are required" },
+			{ error: "userMessage and assistantResponse are required" },
 			{ status: 400 },
 		);
 	}
+
+	const turns: TitleTurn[] = [
+		{ role: "user", content: userMessage.slice(0, TITLE_TURN_LENGTH) },
+		{
+			role: "assistant",
+			content: assistantResponse.slice(0, TITLE_TURN_LENGTH),
+		},
+	];
 
 	if (!process.env.RAG_URL) {
 		return NextResponse.json(
@@ -136,7 +149,7 @@ export async function POST(req: NextRequest) {
 				body: JSON.stringify({
 					provider: SUMMARY_PROVIDER_LABEL,
 					model: summarizerModel.id,
-					question: TITLE_INSTRUCTION,
+					question: buildTitleInstruction(previousTitle),
 					history: turns,
 					base_url: summaryProvider.baseUrl,
 				}),

@@ -1,34 +1,17 @@
 "use client";
 
-import {
-	// IconLink, IconSearch,
-	IconLoader2,
-	IconSend,
-} from "@tabler/icons-react";
-import type { ChatStatus } from "ai";
+import { IconLoader2, IconPaperclip, IconSend } from "@tabler/icons-react";
 import { useRef } from "react";
+import ModelsSelect from "@/components/fields/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
-import type { SessionType } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
+import { useChat } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
-import ModelsSelect from "./ModelsSelect";
 
-interface ChatInputProps {
-	stop?: () => void;
-	status: ChatStatus;
-	session: SessionType;
-	sendMessage: (
-		message: { text: string },
-		options?: { body?: object },
-	) => Promise<void>;
-}
-
-export function ChatInput({
-	stop,
-	status,
-	session,
-	sendMessage,
-}: ChatInputProps) {
+export default function ChatInput() {
+	const { data: session } = useSession();
+	const { sendMessage, status, stop } = useChat();
 	const {
 		input,
 		setInput,
@@ -82,7 +65,7 @@ export function ChatInput({
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			if (isLoading && stop) {
+			if (isLoading) {
 				stop();
 			} else if (input.trim()) {
 				handleSubmit(e as unknown as React.SubmitEvent<HTMLFormElement>);
@@ -112,7 +95,19 @@ export function ChatInput({
 				/>
 
 				<div className="z-10 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2 pt-0">
-					<ModelsSelect />
+					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
+						>
+							<IconPaperclip size={20} />
+						</Button>
+
+						<div className="mx-px w-px h-4 bg-border" />
+
+						<ModelsSelect />
+					</div>
 
 					<Button
 						size="icon"
@@ -129,7 +124,7 @@ export function ChatInput({
 						onClick={(event) => {
 							if (!isLoading) return;
 							event.preventDefault();
-							stop?.();
+							stop();
 						}}
 					/>
 				</div>
@@ -137,22 +132,3 @@ export function ChatInput({
 		</div>
 	);
 }
-
-// <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-// <Button
-// 		variant="ghost"
-// 		size="icon"
-// 		className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
-// 	>
-// 		<IconLink size={20} />
-// 	</Button>
-// 	<div className="mx-px w-px h-4 bg-border" />
-// 	<Button
-// 		variant="ghost"
-// 		size="icon"
-// 		className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
-// 	>
-// 		<IconSearch size={20} />
-// 	</Button>
-// 	<div className="mx-px w-px h-4 bg-border" />
-// </div>

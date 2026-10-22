@@ -7,7 +7,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ThemeSwitch from "@/components/reusable/ThemeSwitch";
+import ThemeSwitch from "@/components/buttons/ThemeSwitch";
 import { Button } from "@/components/ui/button";
 import {
 	Card,

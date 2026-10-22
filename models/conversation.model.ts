@@ -1,5 +1,5 @@
 import { model, models, Schema } from "mongoose";
-import type { Conversation } from "../types/conversation.type";
+import type { Conversation } from "@/types/conversation.type";
 
 const conversationSchema = new Schema<Conversation>({
 	userId: String,
