@@ -70,16 +70,6 @@ export async function POST(req: NextRequest) {
 		{ role: "user", content: userMessage.slice(0, TITLE_TURN_LENGTH) },
 	];
 
-	if (!process.env.RAG_URL) {
-		return NextResponse.json(
-			{
-				error: "RAG service URL is not configured",
-				details: "Set RAG_URL in the Next.js environment",
-			},
-			{ status: 502 },
-		);
-	}
-
 	try {
 		await connectDB();
 		const summaryProvider = (await ProviderModel.findOne({

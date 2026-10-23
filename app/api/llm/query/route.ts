@@ -1,3 +1,6 @@
+import { textOf } from "@/functions/message";
+import type { Message } from "@/types/message.type";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -14,21 +17,6 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
 	type HistoryTurn = { role: "user" | "assistant"; content: string };
-
-	const textOf = (m: unknown): string => {
-		const msg = m as {
-			parts?: { type?: string; text?: string }[];
-			content?: string;
-		};
-		if (Array.isArray(msg?.parts)) {
-			return msg.parts
-				.filter((p) => p?.type === "text")
-				.map((p) => p?.text ?? "")
-				.join("");
-		}
-		return msg?.content ?? "";
-	};
-
 	try {
 		const body = await req.json();
 		const {
@@ -41,7 +29,7 @@ export async function POST(req: Request) {
 		} = body;
 
 		const turns: HistoryTurn[] = Array.isArray(messages)
-			? messages.flatMap((m: unknown) => {
+			? messages.flatMap((m: Message) => {
 					const role = (m as { role?: string })?.role;
 					const content = textOf(m);
 					if (role !== "user" && role !== "assistant") return [];
@@ -60,33 +48,6 @@ export async function POST(req: Request) {
 			(lastUserIndex >= 0 ? (turns[lastUserIndex]?.content ?? "") : "");
 		const history = lastUserIndex >= 0 ? turns.slice(0, lastUserIndex) : [];
 
-		if (!question) {
-			return new Response(JSON.stringify({ error: "No question provided" }), {
-				status: 400,
-				headers: { "Content-Type": "application/json" },
-			});
-		}
-
-		if (!provider || !model) {
-			return new Response(
-				JSON.stringify({ error: "Provider and model are required" }),
-				{
-					status: 400,
-					headers: { "Content-Type": "application/json" },
-				},
-			);
-		}
-
-		if (!process.env.RAG_URL) {
-			return new Response(
-				JSON.stringify({
-					error: "RAG service URL is not configured",
-					details: "Set RAG_URL in the Next.js environment",
-				}),
-				{ status: 502, headers: { "Content-Type": "application/json" } },
-			);
-		}
-
 		const ragFiles = Array.isArray(ragFilesRaw)
 			? (ragFilesRaw as unknown[]).filter(
 					(f): f is { indexId: string; fileName?: string } =>
@@ -99,56 +60,24 @@ export async function POST(req: Request) {
 		let questionWithContext = question;
 		if (ragFiles.length > 0) {
 			try {
-				const searchController = new AbortController();
-				const searchTimeout = setTimeout(() => searchController.abort(), 15000);
+				const ragResponse = await fetch(new URL("/api/rag/files", req.url), {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ question, ragFiles }),
+				});
 
-				const searchResponse = await fetch(
-					`${process.env.RAG_URL}/rag/search`,
-					{
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							query: question,
-							top_k: 5,
-							index_ids: ragFiles.map((f) => f.indexId),
-						}),
-						signal: searchController.signal,
-					},
-				);
-				clearTimeout(searchTimeout);
-
-				if (searchResponse.ok) {
-					const searchData = (await searchResponse.json()) as {
-						chunks?: { content?: string }[];
+				if (ragResponse.ok) {
+					const ragData = (await ragResponse.json()) as {
+						questionWithContext?: string;
 					};
-					const chunks = (searchData.chunks ?? [])
-						.map((chunk) => chunk?.content ?? "")
-						.filter(Boolean);
-
-					if (chunks.length > 0) {
-						const documentNames = [
-							...new Set(
-								ragFiles
-									.map((f) => f.fileName)
-									.filter((name): name is string => Boolean(name)),
-							),
-						].join(", ");
-						questionWithContext = [
-							`You are answering based on the provided document context${documentNames ? ` (from: ${documentNames})` : ""}.`,
-							"Answer using ONLY the information in the document context. Synthesize the relevant information across chunks into a clear, natural, human-like answer. Avoid lists, bullet points, markdown formatting, symbols, or emphasis markers.",
-							'If the context does not contain the answer or any part of it, respond exactly with: "I do not have enough information to answer the question."',
-							"",
-							"Document context:",
-							chunks.join("\n\n"),
-							"",
-							`Question: ${question}`,
-						].join("\n");
+					if (ragData?.questionWithContext) {
+						questionWithContext = ragData.questionWithContext;
 					}
 				} else {
 					console.error(
-						"RAG search error:",
-						searchResponse.status,
-						await searchResponse.text(),
+						"RAG files API error:",
+						ragResponse.status,
+						await ragResponse.text(),
 					);
 				}
 			} catch (ragError) {

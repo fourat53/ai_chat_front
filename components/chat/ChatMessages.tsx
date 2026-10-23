@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import MainLoader from "@/components/loaders/MainLoader";
 import { AssistantMessage } from "@/components/messages/AssistantMessage";
 import { UserMessage } from "@/components/messages/UserMessage";
-import mapToMessage from "@/functions/mapToMessage";
+import { mapToMessage } from "@/functions/message";
 import { useChat } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";

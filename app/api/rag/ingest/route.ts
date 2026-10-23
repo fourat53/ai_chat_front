@@ -29,16 +29,6 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-	if (!process.env.RAG_URL) {
-		return new Response(
-			JSON.stringify({
-				error: "RAG service URL is not configured",
-				details: "Set RAG_URL in the Next.js environment",
-			}),
-			{ status: 502, headers: { "Content-Type": "application/json" } },
-		);
-	}
-
 	try {
 		const {
 			url,

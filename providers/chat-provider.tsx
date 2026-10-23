@@ -13,7 +13,7 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
 import { selectConversation } from "@/functions/conversation";
-import mapToMessage from "@/functions/mapToMessage";
+import { mapToMessage } from "@/functions/message";
 import { useTitle } from "@/hooks/use-title";
 import { useSession } from "@/lib/auth-client";
 import { useChatStore } from "@/store/useChatStore";
