@@ -24,11 +24,11 @@ export function useTitle({ messages, status }: UseTitleRefreshOptions) {
 
 	useEffect(() => {
 		if (status !== "submitted" && status !== "streaming") return;
-		const { selectedConversation } = useChatStore.getState();
-		const convId = selectedConversation?.id;
+		const { selectedConv } = useChatStore.getState();
+		const convId = selectedConv?.id;
 		if (!convId || attemptedRef.current.has(convId)) return;
 
-		if (selectedConversation.title !== "New Chat") {
+		if (selectedConv.title !== "New Chat") {
 			attemptedRef.current.add(convId);
 			return;
 		}
@@ -48,7 +48,7 @@ export function useTitle({ messages, status }: UseTitleRefreshOptions) {
 					controller.signal,
 				);
 				if (!title || controller.signal.aborted) return;
-				useChatStore.getState().renameConversation(convId, title);
+				useChatStore.getState().renameConv(convId, title);
 				if (persist) {
 					await updateConversation(convId, { title });
 				}

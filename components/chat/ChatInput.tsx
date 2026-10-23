@@ -33,22 +33,22 @@ export default function ChatInput() {
 	const {
 		selectedModel,
 		selectedProvider,
-		selectedConversation,
+		selectedConv,
 		setPendingMeta,
 		input,
 		setInput,
-		ragFilesByConversation,
+		convRagFiles,
 		addRagFile,
 		removeRagFile,
 	} = useChatStore(
 		useShallow((state) => ({
 			selectedModel: state.selectedModel,
 			selectedProvider: state.selectedProvider,
-			selectedConversation: state.selectedConversation,
+			selectedConv: state.selectedConv,
 			setPendingMeta: state.setPendingMeta,
 			input: state.input,
 			setInput: state.setInput,
-			ragFilesByConversation: state.ragFilesByConversation,
+			convRagFiles: state.convRagFiles,
 			addRagFile: state.addRagFile,
 			removeRagFile: state.removeRagFile,
 		})),
@@ -65,8 +65,8 @@ export default function ChatInput() {
 	const [uploadError, setUploadError] = useState<string | null>(null);
 
 	const isUploading = uploadingFile !== null;
-	const ragFiles: RagFile[] = selectedConversation
-		? (ragFilesByConversation[selectedConversation.id] ?? [])
+	const ragFiles: RagFile[] = selectedConv
+		? (convRagFiles[selectedConv.id] ?? [])
 		: [];
 
 	const submitMessage = async () => {
@@ -78,11 +78,11 @@ export default function ChatInput() {
 		sendingRef.current = true;
 		try {
 			const conversation =
-				selectedConversation ?? (await createNewConversation(!!session?.user));
+				selectedConv ?? (await createNewConversation(!!session?.user));
 			if (!conversation) return;
 
 			const ragFiles =
-				useChatStore.getState().ragFilesByConversation[conversation.id] ?? [];
+				useChatStore.getState().convRagFiles[conversation.id] ?? [];
 
 			setInput("");
 			setPendingMeta(
@@ -149,7 +149,7 @@ export default function ChatInput() {
 		setUploadError(null);
 		try {
 			const conversation =
-				selectedConversation ?? (await createNewConversation(!!session?.user));
+				selectedConv ?? (await createNewConversation(!!session?.user));
 			if (!conversation) throw new Error("Could not create a conversation");
 			const indexId = createRagIndexId(conversation.id);
 
@@ -175,8 +175,8 @@ export default function ChatInput() {
 	};
 
 	const handleRemoveFile = (ragFile: RagFile) => {
-		if (selectedConversation?.id) {
-			removeRagFile(selectedConversation.id, ragFile.indexId);
+		if (selectedConv?.id) {
+			removeRagFile(selectedConv.id, ragFile.indexId);
 		}
 		void deleteDocument(ragFile.indexId);
 		void deleteUploadedFile(ragFile.fileKey);

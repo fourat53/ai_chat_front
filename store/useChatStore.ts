@@ -11,16 +11,16 @@ interface ChatState {
 	setConversations: (
 		conversations: Conversation[] | ((prev: Conversation[]) => Conversation[]),
 	) => void;
-	renameConversation: (id: string, title: string) => void;
+	renameConv: (id: string, title: string) => void;
 
-	selectedConversation: Conversation | null;
-	setSelectedConversation: (conversation: Conversation | null) => void;
+	selectedConv: Conversation | null;
+	setSelectedConv: (conversation: Conversation | null) => void;
 
-	loadingConversation: boolean;
-	setLoadingConversation: (loading: boolean) => void;
+	loadingConv: boolean;
+	setLoadingConv: (loading: boolean) => void;
 
-	// RAG files attached per conversation
-	ragFilesByConversation: Record<string, RagFile[]>;
+	// RAG files
+	convRagFiles: Record<string, RagFile[]>;
 	addRagFile: (conversationId: string, file: RagFile) => void;
 	removeRagFile: (conversationId: string, indexId: string) => void;
 
@@ -57,57 +57,52 @@ const useChatStore = create<ChatState>((set) => ({
 					? conversations(state.conversations)
 					: conversations,
 		})),
-	renameConversation: (id, title) =>
+	renameConv: (id, title) =>
 		set((state) =>
 			!state.conversations.some((c) => c.id === id) &&
-			state.selectedConversation?.id !== id
+			state.selectedConv?.id !== id
 				? state
 				: {
 						conversations: state.conversations.map((c) =>
 							c.id === id ? { ...c, title } : c,
 						),
-						selectedConversation:
-							state.selectedConversation?.id === id
-								? { ...state.selectedConversation, title }
-								: state.selectedConversation,
+						selectedConv:
+							state.selectedConv?.id === id
+								? { ...state.selectedConv, title }
+								: state.selectedConv,
 					},
 		),
 
-	selectedConversation: null,
-	setSelectedConversation: (conversation: Conversation | null) =>
+	selectedConv: null,
+	setSelectedConv: (conversation: Conversation | null) =>
 		set((state) =>
-			state.selectedConversation?.id === conversation?.id
+			state.selectedConv?.id === conversation?.id
 				? state
-				: { selectedConversation: conversation },
+				: { selectedConv: conversation },
 		),
 
-	loadingConversation: true,
-	setLoadingConversation: (loading: boolean) =>
+	loadingConv: true,
+	setLoadingConv: (loading: boolean) =>
 		set((state) =>
-			state.loadingConversation === loading
-				? state
-				: { loadingConversation: loading },
+			state.loadingConv === loading ? state : { loadingConv: loading },
 		),
 
-	// RAG files attached per conversation
-	ragFilesByConversation: {},
+	// RAG files
+	convRagFiles: {},
 	addRagFile: (conversationId, file) =>
 		set((state) => ({
-			ragFilesByConversation: {
-				...state.ragFilesByConversation,
-				[conversationId]: [
-					...(state.ragFilesByConversation[conversationId] ?? []),
-					file,
-				],
+			convRagFiles: {
+				...state.convRagFiles,
+				[conversationId]: [...(state.convRagFiles[conversationId] ?? []), file],
 			},
 		})),
 	removeRagFile: (conversationId, indexId) =>
 		set((state) => ({
-			ragFilesByConversation: {
-				...state.ragFilesByConversation,
-				[conversationId]: (
-					state.ragFilesByConversation[conversationId] ?? []
-				).filter((ragFile) => ragFile.indexId !== indexId),
+			convRagFiles: {
+				...state.convRagFiles,
+				[conversationId]: (state.convRagFiles[conversationId] ?? []).filter(
+					(ragFile) => ragFile.indexId !== indexId,
+				),
 			},
 		})),
 

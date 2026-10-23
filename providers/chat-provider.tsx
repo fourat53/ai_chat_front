@@ -34,10 +34,10 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export default function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
-	const { conversations, selectedConversation } = useChatStore(
+	const { conversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
 			conversations: s.conversations,
-			selectedConversation: s.selectedConversation,
+			selectedConv: s.selectedConv,
 		})),
 	);
 
@@ -65,7 +65,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		if (
 			convRef.current.id === "" &&
-			!selectedConversation &&
+			!selectedConv &&
 			conversations.length > 0
 		) {
 			const hashId = window.location.hash.replace(/^#/, "").trim();
@@ -77,18 +77,14 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 				stop,
 			});
 		}
-	}, [conversations, selectedConversation, setMessages, stop]);
+	}, [conversations, selectedConv, setMessages, stop]);
 
 	useEffect(() => {
 		const run = async () => {
-			if (
-				status !== "ready" ||
-				messages.length === 0 ||
-				!selectedConversation?.id
-			)
+			if (status !== "ready" || messages.length === 0 || !selectedConv?.id)
 				return;
 
-			const convId = selectedConversation.id;
+			const convId = selectedConv.id;
 			if (
 				convRef.current.id === convId &&
 				messages.length <= convRef.current.length
@@ -96,7 +92,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 				return;
 
 			if (convRef.current.id !== convId) {
-				const knownLength = selectedConversation.messages?.length ?? 0;
+				const knownLength = selectedConv.messages?.length ?? 0;
 				if (messages.length <= knownLength) {
 					convRef.current = { id: convId, length: messages.length };
 					return;
@@ -135,7 +131,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 		};
 
 		void run();
-	}, [selectedConversation, setMessages, status, messages, session]);
+	}, [selectedConv, setMessages, status, messages, session]);
 
 	const value = useMemo<ChatContextValue>(
 		() => ({ messages, setMessages, stop, sendMessage, status }),

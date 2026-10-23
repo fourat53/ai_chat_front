@@ -11,10 +11,8 @@ import type { Message } from "@/types/message.type";
 
 export default function ChatMessages() {
 	const { messages, status } = useChat();
-	const loadingConversation = useChatStore((s) => s.loadingConversation);
-	const selectedConversationId = useChatStore(
-		(s) => s.selectedConversation?.id,
-	);
+	const loadingConv = useChatStore((s) => s.loadingConv);
+	const selectedConvId = useChatStore((s) => s.selectedConv?.id);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const scrolledUserIdRef = useRef<string | undefined>(undefined);
 	const scrolledConvRef = useRef<string | undefined>(undefined);
@@ -36,18 +34,18 @@ export default function ChatMessages() {
 
 	useEffect(() => {
 		if (
-			loadingConversation ||
-			!selectedConversationId ||
+			loadingConv ||
+			!selectedConvId ||
 			messages.length === 0 ||
-			scrolledConvRef.current === selectedConversationId
+			scrolledConvRef.current === selectedConvId
 		)
 			return;
-		scrolledConvRef.current = selectedConversationId;
+		scrolledConvRef.current = selectedConvId;
 		requestAnimationFrame(() => {
 			const container = scrollRef.current;
 			container?.scrollTo({ top: container.scrollHeight });
 		});
-	}, [loadingConversation, messages, selectedConversationId]);
+	}, [loadingConv, messages, selectedConvId]);
 
 	const lastIsUser = messages[messages.length - 1]?.role === "user";
 	const displayMessages =
@@ -82,7 +80,7 @@ export default function ChatMessages() {
 						/>
 					);
 				})
-			) : loadingConversation ? (
+			) : loadingConv ? (
 				<div className="h-full w-full flex justify-center items-center">
 					<MainLoader />
 				</div>

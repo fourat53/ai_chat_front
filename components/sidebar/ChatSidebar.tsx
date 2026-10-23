@@ -34,14 +34,13 @@ import FooterSidebar from "./FooterSidebar";
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
 	const { setMessages, stop } = useChat();
-	const { conversations, setConversations, selectedConversation } =
-		useChatStore(
-			useShallow((s) => ({
-				conversations: s.conversations,
-				setConversations: s.setConversations,
-				selectedConversation: s.selectedConversation,
-			})),
-		);
+	const { conversations, setConversations, selectedConv } = useChatStore(
+		useShallow((s) => ({
+			conversations: s.conversations,
+			setConversations: s.setConversations,
+			selectedConv: s.selectedConv,
+		})),
+	);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["conversations"],
@@ -59,7 +58,7 @@ export default function ChatSidebar() {
 	};
 
 	const handleNewChat = async () => {
-		if (selectedConversation) {
+		if (selectedConv) {
 			void selectConversation(null, { setMessages, stop });
 		}
 		const conversation = await createNewConversation(!!session?.user);
@@ -74,7 +73,7 @@ export default function ChatSidebar() {
 		} else {
 			setConversations(conversations.filter((c) => c.id !== id));
 		}
-		if (selectedConversation?.id === id) {
+		if (selectedConv?.id === id) {
 			void selectConversation(null, { setMessages, stop });
 		}
 	};
@@ -116,7 +115,7 @@ export default function ChatSidebar() {
 										className="rounded-md hover:bg-muted/50 group/item flex items-center justify-between"
 									>
 										<SidebarMenuButton
-											isActive={selectedConversation?.id === conv.id}
+											isActive={selectedConv?.id === conv.id}
 											className="pr-2 rounded-none rounded-l-md flex-1"
 											onClick={() => handleSelectConversation(conv.id)}
 										>
@@ -124,10 +123,10 @@ export default function ChatSidebar() {
 											<span className="truncate">{conv.title}</span>
 										</SidebarMenuButton>
 										<SidebarMenuButton
-											isActive={selectedConversation?.id === conv.id}
+											isActive={selectedConv?.id === conv.id}
 											className={cn(
 												"size-9 p-2.5 hover:bg-red-600/10 rounded-none rounded-r-md  group-hover/item:opacity-100",
-												selectedConversation?.id !== conv.id && "opacity-0",
+												selectedConv?.id !== conv.id && "opacity-0",
 											)}
 											onClick={() => handleDeleteConversation(conv.id)}
 										>

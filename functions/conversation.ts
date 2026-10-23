@@ -45,36 +45,36 @@ async function selectConversation(
 		conversations,
 		providers,
 		models,
-		setSelectedConversation,
+		setSelectedConv,
 		setSelectedProvider,
 		setSelectedModel,
-		setLoadingConversation,
+		setLoadingConv,
 		setPendingMeta,
 	} = useChatStore.getState();
 
 	if (!id) {
 		selectionToken++;
 		stop?.();
-		setSelectedConversation(null);
+		setSelectedConv(null);
 		setPendingMeta(null);
 		setUrlHash(null);
 		setMessages([]);
 		return true;
 	}
 
-	if (useChatStore.getState().selectedConversation?.id === id) return true;
+	if (useChatStore.getState().selectedConv?.id === id) return true;
 
 	const conversation = conversations.find((c) => c.id === id);
 	if (!conversation) {
-		setLoadingConversation(false);
+		setLoadingConv(false);
 		return false;
 	}
 
 	const token = ++selectionToken;
 	stop?.();
-	setLoadingConversation(true);
+	setLoadingConv(true);
 	setPendingMeta(null);
-	setSelectedConversation(conversation);
+	setSelectedConv(conversation);
 	setUrlHash(id);
 	setMessages([]);
 
@@ -82,7 +82,7 @@ async function selectConversation(
 		const full = await getConversation(id);
 		if (token !== selectionToken) return false;
 		const resolved = full ?? conversation;
-		setSelectedConversation(resolved);
+		setSelectedConv(resolved);
 		setSelectedProvider(
 			providers.find((p) => p.id === resolved.providerId) ?? null,
 		);
@@ -94,7 +94,7 @@ async function selectConversation(
 		return false;
 	} finally {
 		if (token === selectionToken) {
-			setLoadingConversation(false);
+			setLoadingConv(false);
 		}
 	}
 }
@@ -107,7 +107,7 @@ async function createNewConversation(
 		selectedModel,
 		conversations,
 		setConversations,
-		setSelectedConversation,
+		setSelectedConv,
 	} = useChatStore.getState();
 	const providerId = selectedProvider?.id ?? "";
 	const modelId = selectedModel?.id ?? "";
@@ -138,7 +138,7 @@ async function createNewConversation(
 	}
 
 	setConversations([conversation, ...conversations]);
-	setSelectedConversation(conversation);
+	setSelectedConv(conversation);
 	setUrlHash(conversation.id);
 	return conversation;
 }
