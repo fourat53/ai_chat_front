@@ -39,16 +39,23 @@ export type SelectProps = {
 	triggerClassName?: string;
 };
 
-function stopPrintableKeys(event: React.KeyboardEvent) {
-	if (
+function isPrintableKey(event: React.KeyboardEvent) {
+	return (
 		event.key.length === 1 &&
 		event.key !== " " &&
 		!event.ctrlKey &&
 		!event.metaKey &&
 		!event.altKey
-	) {
-		event.stopPropagation();
-	}
+	);
+}
+
+function stopPrintableKeys(event: React.KeyboardEvent) {
+	if (isPrintableKey(event)) event.stopPropagation();
+}
+
+function keepPopupClickFocus(event: React.MouseEvent) {
+	if (event.target instanceof Element && event.target.closest("input")) return;
+	event.preventDefault();
 }
 
 export default function Select({
@@ -66,6 +73,7 @@ export default function Select({
 	triggerClassName,
 }: SelectProps) {
 	const [search, setSearch] = useState("");
+	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	const handleOpenChange = useCallback((open: boolean) => {
 		if (open) setSearch("");
@@ -78,12 +86,22 @@ export default function Select({
 		return items.filter((item) => item.label.toLowerCase().includes(query));
 	}, [items, search, searchable]);
 
+	const handlePopupKeyDown = (event: React.KeyboardEvent) => {
+		if (!isPrintableKey(event)) return;
+		event.stopPropagation();
+		const input = searchInputRef.current;
+		if (input && document.activeElement !== input) {
+			input.focus();
+		}
+	};
+
 	const selected = items.find((item) => item.value === value);
 
 	return (
 		<SelectRoot
 			value={value ?? ""}
 			disabled={disabled}
+			highlightItemOnHover={false}
 			onValueChange={(next) => onValueChange?.(next)}
 			onOpenChange={handleOpenChange}
 		>
@@ -96,8 +114,9 @@ export default function Select({
 				<SelectValue placeholder={placeholder}>{selected?.label}</SelectValue>
 			</SelectTrigger>
 			<SelectContent
-				className={searchable ? "max-h-90 overflow-y-hidden" : undefined}
-				onKeyDownCapture={stopPrintableKeys}
+				className={searchable ? "max-h-90" : undefined}
+				onKeyDownCapture={handlePopupKeyDown}
+				onMouseDown={keepPopupClickFocus}
 			>
 				{searchable && (
 					<SelectSearch
@@ -105,6 +124,7 @@ export default function Select({
 						onChange={setSearch}
 						placeholder={searchPlaceholder}
 						resultCount={filteredItems.length}
+						inputRef={searchInputRef}
 					/>
 				)}
 				<SelectGroup
@@ -112,8 +132,13 @@ export default function Select({
 				>
 					{groupLabel && <SelectLabel>{groupLabel}</SelectLabel>}
 					{filteredItems.map((item) => (
-						<SelectItem key={item.value} value={item.value}>
-							<span title={item.label} className="truncate">
+						<SelectItem
+							title={item.label}
+							key={item.value}
+							value={item.value}
+							className="w-full min-w-0 overflow-hidden hover:bg-accent hover:text-accent-foreground hover:**:text-accent-foreground"
+						>
+							<span className="block min-w-0 flex-1 truncate">
 								{item.label}
 							</span>
 						</SelectItem>
@@ -132,21 +157,23 @@ function SelectSearch({
 	onChange,
 	placeholder,
 	resultCount,
+	inputRef,
 }: {
 	value: string;
 	onChange: (value: string) => void;
 	placeholder?: string;
 	resultCount: number;
+	inputRef: React.RefObject<HTMLInputElement | null>;
 }) {
-	const inputRef = useRef<HTMLInputElement>(null);
 	const lastResultCountRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (lastResultCountRef.current === resultCount) return;
 		lastResultCountRef.current = resultCount;
-		const frame = requestAnimationFrame(() => inputRef.current?.focus());
+		const input = inputRef.current;
+		const frame = requestAnimationFrame(() => input?.focus());
 		return () => cancelAnimationFrame(frame);
-	}, [resultCount]);
+	}, [resultCount, inputRef]);
 
 	return (
 		<div className="text-sm border-b bg-popover relative z-20 flex h-10 items-center gap-2 px-3 py-2">
