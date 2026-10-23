@@ -3,6 +3,7 @@ import type { Conversation } from "@/types/conversation.type";
 import type { MessageMeta } from "@/types/message.type";
 import type { Model } from "@/types/model.type";
 import type { Provider } from "@/types/provider.type";
+import type { RagFile } from "@/types/rag.type";
 
 interface ChatState {
 	// Conversations
@@ -17,6 +18,11 @@ interface ChatState {
 
 	loadingConversation: boolean;
 	setLoadingConversation: (loading: boolean) => void;
+
+	// RAG files attached per conversation
+	ragFilesByConversation: Record<string, RagFile[]>;
+	addRagFile: (conversationId: string, file: RagFile) => void;
+	removeRagFile: (conversationId: string, indexId: string) => void;
 
 	// Providers
 	providers: Provider[];
@@ -82,6 +88,28 @@ const useChatStore = create<ChatState>((set) => ({
 				? state
 				: { loadingConversation: loading },
 		),
+
+	// RAG files attached per conversation
+	ragFilesByConversation: {},
+	addRagFile: (conversationId, file) =>
+		set((state) => ({
+			ragFilesByConversation: {
+				...state.ragFilesByConversation,
+				[conversationId]: [
+					...(state.ragFilesByConversation[conversationId] ?? []),
+					file,
+				],
+			},
+		})),
+	removeRagFile: (conversationId, indexId) =>
+		set((state) => ({
+			ragFilesByConversation: {
+				...state.ragFilesByConversation,
+				[conversationId]: (
+					state.ragFilesByConversation[conversationId] ?? []
+				).filter((ragFile) => ragFile.indexId !== indexId),
+			},
+		})),
 
 	// Providers
 	providers: [],

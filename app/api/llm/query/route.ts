@@ -37,6 +37,7 @@ export async function POST(req: Request) {
 			model,
 			question: directQuestion,
 			baseUrl,
+			ragFiles: ragFilesRaw,
 		} = body;
 
 		const turns: HistoryTurn[] = Array.isArray(messages)
@@ -86,6 +87,78 @@ export async function POST(req: Request) {
 			);
 		}
 
+		const ragFiles = Array.isArray(ragFilesRaw)
+			? (ragFilesRaw as unknown[]).filter(
+					(f): f is { indexId: string; fileName?: string } =>
+						!!f &&
+						typeof f === "object" &&
+						typeof (f as { indexId?: unknown }).indexId === "string",
+				)
+			: [];
+
+		let questionWithContext = question;
+		if (ragFiles.length > 0) {
+			try {
+				const searchController = new AbortController();
+				const searchTimeout = setTimeout(() => searchController.abort(), 15000);
+
+				const searchResponse = await fetch(
+					`${process.env.RAG_URL}/rag/search`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							query: question,
+							top_k: 5,
+							index_ids: ragFiles.map((f) => f.indexId),
+						}),
+						signal: searchController.signal,
+					},
+				);
+				clearTimeout(searchTimeout);
+
+				if (searchResponse.ok) {
+					const searchData = (await searchResponse.json()) as {
+						chunks?: { content?: string }[];
+					};
+					const chunks = (searchData.chunks ?? [])
+						.map((chunk) => chunk?.content ?? "")
+						.filter(Boolean);
+
+					if (chunks.length > 0) {
+						const documentNames = [
+							...new Set(
+								ragFiles
+									.map((f) => f.fileName)
+									.filter((name): name is string => Boolean(name)),
+							),
+						].join(", ");
+						questionWithContext = [
+							`You are answering based on the provided document context${documentNames ? ` (from: ${documentNames})` : ""}.`,
+							"Answer using ONLY the information in the document context. Synthesize the relevant information across chunks into a clear, natural, human-like answer. Avoid lists, bullet points, markdown formatting, symbols, or emphasis markers.",
+							'If the context does not contain the answer or any part of it, respond exactly with: "I do not have enough information to answer the question."',
+							"",
+							"Document context:",
+							chunks.join("\n\n"),
+							"",
+							`Question: ${question}`,
+						].join("\n");
+					}
+				} else {
+					console.error(
+						"RAG search error:",
+						searchResponse.status,
+						await searchResponse.text(),
+					);
+				}
+			} catch (ragError) {
+				console.error(
+					"RAG retrieval failed, continuing without context:",
+					ragError,
+				);
+			}
+		}
+
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), 60000);
 
@@ -96,7 +169,7 @@ export async function POST(req: Request) {
 				body: JSON.stringify({
 					provider,
 					model,
-					question,
+					question: questionWithContext,
 					history,
 					base_url: baseUrl,
 				}),
