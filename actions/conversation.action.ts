@@ -1,20 +1,10 @@
 "use server";
 
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { getUserId } from "@/lib/session";
 import { ConversationModel } from "@/models/conversation.model";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
-
-async function getUserId(): Promise<string | null> {
-	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		return session?.user?.id ?? null;
-	} catch {
-		return null;
-	}
-}
 
 export async function createConversation(data: {
 	title: string;

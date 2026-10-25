@@ -42,18 +42,17 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request for review.
 
 Tasks to do:
+-on first render or refresh, scroll down to the bottom of messages before removing the main loader.
+- Make sure you can ask a question and send it with files still processing.
+- When a file is linked, the chat should be able to answer question that are not related to it. if only says I don't know or similar if the file does not contain the answer and is mentioned by the user or the user clearly wants data from it.
+- the files should be organized into a multi-selection select to specify which files should the model get context about. there should also be a delete x in select-item of the file removing the file from everywhere and an icon specifying what type is the file.
 
-fix model search (remove one key selection that interupts search and make sure on select open the seach input is focused and verify that the search is fluid, no stturring or waiting).
 
-make the ChatMessage component two components UserMessage and AssistantMessage since they don't have much in commun.
 
-scroll down in ChatMessages right after a new user message is submitted, to see the start of the response.
-
-try unifing the loading section (use meta section and loading only once for consistency).
-2. Add update query to User message bubble deleting all the next messages to the old updated query.
-3. MCP server (google calendar, docs, sheets, etc).
-4. Remove all models that are not available with the current api key (depricated, priced, etc).
-5. Add Search button.
-6. Add Think button.
-7. Add Files with RAG capability using vector search and BM5 keyword search.
-8. Add api key selection for users.
+1. Add update query to User message bubble deleting all the next messages to the old updated query.
+2. MCP server (google calendar, docs, sheets, etc).
+3. Remove all models that are not available with the current api key (depricated, priced, etc).
+4. Add Search button.
+5. Add Think button.
+6. Add Files with RAG capability using BM5 keyword search.
+7. Add api key selection for users.

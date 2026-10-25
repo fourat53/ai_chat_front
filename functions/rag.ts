@@ -12,7 +12,27 @@ function isAcceptedRagFile(file: File): boolean {
 	return RAG_ACCEPTED_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
 
-export function createRagIndexId(conversationId: string): string {
+import type { Attachment, ConvFile } from "@/types/file.type";
+
+function toConvFile(attachment: Attachment): ConvFile {
+	return {
+		attachmentId: attachment.id,
+		indexId: attachment.indexId,
+		fileName: attachment.fileName,
+		fileUrl: attachment.fileUrl ?? "",
+		fileKey: attachment.fileKey ?? "",
+	};
+}
+
+async function computeFileHash(file: File): Promise<string> {
+	const buffer = await file.arrayBuffer();
+	const digest = await crypto.subtle.digest("SHA-256", buffer);
+	return [...new Uint8Array(digest)]
+		.map((byte) => byte.toString(16).padStart(2, "0"))
+		.join("");
+}
+
+function createRagIndexId(conversationId: string): string {
 	return `${conversationId}::${crypto.randomUUID()}`;
 }
 
@@ -71,4 +91,4 @@ export async function deleteUploadedFile(fileKey: string): Promise<boolean> {
 	}
 }
 
-export { isAcceptedRagFile };
+export { computeFileHash, createRagIndexId, isAcceptedRagFile, toConvFile };

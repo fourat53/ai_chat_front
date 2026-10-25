@@ -2,6 +2,8 @@ import {
 	createConversation,
 	getConversation,
 } from "@/actions/conversation.action";
+import { getConversationFiles } from "@/actions/file.action";
+import { toConvFile } from "@/functions/rag";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
@@ -50,6 +52,7 @@ async function selectConversation(
 		setSelectedModel,
 		setLoadingConv,
 		setPendingMeta,
+		setConvFiles,
 	} = useChatStore.getState();
 
 	if (!id) {
@@ -88,6 +91,16 @@ async function selectConversation(
 		);
 		setSelectedModel(models.find((m) => m.id === resolved.modelId) ?? null);
 		setMessages(toUiMessages(full?.messages));
+
+		if (full) {
+			try {
+				const attachments = await getConversationFiles(id);
+				if (token !== selectionToken) return false;
+				setConvFiles(id, attachments.map(toConvFile));
+			} catch (error) {
+				console.error("Failed to load conversation files:", error);
+			}
+		}
 		return true;
 	} catch (error) {
 		console.error("Failed to load conversation:", error);

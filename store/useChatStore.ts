@@ -38,6 +38,7 @@ interface ChatState {
 	// RAG files
 	convFiles: Record<string, ConvFile[]>;
 	addConvFile: (conversationId: string, file: ConvFile) => void;
+	setConvFiles: (conversationId: string, files: ConvFile[]) => void;
 	removeConvFile: (conversationId: string, indexId: string) => void;
 	// RAG files upload
 	uploadingFile: File | null;
@@ -132,6 +133,10 @@ const useChatStore = create<ChatState>((set) => ({
 					(convFile) => convFile.indexId !== indexId,
 				),
 			},
+		})),
+	setConvFiles: (conversationId, files) =>
+		set((state) => ({
+			convFiles: { ...state.convFiles, [conversationId]: files },
 		})),
 	// RAG files upload
 	uploadingFile: null,

@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	turbopack: {
+		resolveAlias: {
+			"emf-converter": "./lib/stubs/emf-converter.ts",
+		},
+	},
 	images: {
 		remotePatterns: [
 			{
