@@ -7,10 +7,12 @@ This project is a modern Next.js frontend application featuring an integrated AI
 ## Installation
 
 1. Clone the repository and navigate to the frontend directory:
+
    ```bash
    cd my_front
    ```
 2. Install the required dependencies using npm:
+
    ```bash
    npm install
    ```
@@ -19,6 +21,7 @@ This project is a modern Next.js frontend application featuring an integrated AI
 ## Usage
 
 1. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -32,7 +35,6 @@ This project is licensed under the MIT License.
 ## Contributing
 
 We welcome contributions! Please follow these steps:
-
 1. Fork the repository.
 2. Create a new branch for your feature or bugfix (`git checkout -b feature/my-feature`).
 3. Commit your changes (`git commit -m 'Add some feature'`).
@@ -48,7 +50,6 @@ make the ChatMessage component two components UserMessage and AssistantMessage s
 scroll down in ChatMessages right after a new user message is submitted, to see the start of the response.
 
 try unifing the loading section (use meta section and loading only once for consistency).
-
 2. Add update query to User message bubble deleting all the next messages to the old updated query.
 3. MCP server (google calendar, docs, sheets, etc).
 4. Remove all models that are not available with the current api key (depricated, priced, etc).

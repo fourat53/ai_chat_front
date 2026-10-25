@@ -27,13 +27,13 @@ import {
 } from "@/functions/conversation";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { useChat } from "@/providers/chat-provider";
+import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import FooterSidebar from "./FooterSidebar";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
-	const { setMessages, stop } = useChat();
+	const { setMessages, stop } = useChatContext();
 	const { conversations, setConversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
 			conversations: s.conversations,

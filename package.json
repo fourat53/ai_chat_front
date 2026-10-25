@@ -12,7 +12,7 @@
 		"check": "biome check"
 	},
 	"dependencies": {
-		"@ai-sdk/react": "^4.0.152",
+		"@ai-sdk/react": "^4.0.154",
 		"@base-ui/react": "^1.9.0",
 		"@better-auth/mongo-adapter": "^1.7.12",
 		"@tabler/icons-react": "^3.49.0",
@@ -21,7 +21,7 @@
 		"@types/react-syntax-highlighter": "^15.5.13",
 		"@uploadthing/react": "^7.3.3",
 		"@wrksz/themes": "^2.1.1",
-		"ai": "^7.0.148",
+		"ai": "^7.0.150",
 		"better-auth": "^1.7.12",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",

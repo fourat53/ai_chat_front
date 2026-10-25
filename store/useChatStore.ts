@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import type { Conversation } from "@/types/conversation.type";
+import type { ConvFile } from "@/types/file.type";
 import type { MessageMeta } from "@/types/message.type";
 import type { Model } from "@/types/model.type";
 import type { Provider } from "@/types/provider.type";
-import type { RagFile } from "@/types/rag.type";
 
 interface ChatState {
 	// Conversations
@@ -12,39 +12,40 @@ interface ChatState {
 		conversations: Conversation[] | ((prev: Conversation[]) => Conversation[]),
 	) => void;
 	renameConv: (id: string, title: string) => void;
-
 	selectedConv: Conversation | null;
 	setSelectedConv: (conversation: Conversation | null) => void;
-
 	loadingConv: boolean;
 	setLoadingConv: (loading: boolean) => void;
-
-	// RAG files
-	convRagFiles: Record<string, RagFile[]>;
-	addRagFile: (conversationId: string, file: RagFile) => void;
-	removeRagFile: (conversationId: string, indexId: string) => void;
 
 	// Providers
 	providers: Provider[];
 	setProviders: (providers: Provider[]) => void;
-
 	selectedProvider: Provider | null;
 	setSelectedProvider: (provider: Provider | null) => void;
 
 	// Models
 	models: Model[];
 	setModels: (models: Model[]) => void;
-
 	selectedModel: Model | null;
 	setSelectedModel: (model: Model | null) => void;
-
-	// Pending Model Metadata
 	pendingMeta: MessageMeta | null;
 	setPendingMeta: (pendingMeta: MessageMeta | null) => void;
 
 	// Input
 	input: string;
 	setInput: (input: string) => void;
+
+	// RAG files
+	convFiles: Record<string, ConvFile[]>;
+	addConvFile: (conversationId: string, file: ConvFile) => void;
+	removeConvFile: (conversationId: string, indexId: string) => void;
+	// RAG files upload
+	uploadingFile: File | null;
+	setUploadingFile: (file: File | null) => void;
+	uploadPhase: "uploading" | "processing";
+	setUploadPhase: (phase: "uploading" | "processing") => void;
+	uploadError: string | null;
+	setUploadError: (error: string | null) => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
@@ -72,7 +73,6 @@ const useChatStore = create<ChatState>((set) => ({
 								: state.selectedConv,
 					},
 		),
-
 	selectedConv: null,
 	setSelectedConv: (conversation: Conversation | null) =>
 		set((state) =>
@@ -80,36 +80,15 @@ const useChatStore = create<ChatState>((set) => ({
 				? state
 				: { selectedConv: conversation },
 		),
-
 	loadingConv: true,
 	setLoadingConv: (loading: boolean) =>
 		set((state) =>
 			state.loadingConv === loading ? state : { loadingConv: loading },
 		),
 
-	// RAG files
-	convRagFiles: {},
-	addRagFile: (conversationId, file) =>
-		set((state) => ({
-			convRagFiles: {
-				...state.convRagFiles,
-				[conversationId]: [...(state.convRagFiles[conversationId] ?? []), file],
-			},
-		})),
-	removeRagFile: (conversationId, indexId) =>
-		set((state) => ({
-			convRagFiles: {
-				...state.convRagFiles,
-				[conversationId]: (state.convRagFiles[conversationId] ?? []).filter(
-					(ragFile) => ragFile.indexId !== indexId,
-				),
-			},
-		})),
-
 	// Providers
 	providers: [],
 	setProviders: (providers: Provider[]) => set({ providers }),
-
 	selectedProvider: null,
 	setSelectedProvider: (provider: Provider | null) =>
 		set((state) =>
@@ -121,14 +100,11 @@ const useChatStore = create<ChatState>((set) => ({
 	// Models
 	models: [],
 	setModels: (models: Model[]) => set({ models }),
-
 	selectedModel: null,
 	setSelectedModel: (model: Model | null) =>
 		set((state) =>
 			state.selectedModel?.id === model?.id ? state : { selectedModel: model },
 		),
-
-	// Pending Model Metadata
 	pendingMeta: null,
 	setPendingMeta: (pendingMeta) =>
 		set((state) =>
@@ -138,6 +114,41 @@ const useChatStore = create<ChatState>((set) => ({
 	// Input
 	input: "",
 	setInput: (input: string) => set({ input }),
+
+	// RAG files
+	convFiles: {},
+	addConvFile: (conversationId, file) =>
+		set((state) => ({
+			convFiles: {
+				...state.convFiles,
+				[conversationId]: [...(state.convFiles[conversationId] ?? []), file],
+			},
+		})),
+	removeConvFile: (conversationId, indexId) =>
+		set((state) => ({
+			convFiles: {
+				...state.convFiles,
+				[conversationId]: (state.convFiles[conversationId] ?? []).filter(
+					(convFile) => convFile.indexId !== indexId,
+				),
+			},
+		})),
+	// RAG files upload
+	uploadingFile: null,
+	setUploadingFile: (file) =>
+		set((state) =>
+			state.uploadingFile === file ? state : { uploadingFile: file },
+		),
+	uploadPhase: "uploading",
+	setUploadPhase: (phase) =>
+		set((state) =>
+			state.uploadPhase === phase ? state : { uploadPhase: phase },
+		),
+	uploadError: null,
+	setUploadError: (error) =>
+		set((state) =>
+			state.uploadError === error ? state : { uploadError: error },
+		),
 }));
 
 export { useChatStore };

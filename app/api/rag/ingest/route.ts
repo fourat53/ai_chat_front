@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 		const timeout = setTimeout(() => controller.abort(), INGEST_TIMEOUT_MS);
 
 		try {
-			const response = await fetch(`${process.env.RAG_URL}/rag/upload-url`, {
+			const response = await fetch(`${process.env.RAG_URL}/rag/upload`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

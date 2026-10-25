@@ -59,7 +59,7 @@ export async function deleteDocument(indexId: string): Promise<boolean> {
 
 export async function deleteUploadedFile(fileKey: string): Promise<boolean> {
 	try {
-		const response = await fetch("/api/rag/storage-delete", {
+		const response = await fetch("/api/uploadthing/delete", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ key: fileKey }),

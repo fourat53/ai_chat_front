@@ -18,7 +18,7 @@ export default function AssistantMeta({ message, isLast }: AssistantMetaProps) {
 				modelName: message.modelName,
 			};
 		}
-		return isLast ? (pendingMeta ?? null) : null;
+		return isLast ? pendingMeta : null;
 	}
 
 	const meta = resolveMeta();

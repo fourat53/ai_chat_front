@@ -14,11 +14,12 @@ const message = z.object({
 	modelName: z.string().optional(),
 });
 
-type Message = z.infer<typeof message> & UIMessage;
-type MessageBody = Omit<Message, "id">;
 type MessageMeta = {
 	providerName: string;
 	modelName: string;
 };
+
+type Message = z.infer<typeof message> & UIMessage;
+type MessageBody = Omit<Message, "id">;
 
 export { ChatRole, type Message, type MessageBody, type MessageMeta, message };

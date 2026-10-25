@@ -5,12 +5,12 @@ import MainLoader from "@/components/loaders/MainLoader";
 import { AssistantMessage } from "@/components/messages/AssistantMessage";
 import { UserMessage } from "@/components/messages/UserMessage";
 import { mapToMessage } from "@/functions/message";
-import { useChat } from "@/providers/chat-provider";
+import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
 
 export default function ChatMessages() {
-	const { messages, status } = useChat();
+	const { messages, status } = useChatContext();
 	const loadingConv = useChatStore((s) => s.loadingConv);
 	const selectedConvId = useChatStore((s) => s.selectedConv?.id);
 	const scrollRef = useRef<HTMLDivElement>(null);

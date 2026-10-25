@@ -1,6 +1,6 @@
 "use client";
 
-import { useChat as useChatResponse } from "@ai-sdk/react";
+import { useChat } from "@ai-sdk/react";
 import { type ChatStatus, TextStreamChatTransport } from "ai";
 import {
 	createContext,
@@ -52,13 +52,14 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 		});
 	}, []);
 
-	const { messages, setMessages, stop, sendMessage, status } =
-		useChatResponse<Message>({
+	const { messages, setMessages, stop, sendMessage, status } = useChat<Message>(
+		{
 			transport,
 			onError: (err) => {
 				console.error("Chat error:", err);
 			},
-		});
+		},
+	);
 
 	useTitle({ messages, status });
 
@@ -141,10 +142,10 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 	return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 }
 
-export function useChat(): ChatContextValue {
+export function useChatContext(): ChatContextValue {
 	const context = useContext(ChatContext);
 	if (!context) {
-		throw new Error("useChat must be used within a ChatProvider");
+		throw new Error("useChatContext must be used within a ChatProvider");
 	}
 	return context;
 }
