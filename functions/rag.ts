@@ -21,6 +21,8 @@ function toConvFile(attachment: Attachment): ConvFile {
 		fileName: attachment.fileName,
 		fileUrl: attachment.fileUrl ?? "",
 		fileKey: attachment.fileKey ?? "",
+		selected: true,
+		hash: attachment.hash,
 	};
 }
 

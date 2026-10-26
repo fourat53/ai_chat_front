@@ -23,6 +23,7 @@ function toAttachment(doc: {
 	fileName: string;
 	fileKey: string | null;
 	fileUrl: string | null;
+	hash?: string;
 }): Attachment {
 	return {
 		id: doc._id.toString(),
@@ -30,6 +31,7 @@ function toAttachment(doc: {
 		fileName: doc.fileName,
 		fileKey: doc.fileKey,
 		fileUrl: doc.fileUrl,
+		hash: doc.hash,
 	};
 }
 
@@ -164,24 +166,25 @@ async function getConversationFiles(
 async function removeConversationFile(
 	attachmentId: string,
 	conversationId: string,
-): Promise<void> {
+): Promise<{ deleted: boolean }> {
 	const userId = await getUserId();
 	if (!userId) throw new Error("Unauthorized");
 	await connectDB();
 	const doc = await FileModel.findOne({ _id: attachmentId, userId }).lean();
-	if (!doc) return;
+	if (!doc) return { deleted: false };
 
 	const remaining = doc.conversationIds.filter(
 		(id: string) => id !== conversationId,
 	);
 	if (remaining.length === 0) {
 		await cleanupAttachment(userId, toAttachment(doc));
-		return;
+		return { deleted: true };
 	}
 	await FileModel.updateOne(
 		{ _id: doc._id, userId, conversationIds: conversationId },
 		{ $set: { conversationIds: remaining } },
 	);
+	return { deleted: false };
 }
 
 export {

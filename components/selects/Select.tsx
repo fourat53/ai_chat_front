@@ -145,7 +145,9 @@ export default function Select({
 					))}
 				</SelectGroup>
 				{filteredItems.length === 0 && (
-					<div className="px-3 pb-2 text-muted-foreground">{emptyText}</div>
+					<div className="px-3 pb-2 min-h-40 flex items-center justify-center text-xs text-muted-foreground">
+						{emptyText}
+					</div>
 				)}
 			</SelectContent>
 		</SelectRoot>
@@ -176,7 +178,7 @@ function SelectSearch({
 	}, [resultCount, inputRef]);
 
 	return (
-		<div className="text-sm border-b bg-popover relative z-20 flex h-10 items-center gap-2 px-3 py-2">
+		<div className="text-xs rounded-t-2xl border-b bg-popover relative z-20 flex h-10 items-center gap-2 px-3 py-2">
 			<IconSearch
 				size={14}
 				className="pointer-events-none shrink-0 text-muted-foreground"

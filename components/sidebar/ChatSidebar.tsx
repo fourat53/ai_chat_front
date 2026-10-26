@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import FooterSidebar from "./FooterSidebar";
+import { Skeleton } from "../ui/skeleton";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
@@ -49,9 +50,15 @@ export default function ChatSidebar() {
 	});
 
 	useEffect(() => {
-		if (!data) return;
-		setConversations(data);
-	}, [data, setConversations]);
+		if (data) {
+			setConversations(data);
+			if (data.length === 0 && useChatStore.getState().loadingConv) {
+				useChatStore.getState().setLoadingConv(false);
+			}
+		} else if (error && useChatStore.getState().loadingConv) {
+			useChatStore.getState().setLoadingConv(false);
+		}
+	}, [data, error, setConversations]);
 
 	const handleSelectConversation = (id: string) => {
 		void selectConversation(id, { setMessages, stop });
@@ -100,8 +107,14 @@ export default function ChatSidebar() {
 								New Chat
 							</Button>
 							{sessionPending || isLoading ? (
-								<div className="absolute h-full w-full flex justify-center items-center">
-									<MainLoader />
+								<div className="flex flex-col gap-2.25 ">
+									{Array.from({ length: 4 }).map((_, index) => (
+										<Skeleton
+											key={index}
+											className="h-8 rounded-[10px]"
+											style={{ animationDelay: `${index * 150}ms` }}
+										/>
+									))}
 								</div>
 							) : error ? (
 								<div className="p-4 pt-20 text-center text-sm text-foreground-muted">

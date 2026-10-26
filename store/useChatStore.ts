@@ -40,6 +40,7 @@ interface ChatState {
 	addConvFile: (conversationId: string, file: ConvFile) => void;
 	setConvFiles: (conversationId: string, files: ConvFile[]) => void;
 	removeConvFile: (conversationId: string, indexId: string) => void;
+	toggleConvFileSelected: (conversationId: string, indexId: string) => void;
 	// RAG files upload
 	uploadingFile: File | null;
 	setUploadingFile: (file: File | null) => void;
@@ -119,12 +120,37 @@ const useChatStore = create<ChatState>((set) => ({
 	// RAG files
 	convFiles: {},
 	addConvFile: (conversationId, file) =>
-		set((state) => ({
-			convFiles: {
-				...state.convFiles,
-				[conversationId]: [...(state.convFiles[conversationId] ?? []), file],
-			},
-		})),
+		set((state) => {
+			const current = state.convFiles[conversationId] ?? [];
+			const exists = current.some(
+				(f) =>
+					f.indexId === file.indexId ||
+					(file.attachmentId && f.attachmentId === file.attachmentId) ||
+					(file.fileKey && f.fileKey === file.fileKey) ||
+					(file.hash && f.hash === file.hash),
+			);
+			if (exists) {
+				return {
+					convFiles: {
+						...state.convFiles,
+						[conversationId]: current.map((f) =>
+							f.indexId === file.indexId ||
+							(file.attachmentId && f.attachmentId === file.attachmentId) ||
+							(file.fileKey && f.fileKey === file.fileKey) ||
+							(file.hash && f.hash === file.hash)
+								? { ...f, ...file, selected: true }
+								: f,
+						),
+					},
+				};
+			}
+			return {
+				convFiles: {
+					...state.convFiles,
+					[conversationId]: [...current, file],
+				},
+			};
+		}),
 	removeConvFile: (conversationId, indexId) =>
 		set((state) => ({
 			convFiles: {
@@ -134,9 +160,27 @@ const useChatStore = create<ChatState>((set) => ({
 				),
 			},
 		})),
+	toggleConvFileSelected: (conversationId, indexId) =>
+		set((state) => ({
+			convFiles: {
+				...state.convFiles,
+				[conversationId]: (state.convFiles[conversationId] ?? []).map(
+					(convFile) =>
+						convFile.indexId === indexId
+							? { ...convFile, selected: !convFile.selected }
+							: convFile,
+				),
+			},
+		})),
 	setConvFiles: (conversationId, files) =>
 		set((state) => ({
-			convFiles: { ...state.convFiles, [conversationId]: files },
+			convFiles: {
+				...state.convFiles,
+				[conversationId]: files.filter(
+					(file, index, self) =>
+						index === self.findIndex((f) => f.indexId === file.indexId),
+				),
+			},
 		})),
 	// RAG files upload
 	uploadingFile: null,

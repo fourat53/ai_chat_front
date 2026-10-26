@@ -3,13 +3,14 @@
 import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
 import { useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { AddFilesButton, ChatFiles } from "@/components/chat/ChatFiles";
 import ModelsSelect from "@/components/selects/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
 import { useSession } from "@/lib/auth-client";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
+import FilesButton from "@/components/buttons/FilesButton";
+import FilesSelect from "@/components/selects/FilesSelect";
 
 export default function ChatInput() {
 	const { data: session } = useSession();
@@ -50,7 +51,9 @@ export default function ChatInput() {
 				selectedConv ?? (await createNewConversation(!!session?.user));
 			if (!conversation) return;
 
-			const ragFiles = useChatStore.getState().convFiles[conversation.id] ?? [];
+			const convFiles =
+				useChatStore.getState().convFiles[conversation.id] ?? [];
+			const selectedRagFiles = convFiles.filter((file) => file.selected);
 
 			setInput("");
 			setPendingMeta(
@@ -69,7 +72,7 @@ export default function ChatInput() {
 						provider: selectedProvider.label,
 						model: selectedModel.id,
 						baseUrl: selectedProvider.baseUrl,
-						ragFiles: ragFiles.length ? ragFiles : undefined,
+						ragFiles: selectedRagFiles.length ? selectedRagFiles : undefined,
 					},
 				},
 			);
@@ -117,31 +120,29 @@ export default function ChatInput() {
 					}}
 				/>
 
-				<ChatFiles />
-
 				<div className="z-10 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2 pt-0">
 					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-						<AddFilesButton />
-
-						<div className="mx-px w-px h-4 bg-border" />
-
-						<ModelsSelect />
+						<FilesButton />
+						<FilesSelect />
 					</div>
-
-					<Button
-						size="icon"
-						type="submit"
-						className="rounded-full size-8 sm:size-9"
-						disabled={
-							isUploading || (!isLoading && (!input || input.trim() === ""))
-						}
-						icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
-						onClick={(event) => {
-							if (!isLoading) return;
-							event.preventDefault();
-							stop();
-						}}
-					/>
+					<div className="flex flex-wrap gap-1 sm:gap-2 items-center justify-end">
+						<ModelsSelect />
+						<div className="mx-px w-px h-4 bg-border" />
+						<Button
+							size="icon"
+							type="submit"
+							className="rounded-full size-8 sm:size-9"
+							disabled={
+								isUploading || (!isLoading && (!input || input.trim() === ""))
+							}
+							icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
+							onClick={(event) => {
+								if (!isLoading) return;
+								event.preventDefault();
+								stop();
+							}}
+						/>
+					</div>
 				</div>
 			</form>
 		</div>

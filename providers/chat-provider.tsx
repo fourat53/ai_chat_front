@@ -33,7 +33,7 @@ interface ChatContextValue {
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 export default function ChatProvider({ children }: { children: ReactNode }) {
-	const { data: session } = useSession();
+	const { data: session, isPending: sessionPending } = useSession();
 	const { conversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
 			conversations: s.conversations,
@@ -77,8 +77,18 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 				setMessages,
 				stop,
 			});
+		} else if (
+			!sessionPending &&
+			!session?.user &&
+			!selectedConv &&
+			conversations.length === 0
+		) {
+			const hashId = window.location.hash.replace(/^#/, "").trim();
+			if (!hashId && useChatStore.getState().loadingConv) {
+				useChatStore.getState().setLoadingConv(false);
+			}
 		}
-	}, [conversations, selectedConv, setMessages, stop]);
+	}, [conversations, selectedConv, setMessages, stop, session, sessionPending]);
 
 	useEffect(() => {
 		const run = async () => {

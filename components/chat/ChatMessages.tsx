@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import MainLoader from "@/components/loaders/MainLoader";
 import { AssistantMessage } from "@/components/messages/AssistantMessage";
 import { UserMessage } from "@/components/messages/UserMessage";
@@ -15,7 +15,22 @@ export default function ChatMessages() {
 	const selectedConvId = useChatStore((s) => s.selectedConv?.id);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const scrolledUserIdRef = useRef<string | undefined>(undefined);
-	const scrolledConvRef = useRef<string | undefined>(undefined);
+	const [scrolledForConvId, setScrolledForConvId] = useState<string | null>(
+		null,
+	);
+
+	const hasUrlConv =
+		typeof window !== "undefined" &&
+		Boolean(window.location.hash.replace(/^#/, "").trim());
+
+	const isPendingScroll =
+		!loadingConv &&
+		!!selectedConvId &&
+		messages.length > 0 &&
+		scrolledForConvId !== selectedConvId;
+
+	const isLoading =
+		loadingConv || isPendingScroll || (hasUrlConv && !selectedConvId);
 
 	useEffect(() => {
 		if (status !== "submitted" && status !== "streaming") return;
@@ -33,19 +48,21 @@ export default function ChatMessages() {
 	}, [messages, status]);
 
 	useEffect(() => {
-		if (
-			loadingConv ||
-			!selectedConvId ||
-			messages.length === 0 ||
-			scrolledConvRef.current === selectedConvId
-		)
-			return;
-		scrolledConvRef.current = selectedConvId;
-		requestAnimationFrame(() => {
-			const container = scrollRef.current;
-			container?.scrollTo({ top: container.scrollHeight });
+		if (loadingConv || !selectedConvId || messages.length === 0) return;
+		if (scrolledForConvId === selectedConvId) return;
+
+		const container = scrollRef.current;
+		if (container) {
+			container.scrollTop = container.scrollHeight;
+		}
+		const frame = requestAnimationFrame(() => {
+			if (container) {
+				container.scrollTop = container.scrollHeight;
+			}
+			setScrolledForConvId(selectedConvId);
 		});
-	}, [loadingConv, messages, selectedConvId]);
+		return () => cancelAnimationFrame(frame);
+	}, [loadingConv, messages.length, selectedConvId, scrolledForConvId]);
 
 	const lastIsUser = messages[messages.length - 1]?.role === "user";
 	const displayMessages =
@@ -62,37 +79,40 @@ export default function ChatMessages() {
 			: messages;
 
 	return (
-		<div
-			ref={scrollRef}
-			className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background"
-		>
-			{messages.length > 0 ? (
-				displayMessages.map((msg, index) => {
-					const message = mapToMessage(msg);
-					return msg.role === "user" ? (
-						<UserMessage key={msg.id} message={message} />
-					) : (
-						<AssistantMessage
-							key={msg.id}
-							status={status}
-							message={message}
-							isLast={index === displayMessages.length - 1}
-						/>
-					);
-				})
-			) : loadingConv ? (
-				<div className="h-full w-full flex justify-center items-center">
+		<div className="relative flex min-h-0 flex-1 flex-col">
+			<div
+				ref={scrollRef}
+				className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background"
+			>
+				{messages.length > 0 ? (
+					displayMessages.map((msg, index) => {
+						const message = mapToMessage(msg);
+						return msg.role === "user" ? (
+							<UserMessage key={msg.id} message={message} />
+						) : (
+							<AssistantMessage
+								key={msg.id}
+								status={status}
+								message={message}
+								isLast={index === displayMessages.length - 1}
+							/>
+						);
+					})
+				) : !isLoading ? (
+					<div className="flex flex-col justify-center items-center px-2 mx-auto space-y-4 max-w-md h-full text-center">
+						<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+							How can I help you today?
+						</h1>
+						<p className="text-muted-foreground">
+							Select a provider and a model, then type a message to start a new
+							conversation.
+						</p>
+					</div>
+				) : null}
+			</div>
+			{isLoading && (
+				<div className="absolute inset-0 z-10 flex items-center justify-center lg:rounded-t-xl border border-b-0 bg-background">
 					<MainLoader />
-				</div>
-			) : (
-				<div className="flex flex-col justify-center items-center px-2 mx-auto space-y-4 max-w-md h-full text-center">
-					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-						How can I help you today?
-					</h1>
-					<p className="text-muted-foreground">
-						Select a provider and a model, then type a message to start a new
-						conversation.
-					</p>
 				</div>
 			)}
 		</div>

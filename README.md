@@ -43,9 +43,10 @@ We welcome contributions! Please follow these steps:
 
 Tasks to do:
 -on first render or refresh, scroll down to the bottom of messages before removing the main loader.
-- Make sure you can ask a question and send it with files still processing.
+- The chat files should be organized into a multi-selection select to specify which files should the model get context about. The select-items should have: a delete x button that remove the file, a file viewer dialog button and an icon specifying what type is the file.
+Note: When removing a file, if the file's mongoDb document has no other convIds than the current one that we are deleting the file from, than you should delete the file from uploadthing, mongodb and delete its chunks with rag/delete/route.ts.
 - When a file is linked, the chat should be able to answer question that are not related to it. if only says I don't know or similar if the file does not contain the answer and is mentioned by the user or the user clearly wants data from it.
-- the files should be organized into a multi-selection select to specify which files should the model get context about. there should also be a delete x in select-item of the file removing the file from everywhere and an icon specifying what type is the file.
+- Make sure you can ask a question and send it with files still processing.
 
 
 

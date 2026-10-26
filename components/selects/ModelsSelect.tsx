@@ -82,7 +82,7 @@ export default function ModelsSelect() {
 			emptyText="No models found"
 			disabled={models.length === 0}
 			size="sm"
-			triggerClassName="w-40 sm:w-52 h-7 text-xs bg-transparent border-none shadow-none hover:bg-accent focus-visible:ring-0"
+			triggerClassName="w-40 sm:w-52 text-xs bg-transparent border-none shadow-none hover:bg-muted focus-visible:ring-0"
 		/>
 	);
 }

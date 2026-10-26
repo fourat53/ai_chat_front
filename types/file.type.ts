@@ -4,6 +4,8 @@ type ConvFile = {
 	fileName: string;
 	fileUrl: string;
 	fileKey: string;
+	selected: boolean;
+	hash?: string;
 };
 
 type FileStatus = "uploading" | "ready";
@@ -28,6 +30,7 @@ type Attachment = {
 	fileName: string;
 	fileKey: string | null;
 	fileUrl: string | null;
+	hash?: string;
 };
 
 type ReserveFileInput = {
