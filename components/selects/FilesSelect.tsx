@@ -127,8 +127,8 @@ export default function FilesSelect() {
 				</DropdownMenuTrigger>
 				<DropdownMenuContent
 					side="top"
-					align="start"
-					className="w-80 p-1.5 shadow-xl border-border/60 backdrop-blur-md"
+					align="center"
+					className="w-66 p-2 shadow-xl border-border/60 backdrop-blur-md"
 				>
 					<DropdownMenuGroup>
 						<DropdownMenuLabel className="mb-1.5 text-xs text-muted-foreground px-2 py-1.5 font-medium flex items-center justify-between">
@@ -146,6 +146,7 @@ export default function FilesSelect() {
 									<DropdownMenuItem
 										key={ragFile.indexId}
 										closeOnClick={false}
+										className="group/file-item flex items-center gap-2 pl-1.75 pr-1 py-1 rounded-lg cursor-pointer hover:bg-accent/60 transition-colors"
 										onClick={() => {
 											if (selectedConv) {
 												toggleConvFileSelected(
@@ -154,21 +155,18 @@ export default function FilesSelect() {
 												);
 											}
 										}}
-										className="group/file-item flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-accent/60 transition-colors"
 									>
 										<span
 											className={cn(
-												"flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
+												"p-px flex size-3.75 shrink-0 items-center justify-center rounded border transition-colors",
 												ragFile.selected
 													? "border-primary bg-primary text-primary-foreground"
 													: "border-muted-foreground/40 bg-background/50 group-hover/file-item:border-muted-foreground/70",
 											)}
 										>
-											{ragFile.selected && (
-												<IconCheck size={11} strokeWidth={3} />
-											)}
+											{ragFile.selected && <IconCheck strokeWidth={3} />}
 										</span>
-										<TypeIcon size={15} className={cn("shrink-0", TypeColor)} />
+										<TypeIcon size={15} className={`shrink-0 ${TypeColor}`} />
 										<span
 											title={ragFile.fileName}
 											className={cn(
@@ -180,13 +178,13 @@ export default function FilesSelect() {
 										>
 											{ragFile.fileName}
 										</span>
-										<div className="flex items-center gap-0.5 opacity-80 group-hover/file-item:opacity-100 transition-opacity">
+										<div className="flex items-center gap-px opacity-80 group-hover/file-item:opacity-100 transition-opacity">
 											<Button
 												variant="ghost"
 												size="icon"
 												type="button"
 												title="Preview file"
-												className="size-6 rounded-md hover:bg-sidebar hover:text-foreground text-muted-foreground"
+												className="size-6 rounded-md hover:bg-sidebar hover:text-primary text-muted-foreground"
 												onClick={(event) => {
 													event.stopPropagation();
 													setMenuOpen(false);
