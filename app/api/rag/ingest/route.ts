@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const INGEST_TIMEOUT_MS = 120000;
+const INGEST_TIMEOUT_MS = 300000;
 const UPLOADTHING_HOST_SUFFIXES = [".ufs.sh", ".utfs.io", "uploadthing.com"];
 
 function isAllowedFileUrl(rawUrl: string): boolean {

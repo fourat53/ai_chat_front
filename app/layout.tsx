@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -34,7 +35,10 @@ export default function RootLayout({
 			>
 				<ReactQueryProvider>
 					<ThemeProvider>
-						<TooltipProvider>{children}</TooltipProvider>
+						<TooltipProvider>
+							{children}
+							<Toaster position="top-right" className="toast-offset" />
+						</TooltipProvider>
 					</ThemeProvider>
 				</ReactQueryProvider>
 			</body>

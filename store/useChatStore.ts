@@ -46,8 +46,6 @@ interface ChatState {
 	setUploadingFile: (file: File | null) => void;
 	uploadPhase: "uploading" | "processing";
 	setUploadPhase: (phase: "uploading" | "processing") => void;
-	uploadError: string | null;
-	setUploadError: (error: string | null) => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
@@ -192,11 +190,6 @@ const useChatStore = create<ChatState>((set) => ({
 	setUploadPhase: (phase) =>
 		set((state) =>
 			state.uploadPhase === phase ? state : { uploadPhase: phase },
-		),
-	uploadError: null,
-	setUploadError: (error) =>
-		set((state) =>
-			state.uploadError === error ? state : { uploadError: error },
 		),
 }));
 

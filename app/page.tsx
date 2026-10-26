@@ -1,11 +1,18 @@
+"use client";
+
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatMessages from "@/components/chat/ChatMessages";
 import ChatSidebar from "@/components/sidebar/ChatSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import ChatProvider from "@/providers/chat-provider";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function HomePage() {
+	useEffect(() => {
+		toast.info("Welcome to Chat AI! Try to ask me anything.");
+	}, []);
 	return (
 		<ChatProvider>
 			<SidebarProvider className="flex overflow-hidden w-full h-screen bg-background">

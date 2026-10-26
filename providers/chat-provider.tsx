@@ -10,6 +10,7 @@ import {
 	useMemo,
 	useRef,
 } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
 import { selectConversation } from "@/functions/conversation";
@@ -57,6 +58,9 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 			transport,
 			onError: (err) => {
 				console.error("Chat error:", err);
+				toast.error(
+					"The assistant could not complete the response. Try again.",
+				);
 			},
 		},
 	);

@@ -72,7 +72,7 @@ function Button({
 				buttonVariants({ variant, size, className }),
 				showIcon &&
 					iconPosition === "end" &&
-					"pl-4 flex-row-reverse items-center justify-between",
+					"pl-3 flex-row-reverse items-center justify-between",
 			)}
 			{...props}
 		>

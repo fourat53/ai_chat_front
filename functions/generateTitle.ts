@@ -1,7 +1,5 @@
 import type { Message } from "@/types/message.type";
 
-const TITLE_MESSAGE_LENGTH = 2000;
-
 export default async function generateTitle(
 	messages: Message[],
 	signal: AbortSignal,
@@ -12,7 +10,7 @@ export default async function generateTitle(
 	if (!firstUserMessage) return null;
 
 	const payload = {
-		userMessage: firstUserMessage.content.trim().slice(0, TITLE_MESSAGE_LENGTH),
+		userMessage: firstUserMessage.content.trim().slice(0, 2000),
 	};
 
 	try {

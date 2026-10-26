@@ -1,11 +1,18 @@
 export const RAG_ACCEPTED_EXTENSIONS = [
 	".pdf",
 	".docx",
+	".pptx",
 	".txt",
 	".md",
 	".csv",
 ] as const;
 export const RAG_MAX_FILE_SIZE = 15 * 1024 * 1024;
+
+type RagErrorResponse = {
+	detail?: string;
+	error?: string;
+	details?: string;
+};
 
 function isAcceptedRagFile(file: File): boolean {
 	const name = file.name.toLowerCase();
@@ -38,7 +45,7 @@ function createRagIndexId(conversationId: string): string {
 	return `${conversationId}::${crypto.randomUUID()}`;
 }
 
-export async function ingestDocument(
+async function ingestDocument(
 	fileUrl: string,
 	fileName: string,
 	indexId: string,
@@ -53,19 +60,26 @@ export async function ingestDocument(
 		}),
 	});
 
-	const data = (await response.json().catch(() => null)) as {
-		detail?: string;
-		error?: string;
-	} | null;
+	const raw = await response.text();
+	let data: RagErrorResponse | null = null;
+	try {
+		data = JSON.parse(raw) as RagErrorResponse;
+	} catch {
+		data = null;
+	}
 
 	if (!response.ok) {
+		console.error("RAG ingestion failed:", response.status, raw);
 		throw new Error(
-			data?.detail ?? data?.error ?? `Ingestion failed (${response.status})`,
+			data?.detail ??
+				data?.error ??
+				data?.details ??
+				`Ingestion failed (${response.status})`,
 		);
 	}
 }
 
-export async function deleteDocument(indexId: string): Promise<boolean> {
+async function deleteDocument(indexId: string): Promise<boolean> {
 	try {
 		const response = await fetch("/api/rag/delete", {
 			method: "POST",
@@ -79,7 +93,7 @@ export async function deleteDocument(indexId: string): Promise<boolean> {
 	}
 }
 
-export async function deleteUploadedFile(fileKey: string): Promise<boolean> {
+async function deleteUploadedFile(fileKey: string): Promise<boolean> {
 	try {
 		const response = await fetch("/api/uploadthing/delete", {
 			method: "POST",
@@ -93,4 +107,12 @@ export async function deleteUploadedFile(fileKey: string): Promise<boolean> {
 	}
 }
 
-export { computeFileHash, createRagIndexId, isAcceptedRagFile, toConvFile };
+export {
+	computeFileHash,
+	createRagIndexId,
+	isAcceptedRagFile,
+	toConvFile,
+	ingestDocument,
+	deleteDocument,
+	deleteUploadedFile,
+};

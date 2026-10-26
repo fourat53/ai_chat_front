@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import {
 	createConversation,
 	getConversation,
@@ -70,6 +71,7 @@ async function selectConversation(
 	const conversation = conversations.find((c) => c.id === id);
 	if (!conversation) {
 		setLoadingConv(false);
+		toast.error("Conversation not found.");
 		return false;
 	}
 
@@ -104,6 +106,7 @@ async function selectConversation(
 		return true;
 	} catch (error) {
 		console.error("Failed to load conversation:", error);
+		toast.error("Failed to load the conversation. Try again.");
 		return false;
 	} finally {
 		if (token === selectionToken) {
@@ -133,10 +136,14 @@ async function createNewConversation(
 				providerId,
 				modelId,
 			});
-			if (!created?._id) return null;
+			if (!created?._id) {
+				toast.error("Could not start a new conversation. Try again.");
+				return null;
+			}
 			conversation = { ...created, id: created._id } as Conversation;
 		} catch (error) {
 			console.error("Failed to create conversation:", error);
+			toast.error("Could not start a new conversation. Try again.");
 			return null;
 		}
 	} else {

@@ -3,13 +3,13 @@
 import { IconMessage, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import {
 	deleteConversation,
 	getConversations,
 } from "@/actions/conversation.action";
 import ThemeSwitch from "@/components/buttons/ThemeSwitch";
-import MainLoader from "@/components/loaders/MainLoader";
 import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
@@ -29,8 +29,8 @@ import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
-import FooterSidebar from "./FooterSidebar";
 import { Skeleton } from "../ui/skeleton";
+import FooterSidebar from "./FooterSidebar";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
@@ -74,14 +74,18 @@ export default function ChatSidebar() {
 	};
 
 	const handleDeleteConversation = async (id: string) => {
-		if (session?.user) {
-			await deleteConversation(id);
+		try {
+			if (session?.user) {
+				await deleteConversation(id);
+			}
 			setConversations(conversations.filter((c) => c.id !== id));
-		} else {
-			setConversations(conversations.filter((c) => c.id !== id));
-		}
-		if (selectedConv?.id === id) {
-			void selectConversation(null, { setMessages, stop });
+			if (selectedConv?.id === id) {
+				void selectConversation(null, { setMessages, stop });
+			}
+			toast.success("Conversation deleted.");
+		} catch (error) {
+			console.error("Failed to delete conversation:", error);
+			toast.error("Failed to delete the conversation. Try again.");
 		}
 	};
 
@@ -100,8 +104,8 @@ export default function ChatSidebar() {
 						<SidebarMenu className="relative h-full">
 							<Button
 								variant="default"
-								icon={<IconPlus size={18} />}
-								className="my-1 flex gap-2 justify-start items-center w-full"
+								icon={<IconPlus strokeWidth={2.5} />}
+								className="my-1 w-full flex gap-2 justify-start items-center"
 								onClick={() => void handleNewChat()}
 							>
 								New Chat

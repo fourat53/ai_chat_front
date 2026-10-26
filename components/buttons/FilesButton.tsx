@@ -1,7 +1,8 @@
 "use client";
 
-import { IconLoader2, IconPaperclip, IconX } from "@tabler/icons-react";
+import { IconLoader2, IconPaperclip } from "@tabler/icons-react";
 import { useRef } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import {
 	completeFileUpload,
@@ -9,7 +10,6 @@ import {
 	removeConversationFile,
 	reserveConversationFile,
 } from "@/actions/file.action";
-import FilesSelect from "@/components/selects/FilesSelect";
 import { Button } from "@/components/ui/button";
 import { createNewConversation } from "@/functions/conversation";
 import {
@@ -34,7 +34,6 @@ export default function FilesButton() {
 		uploadingFile,
 		setUploadingFile,
 		setUploadPhase,
-		setUploadError,
 	} = useChatStore(
 		useShallow((state) => ({
 			selectedConv: state.selectedConv,
@@ -42,7 +41,6 @@ export default function FilesButton() {
 			uploadingFile: state.uploadingFile,
 			setUploadingFile: state.setUploadingFile,
 			setUploadPhase: state.setUploadPhase,
-			setUploadError: state.setUploadError,
 		})),
 	);
 	const { startUpload, isUploading: isUploadingToUploadThing } =
@@ -57,19 +55,22 @@ export default function FilesButton() {
 		if (!file) return;
 
 		if (!isAcceptedRagFile(file)) {
-			setUploadError(
+			toast.error(
 				`Unsupported file type. Allowed: ${RAG_ACCEPTED_EXTENSIONS.join(", ")}`,
 			);
 			return;
 		}
+		if (file.size === 0) {
+			toast.error("The selected file is empty.");
+			return;
+		}
 		if (file.size > RAG_MAX_FILE_SIZE) {
-			setUploadError("File exceeds the 15 MB size limit.");
+			toast.error("File exceeds the 15 MB size limit.");
 			return;
 		}
 
 		setUploadingFile(file);
 		setUploadPhase("uploading");
-		setUploadError(null);
 
 		let attachment: Attachment | null = null;
 		let conversationId: string | null = null;
@@ -77,7 +78,7 @@ export default function FilesButton() {
 		try {
 			const conversation =
 				selectedConv ?? (await createNewConversation(!!session?.user));
-			if (!conversation) throw new Error("Could not create a conversation");
+			if (!conversation) return;
 			conversationId = conversation.id;
 			const signedIn = !!session?.user;
 			const hash = await computeFileHash(file);
@@ -95,6 +96,7 @@ export default function FilesButton() {
 						.getState()
 						.toggleConvFileSelected(conversationId, alreadyAdded.indexId);
 				}
+				toast.info("This file is already added to the conversation.");
 				return;
 			}
 
@@ -112,6 +114,9 @@ export default function FilesButton() {
 						...toConvFile(reserved.attachment),
 						hash,
 					});
+					toast.info(
+						"This file is already in your library and was added to the conversation.",
+					);
 					return;
 				}
 				attachment = reserved.attachment;
@@ -157,12 +162,17 @@ export default function FilesButton() {
 				selected: true,
 				hash,
 			});
+			toast.success(`${fileName} added to the conversation.`);
 		} catch (error) {
-			setUploadError(
-				error instanceof Error ? error.message : "Upload failed, try again",
+			toast.error(
+				error instanceof Error ? error.message : "Upload failed. Try again.",
 			);
 			if (attachment?.id && conversationId) {
-				await removeConversationFile(attachment.id, conversationId);
+				try {
+					await removeConversationFile(attachment.id, conversationId);
+				} catch (cleanupError) {
+					console.error("Failed to roll back file upload:", cleanupError);
+				}
 			}
 		} finally {
 			setUploadingFile(null);

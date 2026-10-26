@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import ThemeSwitch from "@/components/buttons/ThemeSwitch";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,7 @@ export default function RegisterPage() {
 		setLoading(true);
 		const { error } = await signUp.email({ name, email, password });
 		if (error) {
-			alert(error.message);
+			toast.error(error.message);
 		} else {
 			router.push("/");
 		}

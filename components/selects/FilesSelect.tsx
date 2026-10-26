@@ -3,16 +3,18 @@
 import {
 	IconCheck,
 	IconEye,
+	IconFiles,
 	IconFileText,
 	IconFileTypeCsv,
 	IconFileTypeDocx,
 	IconFileTypePdf,
+	IconFileTypePpt,
 	IconFileTypeTxt,
-	IconFiles,
 	IconMarkdown,
 	IconX,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { removeConversationFile } from "@/actions/file.action";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,7 @@ const FILE_TYPE_ICONS: Record<
 > = {
 	".pdf": { icon: IconFileTypePdf, color: "text-red-500" },
 	".docx": { icon: IconFileTypeDocx, color: "text-blue-500" },
+	".pptx": { icon: IconFileTypePpt, color: "text-orange-500" },
 	".txt": { icon: IconFileTypeTxt, color: "text-gray-500" },
 	".md": { icon: IconMarkdown, color: "text-purple-500" },
 	".csv": { icon: IconFileTypeCsv, color: "text-green-500" },
@@ -59,7 +62,6 @@ export default function FilesSelect() {
 		removeConvFile,
 		addConvFile,
 		toggleConvFileSelected,
-		setUploadError,
 	} = useChatStore(
 		useShallow((state) => ({
 			selectedConv: state.selectedConv,
@@ -67,7 +69,6 @@ export default function FilesSelect() {
 			removeConvFile: state.removeConvFile,
 			addConvFile: state.addConvFile,
 			toggleConvFileSelected: state.toggleConvFileSelected,
-			setUploadError: state.setUploadError,
 		})),
 	);
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -101,13 +102,16 @@ export default function FilesSelect() {
 			} catch (error) {
 				console.error("Failed to remove file:", error);
 				addConvFile(conversationId, ragFile);
-				setUploadError("Failed to remove the file. Try again.");
+				toast.error("Failed to remove the file. Try again.");
+				return;
 			}
+			toast.success("File removed from the conversation.");
 			return;
 		}
 
 		void deleteDocument(ragFile.indexId);
 		void deleteUploadedFile(ragFile.fileKey);
+		toast.success("File removed from the conversation.");
 	};
 
 	if (ragFiles.length === 0) return null;
@@ -119,10 +123,13 @@ export default function FilesSelect() {
 			<DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
 				<DropdownMenuTrigger
 					render={
-						<Button variant="ghost" className="h-9 text-xs font-normal" />
+						<Button
+							variant="ghost"
+							icon={<IconFiles className="text-muted-foreground" />}
+							className="h-8 w-26 text-xs font-normal"
+						/>
 					}
 				>
-					<IconFiles className="text-muted-foreground" />
 					{selectedCount}/{ragFiles.length} files
 				</DropdownMenuTrigger>
 				<DropdownMenuContent
@@ -131,11 +138,8 @@ export default function FilesSelect() {
 					className="w-66 p-2 shadow-xl border-border/60 backdrop-blur-md"
 				>
 					<DropdownMenuGroup>
-						<DropdownMenuLabel className="mb-1.5 text-xs text-muted-foreground px-2 py-1.5 font-medium flex items-center justify-between">
-							<span>Files included in model context</span>
-							<span className="text-[10px] text-muted-foreground/70 font-normal">
-								{selectedCount} selected
-							</span>
+						<DropdownMenuLabel className="mb-1.5 px-2 py-1.5 text-center text-xs text-muted-foreground font-medium">
+							Files included in model context
 						</DropdownMenuLabel>
 						<div className="max-h-60 overflow-y-auto space-y-0.5">
 							{ragFiles.map((ragFile) => {
@@ -146,7 +150,7 @@ export default function FilesSelect() {
 									<DropdownMenuItem
 										key={ragFile.indexId}
 										closeOnClick={false}
-										className="group/file-item flex items-center gap-2 pl-1.75 pr-1 py-1 rounded-lg cursor-pointer hover:bg-accent/60 transition-colors"
+										className="group/file-item flex items-center gap-1 pl-1.75 pr-1 py-1 rounded-lg cursor-pointer hover:bg-accent/60 transition-colors"
 										onClick={() => {
 											if (selectedConv) {
 												toggleConvFileSelected(
@@ -158,7 +162,7 @@ export default function FilesSelect() {
 									>
 										<span
 											className={cn(
-												"p-px flex size-3.75 shrink-0 items-center justify-center rounded border transition-colors",
+												"mr-0.5 p-px flex size-3.75 shrink-0 items-center justify-center rounded border transition-colors",
 												ragFile.selected
 													? "border-primary bg-primary text-primary-foreground"
 													: "border-muted-foreground/40 bg-background/50 group-hover/file-item:border-muted-foreground/70",
