@@ -111,7 +111,7 @@ export default function ChatMessages() {
 				) : null}
 			</div>
 			{isLoading && (
-				<div className="absolute inset-0 z-10 flex items-center justify-center lg:rounded-t-xl border border-b-0 bg-background">
+				<div className="absolute inset-0 flex items-center justify-center">
 					<MainLoader />
 				</div>
 			)}
