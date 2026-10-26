@@ -42,7 +42,7 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request for review.
 
 Tasks to do:
-
+- Reduce timeout and toast timeout error.
 - When a file is linked, the chat should be able to answer question that are not related to it. if only says I don't know or similar if the file does not contain the answer and is mentioned by the user or the user clearly wants data from it.
 - Make sure you can ask a question and send it with files still processing.
 
