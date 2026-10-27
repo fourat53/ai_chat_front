@@ -20,7 +20,7 @@ import {
 	RAG_ACCEPTED_EXTENSIONS,
 	RAG_MAX_FILE_SIZE,
 	toConvFile,
-} from "@/functions/rag";
+} from "@/functions/file";
 import { useSession } from "@/lib/auth-client";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useChatStore } from "@/store/useChatStore";

@@ -33,7 +33,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteDocument, deleteUploadedFile } from "@/functions/rag";
+import { deleteDocument, deleteUploadedFile } from "@/functions/file";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/useChatStore";
 import type { ConvFile } from "@/types/file.type";

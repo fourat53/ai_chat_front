@@ -4,7 +4,7 @@ import {
 	getConversation,
 } from "@/actions/conversation.action";
 import { getConversationFiles } from "@/actions/file.action";
-import { toConvFile } from "@/functions/rag";
+import { toConvFile } from "@/functions/file";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";

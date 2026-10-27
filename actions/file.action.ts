@@ -1,7 +1,7 @@
 "use server";
 
 import { connectDB } from "@/lib/db";
-import { deleteFileData } from "@/functions/file-cleanup";
+import { deleteFileData } from "@/functions/file";
 import { getUserId } from "@/lib/session";
 import { FileModel } from "@/models/file.model";
 import type {

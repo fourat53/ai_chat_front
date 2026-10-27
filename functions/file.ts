@@ -1,4 +1,7 @@
-export const RAG_ACCEPTED_EXTENSIONS = [
+import { UTApi } from "uploadthing/server";
+import type { Attachment, ConvFile } from "@/types/file.type";
+
+const RAG_ACCEPTED_EXTENSIONS = [
 	".pdf",
 	".docx",
 	".pptx",
@@ -6,7 +9,7 @@ export const RAG_ACCEPTED_EXTENSIONS = [
 	".md",
 	".csv",
 ] as const;
-export const RAG_MAX_FILE_SIZE = 15 * 1024 * 1024;
+const RAG_MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 type RagErrorResponse = {
 	detail?: string;
@@ -18,8 +21,6 @@ function isAcceptedRagFile(file: File): boolean {
 	const name = file.name.toLowerCase();
 	return RAG_ACCEPTED_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
-
-import type { Attachment, ConvFile } from "@/types/file.type";
 
 function toConvFile(attachment: Attachment): ConvFile {
 	return {
@@ -107,7 +108,46 @@ async function deleteUploadedFile(fileKey: string): Promise<boolean> {
 	}
 }
 
+async function deleteFileChunks(indexId: string): Promise<void> {
+	try {
+		const response = await fetch(`${process.env.RAG_URL}/rag/delete`, {
+			method: "DELETE",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ index_id: indexId }),
+		});
+		if (!response.ok) {
+			console.error(
+				"RAG delete error:",
+				response.status,
+				await response.text(),
+			);
+		}
+	} catch (error) {
+		console.error("Failed to delete indexed chunks:", error);
+	}
+}
+
+async function deleteUploadThingBlob(fileKey: string): Promise<void> {
+	try {
+		await new UTApi().deleteFiles(fileKey, { keyType: "fileKey" });
+	} catch (error) {
+		console.error("Failed to delete uploaded file:", error);
+	}
+}
+
+async function deleteFileData(
+	indexId: string,
+	fileKey: string | null,
+): Promise<void> {
+	await deleteFileChunks(indexId);
+	if (fileKey) {
+		await deleteUploadThingBlob(fileKey);
+	}
+}
+
 export {
+	RAG_ACCEPTED_EXTENSIONS,
+	RAG_MAX_FILE_SIZE,
 	computeFileHash,
 	createRagIndexId,
 	isAcceptedRagFile,
@@ -115,4 +155,5 @@ export {
 	ingestDocument,
 	deleteDocument,
 	deleteUploadedFile,
+	deleteFileData,
 };
