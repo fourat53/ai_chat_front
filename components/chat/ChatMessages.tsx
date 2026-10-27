@@ -79,10 +79,10 @@ export default function ChatMessages() {
 			: messages;
 
 	return (
-		<div className="relative flex min-h-0 flex-1 flex-col">
+		<div className="relative flex min-h-0 flex-1 flex-col bg-background lg:rounded-t-xl border border-b-0">
 			<div
 				ref={scrollRef}
-				className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2 lg:rounded-t-xl border border-b-0 bg-background"
+				className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2"
 			>
 				{messages.length > 0 ? (
 					displayMessages.map((msg, index) => {
@@ -111,7 +111,7 @@ export default function ChatMessages() {
 				) : null}
 			</div>
 			{isLoading && (
-				<div className="absolute inset-0 flex items-center justify-center">
+				<div className="bg-background lg:rounded-t-xl border-b-2 border-b-transparent absolute inset-0 flex items-center justify-center">
 					<MainLoader />
 				</div>
 			)}

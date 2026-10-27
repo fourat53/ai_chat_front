@@ -53,7 +53,7 @@ export default function AssistantContent({ content }: { content: string }) {
 										fontWeight: 100,
 										fontSize: "0.85rem",
 										background:
-											resolvedTheme === "dark" ? "#090c0d" : "#eaf7f7",
+											resolvedTheme === "dark" ? "#0c0f10" : "#eaf7f7",
 									}}
 								>
 									{codeContent}
