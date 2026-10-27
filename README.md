@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a modern Next.js frontend application featuring an integrated AI chat interface and PDF document viewer. Built with React, Tailwind CSS, Shadcn UI, and Framer Motion, it serves as the user-facing client for the AI Microservice backend, enabling Retrieval-Augmented Generation (RAG) and local LLM interactions.
+This project is a modern Next.js frontend application featuring an integrated AI chat interface and PDF document viewer. Built with React, Tailwind CSS and Shadcn UI, it serves as the user-facing client for the AI Microservice backend, enabling Retrieval-Augmented Generation (RAG) and local LLM interactions.
 
 ## Installation
 
@@ -45,8 +45,6 @@ Tasks to do:
 - Reduce timeout and toast timeout error.
 - When a file is linked, the chat should be able to answer question that are not related to it. if only says I don't know or similar if the file does not contain the answer and is mentioned by the user or the user clearly wants data from it.
 - Make sure you can ask a question and send it with files still processing.
-
-
 
 1. Add update query to User message bubble deleting all the next messages to the old updated query.
 2. MCP server (google calendar, docs, sheets, etc).

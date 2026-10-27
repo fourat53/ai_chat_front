@@ -11,16 +11,15 @@ export function FileViewer({ file }: { file: DocType }) {
 	const { resolvedTheme } = useTheme();
 	return (
 		<DocViewer
-			source={file}
 			pagination
+			source={file}
+			theme={resolvedTheme}
+			loading={<MainLoader />}
 			style={{ height: "85vh" }}
-			onLoad={(meta) => console.log("loaded", meta.type, meta.pageCount)}
 			onError={(err) => {
 				console.error(err);
 				toast.error("Could not preview this file.");
 			}}
-			loading={<MainLoader />}
-			theme={resolvedTheme}
 		/>
 	);
 }

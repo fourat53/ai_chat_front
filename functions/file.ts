@@ -146,14 +146,14 @@ async function deleteFileData(
 }
 
 export {
-	RAG_ACCEPTED_EXTENSIONS,
-	RAG_MAX_FILE_SIZE,
 	computeFileHash,
 	createRagIndexId,
-	isAcceptedRagFile,
-	toConvFile,
-	ingestDocument,
 	deleteDocument,
-	deleteUploadedFile,
 	deleteFileData,
+	deleteUploadedFile,
+	ingestDocument,
+	isAcceptedRagFile,
+	RAG_ACCEPTED_EXTENSIONS,
+	RAG_MAX_FILE_SIZE,
+	toConvFile,
 };
