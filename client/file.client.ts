@@ -1,15 +1,9 @@
 import { UTApi } from "uploadthing/server";
-import type { Attachment, ConvFile } from "@/types/file.type";
-
-const RAG_ACCEPTED_EXTENSIONS = [
-	".pdf",
-	".docx",
-	".pptx",
-	".txt",
-	".md",
-	".csv",
-] as const;
-const RAG_MAX_FILE_SIZE = 15 * 1024 * 1024;
+import {
+	type Attachment,
+	type ConvFile,
+	FILE_EXTENSIONS,
+} from "@/types/file.type";
 
 type RagErrorResponse = {
 	detail?: string;
@@ -19,7 +13,7 @@ type RagErrorResponse = {
 
 function isAcceptedRagFile(file: File): boolean {
 	const name = file.name.toLowerCase();
-	return RAG_ACCEPTED_EXTENSIONS.some((extension) => name.endsWith(extension));
+	return FILE_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
 
 function toConvFile(attachment: Attachment): ConvFile {
@@ -153,7 +147,5 @@ export {
 	deleteUploadedFile,
 	ingestDocument,
 	isAcceptedRagFile,
-	RAG_ACCEPTED_EXTENSIONS,
-	RAG_MAX_FILE_SIZE,
 	toConvFile,
 };

@@ -4,7 +4,8 @@ import {
 	getConversation,
 } from "@/actions/conversation.action";
 import { getConversationFiles } from "@/actions/file.action";
-import { toConvFile } from "@/functions/file";
+import { getMessages } from "@/actions/message.action";
+import { toConvFile } from "@/client/file.client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
@@ -22,17 +23,14 @@ function setUrlHash(conversationId: string | null) {
 	);
 }
 
-function toUiMessages(messages: Conversation["messages"]): Message[] {
-	return (messages ?? []).map(
-		(m) =>
-			({
-				id: m.id,
-				role: m.role,
-				parts: [{ type: "text", text: m.content }],
-				...(m.providerName ? { providerName: m.providerName } : {}),
-				...(m.modelName ? { modelName: m.modelName } : {}),
-			}) as unknown as Message,
-	);
+function toUiMessages(messages: Message[]): Message[] {
+	return messages.map((m) => ({
+		id: m.id,
+		role: m.role,
+		parts: [{ type: "text", text: m.content }],
+		...(m.providerName ? { providerName: m.providerName } : {}),
+		...(m.modelName ? { modelName: m.modelName } : {}),
+	})) as unknown as Message[];
 }
 
 interface SelectConversationOptions {
@@ -92,7 +90,10 @@ async function selectConversation(
 			providers.find((p) => p.id === resolved.providerId) ?? null,
 		);
 		setSelectedModel(models.find((m) => m.id === resolved.modelId) ?? null);
-		setMessages(toUiMessages(full?.messages));
+
+		const messages = await getMessages(id);
+		if (token !== selectionToken) return false;
+		setMessages(toUiMessages(messages));
 
 		if (full) {
 			try {

@@ -4,7 +4,7 @@ import { LogoutButton } from "@/components/buttons/LogoutButton";
 import { Button } from "@/components/ui/button";
 import { SidebarFooter } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { SessionType } from "@/lib/auth-client";
+import type { SessionType } from "@/lib/auth/auth-client";
 
 export default function FooterSidebar({
 	session,

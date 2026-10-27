@@ -1,10 +1,9 @@
-import mongoose, { model, Schema } from "mongoose";
-import type { FileRecord } from "@/types/file.type";
+import { model, models, Schema } from "mongoose";
 
-const fileSchema = new Schema<FileRecord>(
+const fileSchema = new Schema(
 	{
-		userId: String,
-		conversationIds: [String],
+		userId: { type: Schema.Types.ObjectId, required: true, index: true },
+		conversationIds: [{ type: Schema.Types.ObjectId }],
 		indexId: String,
 		hash: String,
 		fileName: String,
@@ -14,13 +13,7 @@ const fileSchema = new Schema<FileRecord>(
 		fileUrl: String,
 		status: String,
 	},
-	{ timestamps: { createdAt: true, updatedAt: false } },
+	{ timestamps: true },
 );
 
-fileSchema.index({ userId: 1, hash: 1 }, { unique: true });
-
-if (mongoose.models.File) {
-	mongoose.deleteModel("File");
-}
-
-export const FileModel = model<FileRecord>("File", fileSchema);
+export const FileModel = models.File || model("File", fileSchema);

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { mapToMessage } from "@/client/message.client";
 import MainLoader from "@/components/loaders/MainLoader";
 import { AssistantMessage } from "@/components/messages/AssistantMessage";
 import { UserMessage } from "@/components/messages/UserMessage";
-import { mapToMessage } from "@/functions/message";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
@@ -71,6 +71,8 @@ export default function ChatMessages() {
 					...messages,
 					{
 						id: "pending-assistant",
+						conversationId: selectedConvId ?? "",
+						userId: "",
 						role: "assistant",
 						parts: [],
 						content: "",

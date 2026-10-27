@@ -9,6 +9,10 @@ import {
 	deleteConversation,
 	getConversations,
 } from "@/actions/conversation.action";
+import {
+	createNewConversation,
+	selectConversation,
+} from "@/client/conversation.client";
 import ThemeSwitch from "@/components/buttons/ThemeSwitch";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +25,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-	createNewConversation,
-	selectConversation,
-} from "@/functions/conversation";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";

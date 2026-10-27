@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { message } from "./message.type";
 
 const conversation = z.object({
 	id: z.string(),
@@ -7,7 +6,6 @@ const conversation = z.object({
 	title: z.string(),
 	providerId: z.string(),
 	modelId: z.string(),
-	messages: z.array(message).optional(),
 });
 
 type Conversation = z.infer<typeof conversation>;

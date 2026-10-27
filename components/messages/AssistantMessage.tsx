@@ -2,7 +2,7 @@ import { IconCopy } from "@tabler/icons-react";
 import type { ChatStatus } from "ai";
 import { LoaderDots } from "@/components/loaders/WaitingDots";
 import { Button } from "@/components/ui/button";
-import handleCopy from "@/functions/handleCopy";
+import handleCopy from "@/lib/functions/handleCopy";
 import type { Message } from "@/types/message.type";
 import AssistantContent from "./AssistantContent";
 import AssistantMeta from "./AssistantMeta";

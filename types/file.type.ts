@@ -1,3 +1,49 @@
+import { z } from "zod";
+
+enum FileStatus {
+	uploading = "uploading",
+	ready = "ready",
+}
+
+const FILE_STATUS = ["uploading", "ready"] as const;
+
+enum FileType {
+	".pdf" = "PDF",
+	".docx" = "DOCX",
+	".pptx" = "PPTX",
+	".txt" = "TXT",
+	".md" = "MD",
+	".csv" = "CSV",
+}
+
+const FILE_EXTENSIONS = [
+	".pdf",
+	".docx",
+	".pptx",
+	".txt",
+	".md",
+	".csv",
+] as const;
+
+const FILE_MAX_SIZE = 15 * 1024 * 1024;
+
+const file = z.object({
+	id: z.string(),
+	attachmentId: z.string().optional(),
+	indexId: z.string(),
+	fileName: z.string(),
+	fileSize: z.string(),
+	fileType: z.enum(FILE_EXTENSIONS),
+	fileUrl: z.string(),
+	fileKey: z.string(),
+	selected: z.boolean(),
+	hash: z.string().optional(),
+	status: z.enum(FILE_STATUS),
+});
+
+type File = z.infer<typeof file>;
+type FileBody = Omit<File, "id">;
+
 type ConvFile = {
 	attachmentId?: string;
 	indexId: string;
@@ -7,8 +53,6 @@ type ConvFile = {
 	selected: boolean;
 	hash?: string;
 };
-
-type FileStatus = "uploading" | "ready";
 
 type FileRecord = {
 	userId: string;
@@ -50,7 +94,16 @@ export type {
 	Attachment,
 	ConvFile,
 	FileRecord,
-	FileStatus,
 	ReserveFileInput,
 	ReserveFileResult,
+};
+export {
+	FILE_EXTENSIONS,
+	FILE_MAX_SIZE,
+	FILE_STATUS,
+	type File,
+	type FileBody,
+	FileStatus,
+	FileType,
+	file,
 };

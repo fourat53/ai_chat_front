@@ -1,10 +1,15 @@
-import { model, models, Schema } from "mongoose";
-import type { Message } from "@/types/message.type";
+import { model, models, Schema, Types } from "mongoose";
 
-const messageSchema = new Schema<Message>({
-	role: String,
-	content: String,
-});
+const messageSchema = new Schema(
+	{
+		conversationId: { type: Types.ObjectId, required: true, index: true },
+		userId: { type: Types.ObjectId, required: true, index: true },
+		role: String,
+		content: String,
+		providerName: String,
+		modelName: String,
+	},
+	{ timestamps: true },
+);
 
-export const MessageModel =
-	models.Message || model<Message>("Message", messageSchema);
+export const MessageModel = models.Message || model("Message", messageSchema);

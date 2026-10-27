@@ -1,4 +1,4 @@
-import { textOf } from "@/functions/message";
+import { textOf } from "@/client/message.client";
 import type { Message } from "@/types/message.type";
 
 export const runtime = "nodejs";

@@ -1,8 +1,7 @@
 "use server";
 
-import { connectDB } from "@/lib/db";
-import { deleteFileData } from "@/functions/file";
-import { getUserId } from "@/lib/session";
+import { getUserId } from "@/actions/user.action";
+import { deleteFileData } from "@/client/file.client";
 import { FileModel } from "@/models/file.model";
 import type {
 	Attachment,
@@ -65,11 +64,9 @@ async function cleanupStaleUploads(
 async function reserveConversationFile(
 	input: ReserveFileInput,
 ): Promise<ReserveFileResult> {
-	const userId = await getUserId();
-	if (!userId) throw new Error("Unauthorized");
 	if (!HASH_PATTERN.test(input.hash)) throw new Error("Invalid file hash");
 
-	await connectDB();
+	const userId = await getUserId();
 
 	for (let attempt = 0; attempt < 2; attempt++) {
 		const existing = await FileModel.findOne({
@@ -120,12 +117,11 @@ async function completeFileUpload(
 	attachmentId: string,
 	file: { fileKey: string; fileUrl: string },
 ): Promise<void> {
-	const userId = await getUserId();
-	if (!userId) throw new Error("Unauthorized");
 	if (!file.fileKey.trim() || !file.fileUrl.trim()) {
 		throw new Error("Missing uploaded file reference");
 	}
-	await connectDB();
+	const userId = await getUserId();
+
 	const result = await FileModel.updateOne(
 		{ _id: attachmentId, userId, status: "uploading" },
 		{ $set: { fileKey: file.fileKey, fileUrl: file.fileUrl } },
@@ -137,8 +133,7 @@ async function completeFileUpload(
 
 async function markFileReady(attachmentId: string): Promise<void> {
 	const userId = await getUserId();
-	if (!userId) throw new Error("Unauthorized");
-	await connectDB();
+
 	const result = await FileModel.updateOne(
 		{ _id: attachmentId, userId, status: "uploading" },
 		{ $set: { status: "ready" } },
@@ -152,8 +147,7 @@ async function getConversationFiles(
 	conversationId: string,
 ): Promise<Attachment[]> {
 	const userId = await getUserId();
-	if (!userId) return [];
-	await connectDB();
+
 	await cleanupStaleUploads(userId, conversationId);
 	const docs = await FileModel.find({
 		userId,
@@ -168,13 +162,12 @@ async function removeConversationFile(
 	conversationId: string,
 ): Promise<{ deleted: boolean }> {
 	const userId = await getUserId();
-	if (!userId) throw new Error("Unauthorized");
-	await connectDB();
+
 	const doc = await FileModel.findOne({ _id: attachmentId, userId }).lean();
 	if (!doc) return { deleted: false };
 
 	const remaining = doc.conversationIds.filter(
-		(id: string) => id !== conversationId,
+		(id: { toString: () => string }) => id.toString() !== conversationId,
 	);
 	if (remaining.length === 0) {
 		await cleanupAttachment(userId, toAttachment(doc));

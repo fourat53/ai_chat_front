@@ -13,10 +13,10 @@ import {
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
-import { selectConversation } from "@/functions/conversation";
-import { mapToMessage } from "@/functions/message";
+import { selectConversation } from "@/client/conversation.client";
+import { mapToMessage } from "@/client/message.client";
 import { useTitle } from "@/hooks/use-title";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth/auth-client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
 
@@ -107,8 +107,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 				return;
 
 			if (convRef.current.id !== convId) {
-				const knownLength = selectedConv.messages?.length ?? 0;
-				if (messages.length <= knownLength) {
+				if (messages.length <= 0) {
 					convRef.current = { id: convId, length: messages.length };
 					return;
 				}
@@ -136,7 +135,6 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 			if (!session?.user) return;
 			try {
 				await updateConversation(convId, {
-					messages: mapped,
 					providerId: selectedProvider?.id ?? "",
 					modelId: selectedModel?.id ?? "",
 				});

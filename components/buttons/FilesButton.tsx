@@ -10,21 +10,23 @@ import {
 	removeConversationFile,
 	reserveConversationFile,
 } from "@/actions/file.action";
-import { Button } from "@/components/ui/button";
-import { createNewConversation } from "@/functions/conversation";
+import { createNewConversation } from "@/client/conversation.client";
 import {
 	computeFileHash,
 	createRagIndexId,
 	ingestDocument,
 	isAcceptedRagFile,
-	RAG_ACCEPTED_EXTENSIONS,
-	RAG_MAX_FILE_SIZE,
 	toConvFile,
-} from "@/functions/file";
-import { useSession } from "@/lib/auth-client";
+} from "@/client/file.client";
+import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/auth/auth-client";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useChatStore } from "@/store/useChatStore";
-import type { Attachment } from "@/types/file.type";
+import {
+	type Attachment,
+	FILE_EXTENSIONS,
+	FILE_MAX_SIZE,
+} from "@/types/file.type";
 
 export default function FilesButton() {
 	const { data: session } = useSession();
@@ -56,7 +58,7 @@ export default function FilesButton() {
 
 		if (!isAcceptedRagFile(file)) {
 			toast.error(
-				`Unsupported file type. Allowed: ${RAG_ACCEPTED_EXTENSIONS.join(", ")}`,
+				`Unsupported file type. Allowed: ${FILE_EXTENSIONS.join(", ")}`,
 			);
 			return;
 		}
@@ -64,7 +66,7 @@ export default function FilesButton() {
 			toast.error("The selected file is empty.");
 			return;
 		}
-		if (file.size > RAG_MAX_FILE_SIZE) {
+		if (file.size > FILE_MAX_SIZE) {
 			toast.error("File exceeds the 15 MB size limit.");
 			return;
 		}
@@ -184,7 +186,7 @@ export default function FilesButton() {
 			<input
 				ref={fileInputRef}
 				type="file"
-				accept={RAG_ACCEPTED_EXTENSIONS.join(",")}
+				accept={FILE_EXTENSIONS.join(",")}
 				className="hidden"
 				onChange={handleFileSelected}
 			/>

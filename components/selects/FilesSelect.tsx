@@ -17,6 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { removeConversationFile } from "@/actions/file.action";
+import { deleteDocument, deleteUploadedFile } from "@/client/file.client";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -33,7 +34,6 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteDocument, deleteUploadedFile } from "@/functions/file";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/useChatStore";
 import type { ConvFile } from "@/types/file.type";

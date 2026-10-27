@@ -1,8 +1,8 @@
 import { IconCopy } from "@tabler/icons-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import handleCopy from "@/functions/handleCopy";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth/auth-client";
+import handleCopy from "@/lib/functions/handleCopy";
 import type { Message } from "@/types/message.type";
 
 type UserMessageProps = {

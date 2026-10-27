@@ -11,7 +11,7 @@ import {
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
-import handleCopy from "@/functions/handleCopy";
+import handleCopy from "@/lib/functions/handleCopy";
 
 export default function AssistantContent({ content }: { content: string }) {
 	const { resolvedTheme } = useTheme();

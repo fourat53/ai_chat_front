@@ -1,9 +1,9 @@
 import type { ChatStatus } from "ai";
 import { useEffect, useRef } from "react";
 import { updateConversation } from "@/actions/conversation.action";
-import generateTitle from "@/functions/generateTitle";
-import { mapToMessage } from "@/functions/message";
-import { useSession } from "@/lib/auth-client";
+import { mapToMessage } from "@/client/message.client";
+import { useSession } from "@/lib/auth/auth-client";
+import generateTitle from "@/lib/functions/generateTitle";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
 

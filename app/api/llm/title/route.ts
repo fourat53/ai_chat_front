@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
+import { connectDB } from "@/lib/config/db";
 import { ProviderModel } from "@/models/provider.model";
 import type { Provider } from "@/types/provider.type";
 

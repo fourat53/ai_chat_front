@@ -1,14 +1,14 @@
 import { model, models, Schema } from "mongoose";
-import type { Conversation } from "@/types/conversation.type";
 
-const conversationSchema = new Schema<Conversation>({
-	userId: String,
-	title: String,
-	providerId: String,
-	modelId: String,
-	messages: Schema.Types.Mixed,
-});
+const conversationSchema = new Schema(
+	{
+		userId: { type: Schema.Types.ObjectId, required: true, index: true },
+		providerId: String,
+		modelId: String,
+		title: String,
+	},
+	{ timestamps: true },
+);
 
 export const ConversationModel =
-	models.Conversation ||
-	model<Conversation>("Conversation", conversationSchema);
+	models.Conversation || model("Conversation", conversationSchema);
