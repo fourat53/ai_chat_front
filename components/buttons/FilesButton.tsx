@@ -20,7 +20,7 @@ import {
 } from "@/client/file.client";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth/auth-client";
-import { useUploadThing } from "@/lib/uploadthing";
+import { useUploadThing } from "@/lib/config/uploadthing";
 import { useChatStore } from "@/store/useChatStore";
 import {
 	type Attachment,
@@ -45,11 +45,8 @@ export default function FilesButton() {
 			setUploadPhase: state.setUploadPhase,
 		})),
 	);
-	const { startUpload, isUploading: isUploadingToUploadThing } =
-		useUploadThing("ragDocument");
+	const { startUpload, isUploading } = useUploadThing("ragDocument");
 	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const isUploading = uploadingFile !== null;
 
 	const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -194,11 +191,11 @@ export default function FilesButton() {
 				variant="ghost"
 				size="icon"
 				type="button"
-				disabled={isUploading || isUploadingToUploadThing}
+				disabled={uploadingFile !== null || isUploading}
 				className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
 				onClick={() => fileInputRef.current?.click()}
 			>
-				{isUploading || isUploadingToUploadThing ? (
+				{uploadingFile !== null || isUploading ? (
 					<IconLoader2 className="animate-spin" size={20} />
 				) : (
 					<IconPaperclip size={20} />

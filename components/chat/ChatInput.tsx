@@ -2,7 +2,9 @@
 
 import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
 import { useRef } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
+import { createMessage } from "@/actions/message.action";
 import { createNewConversation } from "@/client/conversation.client";
 import FilesButton from "@/components/buttons/FilesButton";
 import FilesSelect from "@/components/selects/FilesSelect";
@@ -37,8 +39,6 @@ export default function ChatInput() {
 
 	const sendingRef = useRef(false);
 
-	const isUploading = uploadingFile !== null;
-
 	const submitMessage = async () => {
 		if (sendingRef.current) return;
 		const text = input.trim();
@@ -54,6 +54,20 @@ export default function ChatInput() {
 			const convFiles =
 				useChatStore.getState().convFiles[conversation.id] ?? [];
 			const selectedRagFiles = convFiles.filter((file) => file.selected);
+
+			if (session?.user) {
+				try {
+					await createMessage({
+						conversationId: conversation.id,
+						role: "user",
+						content: text,
+					});
+				} catch (error) {
+					console.error("Failed to save user message:", error);
+					toast.error("Failed to save the message. Try again.");
+					return;
+				}
+			}
 
 			setInput("");
 			setPendingMeta(
@@ -133,7 +147,8 @@ export default function ChatInput() {
 							type="submit"
 							className="rounded-full size-8 sm:size-9"
 							disabled={
-								isUploading || (!isLoading && (!input || input.trim() === ""))
+								uploadingFile !== null ||
+								(!isLoading && (!input || input.trim() === ""))
 							}
 							icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
 							onClick={(event) => {

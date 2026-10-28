@@ -13,23 +13,23 @@ importers:
   .:
     dependencies:
       "@ai-sdk/react":
-        specifier: ^4.0.157
-        version: 4.0.157(react@19.3.1)(zod@4.6.7)
+        specifier: ^4.0.158
+        version: 4.0.158(react@19.3.1)(zod@4.6.7)
       "@base-ui/react":
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       "@better-auth/mongo-adapter":
-        specifier: ^1.7.13
-        version: 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)
+        specifier: ^1.7.14
+        version: 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)
       "@tabler/icons-react":
         specifier: ^3.49.0
         version: 3.49.0(react@19.3.1)
       "@tanstack/react-query":
-        specifier: ^5.104.5
-        version: 5.104.5(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.105.0
+        version: 5.105.0(@types/react@19.3.0)(react@19.3.1)
       "@tanstack/react-query-devtools":
-        specifier: ^5.104.5
-        version: 5.104.5(@tanstack/react-query@5.104.5(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)
+        specifier: ^5.105.0
+        version: 5.105.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)
       "@types/react-syntax-highlighter":
         specifier: ^15.5.13
         version: 15.5.13
@@ -40,11 +40,11 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1(next@16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@7.0.2)
       ai:
-        specifier: ^7.0.153
-        version: 7.0.153(zod@4.6.7)
+        specifier: ^7.0.154
+        version: 7.0.154(zod@4.6.7)
       better-auth:
-        specifier: ^1.7.13
-        version: 1.7.13(mongodb@7.7.0)(next@16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.17)
+        specifier: ^1.7.14
+        version: 1.7.14(mongodb@7.7.0)(next@16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.17)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -123,28 +123,28 @@ importers:
         version: 7.0.2
 
 packages:
-  "@ai-sdk/gateway@4.0.126":
+  "@ai-sdk/gateway@4.0.127":
     resolution:
       {
-        integrity: sha512-gOrvnfrWxslTws5puMe+CvEDjZ0rxbpQYLZgdngQl1g/z3mRc5sllcflVAhy2xJSZacrWtsXwua+NJoc/IKZDw==,
+        integrity: sha512-ENcIQNrZxgFnNSx29X2o/mLKZRzMN91c53Qlp/UrF4RQGVSfaROjFQAq4eeJliRPWwjHvEhJYG42IrOwtWUGOQ==,
       }
     engines: { node: ">=22" }
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  "@ai-sdk/mcp@2.0.84":
+  "@ai-sdk/mcp@2.0.85":
     resolution:
       {
-        integrity: sha512-yVhkdm1cpN1L65Vfg8TjyNMFI+P20NsZ/WcYSI6kyv1MbbHWtOn7lBUSuXJ6H/+wGQaH410q1Um1h4PqoWxocA==,
+        integrity: sha512-I3l10JGrsjYvAnliCENjZ40UYes/UfQfkJNUzKnusHCihu051aK56WfYGnUddKaz6GEKMD68dgPJzSJV9zoSiQ==,
       }
     engines: { node: ">=22" }
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  "@ai-sdk/provider-utils@5.0.68":
+  "@ai-sdk/provider-utils@5.0.69":
     resolution:
       {
-        integrity: sha512-SASuC1DqSdWoYyYfpxbgPKm9VCnMP1VTahWY7WEYzi2QDmFdbw4runqmH7NKC33iB/INo+XbaN2hH3dXHSNQZw==,
+        integrity: sha512-oGCXIoBKLpNrrAzJvltFHdBl20FJMyT+7edD9D4nwxoI8Scbj3y1EgKzjoF2XFhNYkMTcv1oTFDgUzLxdjqSKg==,
       }
     engines: { node: ">=22" }
     peerDependencies:
@@ -157,10 +157,10 @@ packages:
       }
     engines: { node: ">=22" }
 
-  "@ai-sdk/react@4.0.157":
+  "@ai-sdk/react@4.0.158":
     resolution:
       {
-        integrity: sha512-5ImK0xWjYSL0iOy6WexMJigvvjJZLCEX2wKdlQ8AmC/gveSeoEc5s1VZY1UAfR75BbAJggE4zNtaAA/IRDzT2w==,
+        integrity: sha512-IBlwYNVUPuvzaAY0GUg0yHjqlrtTChTDMhmgafoEAM/ImJNWR//MzD1rhk0tJgAlS0QcMyhs40s7eXPIWguwWw==,
       }
     engines: { node: ">=22" }
     peerDependencies:
@@ -219,10 +219,10 @@ packages:
       "@types/react":
         optional: true
 
-  "@better-auth/core@1.7.13":
+  "@better-auth/core@1.7.14":
     resolution:
       {
-        integrity: sha512-h7zk+hwNxNxva2I49ELg1b3yNVG5CneluIp860DYcikWWZlCd3Kh6zYiDcY0Bvt/meRl0XBoQhjp7WlNk4a9fQ==,
+        integrity: sha512-ByhdrGVwp/el+hoTYKSVOHIH23/lQj9TQ1txdGcWOg22tnfr3hJ6ukzySooeYj/R36XsQgBhkJqIp8mKsNeErA==,
       }
     peerDependencies:
       "@better-auth/utils": ^0.4.2 || ^0.5.0
@@ -236,61 +236,61 @@ packages:
       "@opentelemetry/api":
         optional: true
 
-  "@better-auth/drizzle-adapter@1.7.13":
+  "@better-auth/drizzle-adapter@1.7.14":
     resolution:
       {
-        integrity: sha512-BCA2uJQJ9/GrIt/RvnDIVBlo7r1ZgkAICLG20wxjxLIvSLVVlpuZhjNUFf8FtaHYmRXOCYL566hZ114MAvl4lg==,
+        integrity: sha512-5RC8Ec5Ur15FWsS4As9/VrlRbB3+9EfShxIpA5A1FcD6IgPxFvzQNkAm2+FYx9LUSqx47NPf9hBTG2GUCMP9Ig==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
       drizzle-orm: ^0.45.2 || >=1.0.0-rc.1 <2.0.0
     peerDependenciesMeta:
       drizzle-orm:
         optional: true
 
-  "@better-auth/kysely-adapter@1.7.13":
+  "@better-auth/kysely-adapter@1.7.14":
     resolution:
       {
-        integrity: sha512-Pw6roVatSW+B3McdTJv+sS0V5EnwSPS3v/IcYCLcoWTy9LaMSUa/jmGZQarQJ0jAawtv+PFTcYQKXS1Glvjpbg==,
+        integrity: sha512-4wkqj8a8JVpWDYLlgzfbk7eOaWCFkL6HHQd6CLamFKaC8vNsXew1x4v5dE5O6dGr8j4g5qMISS+BAvOuIvBevg==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
       kysely: ^0.28.17 || ^0.29.0
     peerDependenciesMeta:
       kysely:
         optional: true
 
-  "@better-auth/memory-adapter@1.7.13":
+  "@better-auth/memory-adapter@1.7.14":
     resolution:
       {
-        integrity: sha512-9rnOCaXgeiXNTr4EZOAI75xyt+pg7+ILhuY/AP4fpBVnrA9B5RZNg6wrPVUwo9YU5HsK/Ho1Ov4ikAOUicJixQ==,
+        integrity: sha512-Ojv9BcmFyHuTHha9ZM/NUW1ut9J84wLngta+07Es0Ejn8kekqP5aHBpZd5Z8AvADs5iJUOWvQGFmGlPWAKJgBg==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
 
-  "@better-auth/mongo-adapter@1.7.13":
+  "@better-auth/mongo-adapter@1.7.14":
     resolution:
       {
-        integrity: sha512-U/wnes25UBiKA7Kfz8tiimSs8BF1+h05ro99arzFis186XwRpFdD/YvtErmcXH5jMVAvIoCUZNmso+SNQQtsgA==,
+        integrity: sha512-6IA0RSPZFMdRwwnLZ9oWnDIiD0y0o0azTHUfa01BNU2AFJgMDkeiASUV3bKcJBskzQoyQrff74eFYTsTSeeVUQ==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
       mongodb: ^6.0.0 || ^7.0.0
     peerDependenciesMeta:
       mongodb:
         optional: true
 
-  "@better-auth/prisma-adapter@1.7.13":
+  "@better-auth/prisma-adapter@1.7.14":
     resolution:
       {
-        integrity: sha512-401uXNuw8TR/u/dRasmLPRhDW+eqr6NUX6o0D7bq9gCTf4vP4DK1vYSOmG0SJJt5KC1mM1g4n4HtQI2Tq2eLZw==,
+        integrity: sha512-mF6t5xqeZNWzUe0ErmrSdzQmtslJscmu9X8Mp5QmROlpnnAzvSc70RILu8lHms8CePt7N34+KRH1QvYjGFrVGQ==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
       "@prisma/client": ^5.0.0 || ^6.0.0 || ^7.0.0
       prisma: ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -300,13 +300,13 @@ packages:
       prisma:
         optional: true
 
-  "@better-auth/telemetry@1.7.13":
+  "@better-auth/telemetry@1.7.14":
     resolution:
       {
-        integrity: sha512-+v9bIV837pBPLWAB1MLpqY+4MDgetiqv1A2tw3gFYseiz/+2FxfAt0FXbpYHGf9fEaGtPaPWMvBE9dNyIE74MQ==,
+        integrity: sha512-PtKFzsH7gje/WJuUPDjckOoNFazsq8NMt3AdiXIPzHl7tZULcNGTKAX8K7+yn0rG6cO/4mtMgpOjhtilElOnmg==,
       }
     peerDependencies:
-      "@better-auth/core": ^1.7.13
+      "@better-auth/core": ^1.7.14
       "@better-auth/utils": ^0.4.2 || ^0.5.0
       "@better-fetch/fetch": 1.3.3
 
@@ -1325,35 +1325,35 @@ packages:
       }
     engines: { node: ">=20" }
 
-  "@tanstack/query-core@5.104.5":
+  "@tanstack/query-core@5.105.0":
     resolution:
       {
-        integrity: sha512-Q94gI8Opd+CbdVNOdj8ZCyV8WqLYitrDq1t96Xc8WZT6lY0r5iRnJLXYDxMex7EEf2v+mXvn4FcjaBKSxXZQ9A==,
+        integrity: sha512-7p56vRmT/z4UJ6sctGIdl5WRUQyUv53IUpUwEKi2g97zMbO7zh8ZsCLffGAvCPBR4xD72e3VXsDyLwXHhoNTMQ==,
       }
 
-  "@tanstack/query-devtools@5.104.5":
+  "@tanstack/query-devtools@5.105.0":
     resolution:
       {
-        integrity: sha512-BLVEw4lFF7aIRsfqGvI50SSR9oN46/EmlygC+3h5TUdI+fL8GnMQialL3H92TbYi7J1b/hYlUGnckBT2uG5h8w==,
+        integrity: sha512-vRJf9XRHB+P2aMSAEHWtMLsAf1nC9NSsHVqSHiT/FZYU/+5LEo2BOrXKskURQnJEzg6whaBeP6iMn0PS30KJrQ==,
       }
 
-  "@tanstack/react-query-devtools@5.104.5":
+  "@tanstack/react-query-devtools@5.105.0":
     resolution:
       {
-        integrity: sha512-2SMhSSYnOGSaPLuSTKLOj5nPoP4sqasOfkpTn5BLe6LIZuHzrpcqrJx0Rm8uUSN5Ob4lPAbh/1oWClnnGaR7Bg==,
+        integrity: sha512-FfRQxvqngBYqTLsuAB+qaj0Ef3KkUpknuRoyUjcl8OCZhwPocTHEvhMPAoBmk1FtO6nXUIVCC7F9A2AHH01SLQ==,
       }
     peerDependencies:
-      "@tanstack/react-query": ^5.104.5
+      "@tanstack/react-query": ^5.105.0
       "@types/react": ^18 || ^19
       react: ^18 || ^19
     peerDependenciesMeta:
       "@types/react":
         optional: true
 
-  "@tanstack/react-query@5.104.5":
+  "@tanstack/react-query@5.105.0":
     resolution:
       {
-        integrity: sha512-RORgFe052U+93weaNuqg7qHq7vNVNzXN/VrXqD4bbAuQCWUqOl2lV5Ui9flWk5CVvMyL/Bh27QWhzwH0aaOx9g==,
+        integrity: sha512-y+hMuDERvgg6ay1da0V1a6ZC0ZONt7dELxSFkqRZuwm7p1TTZs0MoXrPlBRflIpRoYjvzQVYxycnLImpFLhWrw==,
       }
     peerDependencies:
       "@types/react": ^18 || ^19
@@ -1698,10 +1698,10 @@ packages:
       next:
         optional: true
 
-  ai@7.0.153:
+  ai@7.0.154:
     resolution:
       {
-        integrity: sha512-Ib8v374jWn9FXsjADXodRaP7fsMutlmPsbTLT5gYBDyadFcF9XxfYX1CSSxgSvE1r06MmOeYVwvQjFb3CcBi1Q==,
+        integrity: sha512-vpvOZoV2Xcu6vWYM/X2XAFJG93T/ELF+qbslXxRnpqqhKZ6dtxfZf1KHFqYBz784uV/XVjXkNjgs9Zc239NY3Q==,
       }
     engines: { node: ">=22" }
     peerDependencies:
@@ -1721,10 +1721,10 @@ packages:
     engines: { node: ">=6.0.0" }
     hasBin: true
 
-  better-auth@1.7.13:
+  better-auth@1.7.14:
     resolution:
       {
-        integrity: sha512-ncevUrVAWmYbC6Jjxadeh2QLBGMbsfenu8pwgAHJRexXJ4ifPCMbT4e4u79QKPuGpR5Wjw9yPReedVoh6m/qBg==,
+        integrity: sha512-QxDCI0pOCCHDYmruisKhKyrvOJ6Icv9xg0RA6ZUysfKFXENYwhNNpwUlkE/NmViH2nDMgkKcymmLr55pnpR9vw==,
       }
     peerDependencies:
       "@lynx-js/react": "*"
@@ -2343,10 +2343,10 @@ packages:
         integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==,
       }
 
-  marked@18.1.1:
+  marked@18.1.2:
     resolution:
       {
-        integrity: sha512-zEGgrtUG8crk+TrMacJSVABU4DYDDkS8uqgU3ohrn/2fW9C2AEfUrO3m6IhpIpQpl7YcVpiXXC9cSMWDANT3dg==,
+        integrity: sha512-DfOnvLAQ6WYeWxWO1u4RyFOeqyHup6dks5PPqnoFiooU7ipRvidO/2j8plhAHIiZg574E9ZlzSjUiPMLAzFkgg==,
       }
     engines: { node: ">= 20" }
     hasBin: true
@@ -2429,10 +2429,10 @@ packages:
         integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==,
       }
 
-  mdast-util-to-markdown@2.2.0:
+  mdast-util-to-markdown@2.2.1:
     resolution:
       {
-        integrity: sha512-2Jn/ADrHFFyyniBMi0bncTbJqU78K3/TEYvzvwrWWzD9MYPUa/Gm4r3nOeKFQg/PDM5BsbDYdc8ackW4NTY6NA==,
+        integrity: sha512-ThatlCBxG2GE+mljhNSfZPv56d3QrGiRh97jjYgIk80IzS4uU6d7cHAaexCYSAmUCCcOs3grJ07kX3oTGsFUOw==,
       }
 
   mdast-util-to-string@4.0.0:
@@ -2811,10 +2811,10 @@ packages:
       }
     engines: { node: ^10 || ^12 || >=14 }
 
-  postcss@8.5.31:
+  postcss@8.5.32:
     resolution:
       {
-        integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==,
+        integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==,
       }
     engines: { node: ^10 || ^12 || >=14 }
 
@@ -3386,22 +3386,22 @@ packages:
       }
 
 snapshots:
-  "@ai-sdk/gateway@4.0.126(zod@4.6.7)":
+  "@ai-sdk/gateway@4.0.127(zod@4.6.7)":
     dependencies:
       "@ai-sdk/provider": 4.0.34
-      "@ai-sdk/provider-utils": 5.0.68(zod@4.6.7)
+      "@ai-sdk/provider-utils": 5.0.69(zod@4.6.7)
       "@vercel/oidc": 3.2.0
       zod: 4.6.7
 
-  "@ai-sdk/mcp@2.0.84(zod@4.6.7)":
+  "@ai-sdk/mcp@2.0.85(zod@4.6.7)":
     dependencies:
       "@ai-sdk/provider": 4.0.34
-      "@ai-sdk/provider-utils": 5.0.68(zod@4.6.7)
+      "@ai-sdk/provider-utils": 5.0.69(zod@4.6.7)
       cross-spawn: 7.0.6
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
-  "@ai-sdk/provider-utils@5.0.68(zod@4.6.7)":
+  "@ai-sdk/provider-utils@5.0.69(zod@4.6.7)":
     dependencies:
       "@ai-sdk/provider": 4.0.34
       "@standard-schema/spec": 1.1.0
@@ -3414,12 +3414,12 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  "@ai-sdk/react@4.0.157(react@19.3.1)(zod@4.6.7)":
+  "@ai-sdk/react@4.0.158(react@19.3.1)(zod@4.6.7)":
     dependencies:
-      "@ai-sdk/mcp": 2.0.84(zod@4.6.7)
+      "@ai-sdk/mcp": 2.0.85(zod@4.6.7)
       "@ai-sdk/provider": 4.0.34
-      "@ai-sdk/provider-utils": 5.0.68(zod@4.6.7)
-      ai: 7.0.153(zod@4.6.7)
+      "@ai-sdk/provider-utils": 5.0.69(zod@4.6.7)
+      ai: 7.0.154(zod@4.6.7)
       react: 19.3.1
       swr: 2.5.1(react@19.3.1)
       throttleit: 2.1.0
@@ -3455,7 +3455,7 @@ snapshots:
     optionalDependencies:
       "@types/react": 19.3.0
 
-  "@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)":
+  "@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)":
     dependencies:
       "@better-auth/utils": 0.5.1
       "@better-fetch/fetch": 1.3.3
@@ -3466,38 +3466,38 @@ snapshots:
       nanostores: 1.5.5
       zod: 4.6.7
 
-  "@better-auth/drizzle-adapter@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
+  "@better-auth/drizzle-adapter@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
 
-  "@better-auth/kysely-adapter@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(kysely@0.29.7)":
+  "@better-auth/kysely-adapter@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(kysely@0.29.7)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
     optionalDependencies:
       kysely: 0.29.7
 
-  "@better-auth/memory-adapter@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
+  "@better-auth/memory-adapter@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
 
-  "@better-auth/mongo-adapter@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)":
+  "@better-auth/mongo-adapter@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
     optionalDependencies:
       mongodb: 7.7.0
 
-  "@better-auth/prisma-adapter@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
+  "@better-auth/prisma-adapter@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
 
-  "@better-auth/telemetry@1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)":
+  "@better-auth/telemetry@1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)":
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
       "@better-auth/utils": 0.5.1
       "@better-fetch/fetch": 1.3.3
 
@@ -3990,23 +3990,23 @@ snapshots:
       "@alloc/quick-lru": 5.3.0
       "@tailwindcss/node": 4.3.3
       "@tailwindcss/oxide": 4.3.3
-      postcss: 8.5.31
+      postcss: 8.5.32
       tailwindcss: 4.3.3
 
   "@tanstack/match-sorter-utils@9.2.6":
     dependencies:
       remove-accents: 0.5.0
 
-  "@tanstack/query-core@5.104.5": {}
+  "@tanstack/query-core@5.105.0": {}
 
-  "@tanstack/query-devtools@5.104.5(csstype@3.2.3)":
+  "@tanstack/query-devtools@5.105.0(csstype@3.2.3)":
     dependencies:
       "@kobalte/core": 0.13.14(solid-js@1.9.17)
       "@solid-primitives/keyed": 1.5.3(solid-js@1.9.17)
       "@solid-primitives/resize-observer": 2.2.0(solid-js@1.9.17)
       "@solid-primitives/storage": 1.3.11(solid-js@1.9.17)
       "@tanstack/match-sorter-utils": 9.2.6
-      "@tanstack/query-core": 5.104.5
+      "@tanstack/query-core": 5.105.0
       clsx: 2.1.1
       goober: 2.1.19(csstype@3.2.3)
       solid-js: 1.9.17
@@ -4015,19 +4015,19 @@ snapshots:
     transitivePeerDependencies:
       - csstype
 
-  "@tanstack/react-query-devtools@5.104.5(@tanstack/react-query@5.104.5(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)":
+  "@tanstack/react-query-devtools@5.105.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)":
     dependencies:
-      "@tanstack/query-devtools": 5.104.5(csstype@3.2.3)
-      "@tanstack/react-query": 5.104.5(@types/react@19.3.0)(react@19.3.1)
+      "@tanstack/query-devtools": 5.105.0(csstype@3.2.3)
+      "@tanstack/react-query": 5.105.0(@types/react@19.3.0)(react@19.3.1)
       react: 19.3.1
     optionalDependencies:
       "@types/react": 19.3.0
     transitivePeerDependencies:
       - csstype
 
-  "@tanstack/react-query@5.104.5(@types/react@19.3.0)(react@19.3.1)":
+  "@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1)":
     dependencies:
-      "@tanstack/query-core": 5.104.5
+      "@tanstack/query-core": 5.105.0
       react: 19.3.1
     optionalDependencies:
       "@types/react": 19.3.0
@@ -4174,26 +4174,26 @@ snapshots:
     optionalDependencies:
       next: 16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
-  ai@7.0.153(zod@4.6.7):
+  ai@7.0.154(zod@4.6.7):
     dependencies:
-      "@ai-sdk/gateway": 4.0.126(zod@4.6.7)
+      "@ai-sdk/gateway": 4.0.127(zod@4.6.7)
       "@ai-sdk/provider": 4.0.34
-      "@ai-sdk/provider-utils": 5.0.68(zod@4.6.7)
+      "@ai-sdk/provider-utils": 5.0.69(zod@4.6.7)
       zod: 4.6.7
 
   bail@2.0.2: {}
 
   baseline-browser-mapping@2.11.33: {}
 
-  better-auth@1.7.13(mongodb@7.7.0)(next@16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.17):
+  better-auth@1.7.14(mongodb@7.7.0)(next@16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.17):
     dependencies:
-      "@better-auth/core": 1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
-      "@better-auth/drizzle-adapter": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
-      "@better-auth/kysely-adapter": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(kysely@0.29.7)
-      "@better-auth/memory-adapter": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
-      "@better-auth/mongo-adapter": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)
-      "@better-auth/prisma-adapter": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
-      "@better-auth/telemetry": 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)
+      "@better-auth/core": 1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5)
+      "@better-auth/drizzle-adapter": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
+      "@better-auth/kysely-adapter": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(kysely@0.29.7)
+      "@better-auth/memory-adapter": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
+      "@better-auth/mongo-adapter": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(mongodb@7.7.0)
+      "@better-auth/prisma-adapter": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)
+      "@better-auth/telemetry": 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)
       "@better-auth/utils": 0.5.1
       "@better-fetch/fetch": 1.3.3
       "@noble/ciphers": 2.4.0
@@ -4485,7 +4485,7 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
-  marked@18.1.1: {}
+  marked@18.1.2: {}
 
   mdast-util-find-and-replace@3.0.4:
     dependencies:
@@ -4524,7 +4524,7 @@ snapshots:
       "@types/mdast": 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
       micromark-util-normalize-identifier: 2.0.1
     transitivePeerDependencies:
       - supports-color
@@ -4533,7 +4533,7 @@ snapshots:
     dependencies:
       "@types/mdast": 4.0.4
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4543,7 +4543,7 @@ snapshots:
       devlop: 1.1.0
       markdown-table: 3.0.4
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4552,7 +4552,7 @@ snapshots:
       "@types/mdast": 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4564,7 +4564,7 @@ snapshots:
       mdast-util-gfm-strikethrough: 2.0.1
       mdast-util-gfm-table: 2.0.0
       mdast-util-gfm-task-list-item: 2.0.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4575,7 +4575,7 @@ snapshots:
       "@types/mdast": 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4588,7 +4588,7 @@ snapshots:
       ccount: 2.0.1
       devlop: 1.1.0
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
       unist-util-stringify-position: 4.0.0
@@ -4603,7 +4603,7 @@ snapshots:
       "@types/mdast": 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.1.0
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4624,7 +4624,7 @@ snapshots:
       unist-util-visit: 5.2.0
       vfile: 6.0.3
 
-  mdast-util-to-markdown@2.2.0:
+  mdast-util-to-markdown@2.2.1:
     dependencies:
       "@types/mdast": 4.0.4
       "@types/unist": 3.0.3
@@ -4935,7 +4935,7 @@ snapshots:
       dompurify: 3.4.17
       emf-converter: 2.0.4(@napi-rs/canvas@1.0.13)
       jszip: 3.10.2
-      marked: 18.1.1
+      marked: 18.1.2
       pdfjs-dist: 6.4.299
       pptx-preview: 1.0.7
     optionalDependencies:
@@ -4972,7 +4972,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  postcss@8.5.31:
+  postcss@8.5.32:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -5079,7 +5079,7 @@ snapshots:
   remark-stringify@11.0.0:
     dependencies:
       "@types/mdast": 4.0.4
-      mdast-util-to-markdown: 2.2.0
+      mdast-util-to-markdown: 2.2.1
       unified: 11.0.5
 
   remove-accents@0.5.0: {}

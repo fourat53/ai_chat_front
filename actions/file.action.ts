@@ -1,7 +1,7 @@
 "use server";
 
-import { getUserId } from "@/actions/user.action";
 import { deleteFileData } from "@/client/file.client";
+import { getUserId } from "@/lib/auth/session";
 import { FileModel } from "@/models/file.model";
 import type {
 	Attachment,

@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
+import { createMessage } from "@/actions/message.action";
 import { selectConversation } from "@/client/conversation.client";
 import { mapToMessage } from "@/client/message.client";
 import { useTitle } from "@/hooks/use-title";
@@ -56,6 +57,26 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 	const { messages, setMessages, stop, sendMessage, status } = useChat<Message>(
 		{
 			transport,
+			onFinish: async ({ message, isAbort, isDisconnect, isError }) => {
+				if (isAbort || isDisconnect || isError || !session?.user) return;
+
+				const { selectedConv, pendingMeta } = useChatStore.getState();
+				if (!selectedConv?.id) return;
+
+				const content = mapToMessage(message).content;
+				if (!content.trim()) return;
+
+				try {
+					await createMessage({
+						conversationId: selectedConv.id,
+						role: "assistant",
+						content,
+						...(pendingMeta ?? {}),
+					});
+				} catch (err) {
+					console.error("Failed to save assistant message:", err);
+				}
+			},
 			onError: (err) => {
 				console.error("Chat error:", err);
 				toast.error(

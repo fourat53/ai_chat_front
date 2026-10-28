@@ -9,6 +9,7 @@ import {
 	deleteConversation,
 	getConversations,
 } from "@/actions/conversation.action";
+import { deleteMessagesByConversation } from "@/actions/message.action";
 import {
 	createNewConversation,
 	selectConversation,
@@ -76,6 +77,7 @@ export default function ChatSidebar() {
 	const handleDeleteConversation = async (id: string) => {
 		try {
 			if (session?.user) {
+				await deleteMessagesByConversation(id);
 				await deleteConversation(id);
 			}
 			setConversations(conversations.filter((c) => c.id !== id));

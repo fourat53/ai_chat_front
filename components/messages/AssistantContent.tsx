@@ -54,6 +54,8 @@ export default function AssistantContent({ content }: { content: string }) {
 										fontSize: "0.85rem",
 										background:
 											resolvedTheme === "dark" ? "#0c0f10" : "#eaf7f7",
+										whiteSpace: "pre-wrap",
+										overflowWrap: "anywhere",
 									}}
 								>
 									{codeContent}
