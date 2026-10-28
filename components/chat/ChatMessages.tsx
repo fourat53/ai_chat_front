@@ -48,7 +48,11 @@ export default function ChatMessages() {
 	}, [messages, status]);
 
 	useEffect(() => {
-		if (loadingConv || !selectedConvId || messages.length === 0) return;
+		if (!selectedConvId || messages.length === 0) {
+			setScrolledForConvId(null);
+			return;
+		}
+		if (loadingConv) return;
 		if (scrolledForConvId === selectedConvId) return;
 
 		const container = scrollRef.current;
