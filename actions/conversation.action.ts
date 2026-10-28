@@ -25,8 +25,8 @@ async function getConversations(): Promise<Conversation[]> {
 	const userId = await getUserId();
 
 	const convs = await ConversationModel.find({ userId })
-		.sort({ updatedAt: -1 })
-		.select("userId title providerId modelId updatedAt")
+		.sort({ createdAt: -1 })
+		.select("userId title providerId modelId")
 		.lean();
 
 	const serializedConv = JSON.parse(JSON.stringify(convs));
@@ -66,7 +66,7 @@ async function updateConversation(
 
 	await ConversationModel.updateOne(
 		{ _id, userId },
-		{ $set: { ...data, updatedAt: new Date() } },
+		{ $set: { ...data } },
 	);
 
 	return { success: true };

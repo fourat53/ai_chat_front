@@ -3,11 +3,20 @@
 import { deleteFileData } from "@/client/file.client";
 import { getUserId } from "@/lib/auth/session";
 import { FileModel } from "@/models/file.model";
-import type {
-	Attachment,
-	ReserveFileInput,
-	ReserveFileResult,
-} from "@/types/file.type";
+import type { Attachment } from "@/types/file.type";
+
+type ReserveFileInput = {
+	conversationId: string;
+	hash: string;
+	fileName: string;
+	fileType: string;
+	fileSize: number;
+};
+
+type ReserveFileResult = {
+	reused: boolean;
+	attachment: Attachment;
+};
 
 const STALE_UPLOAD_TTL_MS = 10 * 60 * 1000;
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
