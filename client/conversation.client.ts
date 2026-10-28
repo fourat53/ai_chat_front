@@ -12,6 +12,7 @@ import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
 
 let selectionToken = 0;
+let autoSelectionDone = false;
 
 function setUrlHash(conversationId: string | null) {
 	if (typeof window === "undefined") return;
@@ -22,6 +23,11 @@ function setUrlHash(conversationId: string | null) {
 		"",
 		hash || window.location.pathname + window.location.search,
 	);
+}
+
+function getHashConversationId(): string | null {
+	if (typeof window === "undefined") return null;
+	return window.location.hash.replace(/^#/, "").trim() || null;
 }
 
 function toUiMessages(messages: Message[]): Message[] {
@@ -43,6 +49,7 @@ async function selectConversation(
 	id: string | null,
 	{ setMessages, stop }: SelectConversationOptions,
 ): Promise<boolean> {
+	autoSelectionDone = true;
 	const {
 		conversations,
 		setSelectedConv,
@@ -107,6 +114,22 @@ async function selectConversation(
 			setLoadingConv(false);
 		}
 	}
+}
+
+async function ensureInitialSelection({
+	setMessages,
+	stop,
+}: SelectConversationOptions): Promise<void> {
+	const { conversations, selectedConv } = useChatStore.getState();
+	if (autoSelectionDone || selectedConv || conversations.length === 0) return;
+	const hashId = getHashConversationId();
+	const target = hashId
+		? conversations.find((c) => c.id === hashId)
+		: undefined;
+	await selectConversation(target?.id ?? conversations[0].id, {
+		setMessages,
+		stop,
+	});
 }
 
 async function createNewConversation(
@@ -175,4 +198,10 @@ async function saveConversationSelection(
 	}
 }
 
-export { createNewConversation, saveConversationSelection, selectConversation };
+export {
+	createNewConversation,
+	ensureInitialSelection,
+	getHashConversationId,
+	saveConversationSelection,
+	selectConversation,
+};

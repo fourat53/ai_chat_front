@@ -52,15 +52,15 @@ export default function FooterSidebar({
 					<Skeleton className="h-4 flex-1 group-data-[collapsible=icon]:hidden" />
 				</div>
 			) : (
-				<div className="h-12 text-center flex flex-col justify-center gap-1.5 group-data-[collapsible=icon]:hidden">
-					<p className="px-2 text-xs text-muted-foreground">
-						Sign in for access to chat history.
-					</p>
+				<div className="pt-1 px-2 h-12 text-center flex flex-col justify-center gap-0.5 group-data-[collapsible=icon]:hidden">
 					<Link href="/login" className="block">
-						<Button variant="secondary" className="w-full h-8">
+						<Button variant="secondary" className="w-full h-7.75">
 							Sign In
 						</Button>
 					</Link>
+					<p className="px-2 text-[11px] text-muted-foreground">
+						Sign in for access to chat history.
+					</p>
 				</div>
 			)}
 		</SidebarFooter>

@@ -14,7 +14,10 @@ import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateConversation } from "@/actions/conversation.action";
 import { createMessage } from "@/actions/message.action";
-import { selectConversation } from "@/client/conversation.client";
+import {
+	ensureInitialSelection,
+	getHashConversationId,
+} from "@/client/conversation.client";
 import { mapToMessage } from "@/client/message.client";
 import { useTitle } from "@/hooks/use-title";
 import { useSession } from "@/lib/auth/auth-client";
@@ -89,27 +92,15 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 	useTitle({ messages, status });
 
 	useEffect(() => {
-		if (
-			convRef.current.id === "" &&
-			!selectedConv &&
-			conversations.length > 0
-		) {
-			const hashId = window.location.hash.replace(/^#/, "").trim();
-			const target = hashId
-				? conversations.find((c) => c.id === hashId)
-				: undefined;
-			void selectConversation(target?.id ?? conversations[0].id, {
-				setMessages,
-				stop,
-			});
+		if (!selectedConv && conversations.length > 0) {
+			void ensureInitialSelection({ setMessages, stop });
 		} else if (
 			!sessionPending &&
 			!session?.user &&
 			!selectedConv &&
 			conversations.length === 0
 		) {
-			const hashId = window.location.hash.replace(/^#/, "").trim();
-			if (!hashId && useChatStore.getState().loadingConv) {
+			if (!getHashConversationId() && useChatStore.getState().loadingConv) {
 				useChatStore.getState().setLoadingConv(false);
 			}
 		}

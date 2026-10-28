@@ -15,10 +15,7 @@ import {
 	getConversations,
 } from "@/actions/conversation.action";
 import { deleteMessagesByConversation } from "@/actions/message.action";
-import {
-	createNewConversation,
-	selectConversation,
-} from "@/client/conversation.client";
+import { selectConversation } from "@/client/conversation.client";
 import ThemeSwitch from "@/components/buttons/ThemeSwitch";
 import {
 	Sidebar,
@@ -31,9 +28,9 @@ import { useSession } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
+import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
 import FooterSidebar from "./FooterSidebar";
-import { Button } from "../ui/button";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
@@ -67,13 +64,8 @@ export default function ChatSidebar() {
 		void selectConversation(id, { setMessages, stop });
 	};
 
-	const handleNewChat = async () => {
-		if (selectedConv) {
-			void selectConversation(null, { setMessages, stop });
-		}
-		const conversation = await createNewConversation(!!session?.user);
-		if (!conversation) return;
-		setMessages([]);
+	const handleNewChat = () => {
+		void selectConversation(null, { setMessages, stop });
 	};
 
 	const handleDeleteConversation = async (id: string) => {
@@ -94,9 +86,9 @@ export default function ChatSidebar() {
 	};
 
 	return (
-		<Sidebar variant="inset" collapsible="offcanvas" className="p-0 pb-2.5 m-0">
-			<SidebarHeader className="px-4 flex-row justify-between items-center">
-				<h2 className="font-bold text-xl tracking-tight truncate group-data-[collapsible=icon]:hidden">
+		<Sidebar variant="inset" collapsible="offcanvas" className="p-0 pb-1.5 m-0">
+			<SidebarHeader className="gap-0 flex-row justify-between items-center">
+				<h2 className="w-full text-center font-bold text-xl tracking-tight truncate group-data-[collapsible=icon]:hidden">
 					Chat AI
 				</h2>
 				<ThemeSwitch className="group-data-[collapsible=icon]:hidden" />
@@ -159,7 +151,7 @@ export default function ChatSidebar() {
 							<Button
 								onClick={() => handleDeleteConversation(conv.id)}
 								className={cn(
-									"hidden group-hover/item:block absolute right-0 top-0 size-9 p-2.5 rounded-none rounded-r-md hover:bg-[#652323] group-hover/item:bg-[#4d1b1b] border-none",
+									"hidden group-hover/item:block absolute right-0 top-0 size-9 p-2.5 rounded-none rounded-r-md hover:bg-[#4d1b1b] group-hover/item:bg-transparent border-none",
 								)}
 							>
 								<IconTrash />

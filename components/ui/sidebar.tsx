@@ -474,7 +474,8 @@ const sidebarMenuButtonVariants = cva(
 			variant: {
 				default:
 					"hover:bg-background dark:hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-				outline: "bg-primary/80 hover:bg-primary text-white hover:text-white",
+				outline:
+					"bg-primary/60 hover:bg-primary/80 text-white hover:text-white",
 			},
 			size: {
 				default: "h-9 text-sm",
