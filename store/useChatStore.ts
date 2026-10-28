@@ -12,6 +12,9 @@ interface ChatState {
 		conversations: Conversation[] | ((prev: Conversation[]) => Conversation[]),
 	) => void;
 	renameConv: (id: string, title: string) => void;
+	updateSelectedConv: (
+		fields: Partial<Omit<Conversation, "id" | "userId">>,
+	) => void;
 	selectedConv: Conversation | null;
 	setSelectedConv: (conversation: Conversation | null) => void;
 	loadingConv: boolean;
@@ -73,6 +76,18 @@ const useChatStore = create<ChatState>((set) => ({
 								: state.selectedConv,
 					},
 		),
+	updateSelectedConv: (fields) =>
+		set((state) => {
+			const selectedConv = state.selectedConv;
+			if (!selectedConv) return state;
+			const updated = { ...selectedConv, ...fields };
+			return {
+				conversations: state.conversations.map((c) =>
+					c.id === updated.id ? updated : c,
+				),
+				selectedConv: updated,
+			};
+		}),
 	selectedConv: null,
 	setSelectedConv: (conversation: Conversation | null) =>
 		set((state) =>

@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import {
 	createConversation,
 	getConversation,
+	updateConversation,
 } from "@/actions/conversation.action";
 import { getConversationFiles } from "@/actions/file.action";
 import { getMessages } from "@/actions/message.action";
@@ -44,11 +45,7 @@ async function selectConversation(
 ): Promise<boolean> {
 	const {
 		conversations,
-		providers,
-		models,
 		setSelectedConv,
-		setSelectedProvider,
-		setSelectedModel,
 		setLoadingConv,
 		setPendingMeta,
 		setConvFiles,
@@ -86,10 +83,6 @@ async function selectConversation(
 		if (token !== selectionToken) return false;
 		const resolved = full ?? conversation;
 		setSelectedConv(resolved);
-		setSelectedProvider(
-			providers.find((p) => p.id === resolved.providerId) ?? null,
-		);
-		setSelectedModel(models.find((m) => m.id === resolved.modelId) ?? null);
 
 		const messages = await getMessages(id);
 		if (token !== selectionToken) return false;
@@ -164,4 +157,22 @@ async function createNewConversation(
 	return conversation;
 }
 
-export { createNewConversation, selectConversation };
+async function saveConversationSelection(
+	isSignedIn: boolean,
+	selection: { providerId?: string; modelId?: string },
+): Promise<void> {
+	const state = useChatStore.getState();
+	const convId = state.selectedConv?.id;
+	if (!convId) return;
+
+	state.updateSelectedConv(selection);
+
+	if (!isSignedIn) return;
+	try {
+		await updateConversation(convId, selection);
+	} catch (error) {
+		console.error("Failed to save conversation selection:", error);
+	}
+}
+
+export { createNewConversation, saveConversationSelection, selectConversation };

@@ -64,10 +64,7 @@ async function updateConversation(
 ) {
 	const userId = await getUserId();
 
-	await ConversationModel.updateOne(
-		{ _id, userId },
-		{ $set: { ...data } },
-	);
+	await ConversationModel.updateOne({ _id, userId }, { $set: { ...data } });
 
 	return { success: true };
 }

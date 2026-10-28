@@ -1,6 +1,11 @@
 "use client";
 
-import { IconMessage, IconPlus, IconTrash } from "@tabler/icons-react";
+import {
+	IconKeyFilled,
+	IconMessageFilled,
+	IconPlus,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -15,12 +20,8 @@ import {
 	selectConversation,
 } from "@/client/conversation.client";
 import ThemeSwitch from "@/components/buttons/ThemeSwitch";
-import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
-	SidebarContent,
-	SidebarGroup,
-	SidebarGroupContent,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -32,6 +33,7 @@ import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import { Skeleton } from "../ui/skeleton";
 import FooterSidebar from "./FooterSidebar";
+import { Button } from "../ui/button";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
@@ -93,71 +95,79 @@ export default function ChatSidebar() {
 
 	return (
 		<Sidebar variant="inset" collapsible="offcanvas" className="p-0 pb-2.5 m-0">
-			<SidebarHeader className="flex flex-row justify-between items-center px-4 h-16">
-				<h2 className="font-bold text-xl tracking-tight truncate flex-1 group-data-[collapsible=icon]:hidden">
+			<SidebarHeader className="px-4 flex-row justify-between items-center">
+				<h2 className="font-bold text-xl tracking-tight truncate group-data-[collapsible=icon]:hidden">
 					Chat AI
 				</h2>
 				<ThemeSwitch className="group-data-[collapsible=icon]:hidden" />
 			</SidebarHeader>
-			<div className="mx-2 border-b " />
-			<SidebarContent className="px-1">
-				<SidebarGroup className="h-full">
-					<SidebarGroupContent className="h-full">
-						<SidebarMenu className="relative h-full">
-							<Button
-								variant="default"
-								icon={<IconPlus strokeWidth={2.5} />}
-								className="my-1 w-full flex gap-2 justify-start items-center"
-								onClick={() => void handleNewChat()}
+
+			<div className="mx-2 border-b" />
+
+			<div className="p-2 space-y-1.5">
+				<SidebarMenuButton
+					variant="outline"
+					className={cn(
+						"font-medium",
+						!selectedConv && "bg-primary hover:bg-primary",
+					)}
+					onClick={() => void handleNewChat()}
+				>
+					<IconPlus strokeWidth={2.5} />
+					New Chat
+				</SidebarMenuButton>
+				<SidebarMenuButton>
+					<IconKeyFilled />
+					API Keys
+				</SidebarMenuButton>
+			</div>
+
+			<div className="mx-2 border-b" />
+
+			<SidebarMenu className="p-2 relative h-full overflow-y-auto">
+				{sessionPending || isLoading ? (
+					<div className="flex flex-col gap-2.25 ">
+						{Array.from({ length: 3 }).map((_, index) => (
+							<Skeleton
+								key={index}
+								className="h-7.75 rounded-[10px]"
+								style={{ animationDelay: `${index * 150}ms` }}
+							/>
+						))}
+					</div>
+				) : error ? (
+					<div className="p-4 pt-20 text-center text-sm text-foreground-muted">
+						Failed to load conversations
+					</div>
+				) : (
+					conversations.map((conv) => (
+						<SidebarMenuItem
+							key={conv.id}
+							title={conv.title}
+							className="relative rounded-md group/item"
+						>
+							<SidebarMenuButton
+								isActive={selectedConv?.id === conv.id}
+								onClick={() => handleSelectConversation(conv.id)}
+								className="group-hover/item:bg-background dark:group-hover/item:bg-sidebar-accent"
 							>
-								New Chat
+								<IconMessageFilled />
+								<span className="truncate group-hover/item:max-w-3/4">
+									{conv.title}
+								</span>
+							</SidebarMenuButton>
+							<Button
+								onClick={() => handleDeleteConversation(conv.id)}
+								className={cn(
+									"hidden group-hover/item:block absolute right-0 top-0 size-9 p-2.5 rounded-none rounded-r-md hover:bg-[#652323] group-hover/item:bg-[#4d1b1b] border-none",
+								)}
+							>
+								<IconTrash />
 							</Button>
-							{sessionPending || isLoading ? (
-								<div className="flex flex-col gap-2.25 ">
-									{Array.from({ length: 3 }).map((_, index) => (
-										<Skeleton
-											key={index}
-											className="h-7.75 rounded-[10px]"
-											style={{ animationDelay: `${index * 150}ms` }}
-										/>
-									))}
-								</div>
-							) : error ? (
-								<div className="p-4 pt-20 text-center text-sm text-foreground-muted">
-									Failed to load conversations
-								</div>
-							) : (
-								conversations.map((conv) => (
-									<SidebarMenuItem
-										key={conv.id}
-										title={conv.title}
-										className="rounded-md hover:bg-muted/50 group/item flex items-center justify-between"
-									>
-										<SidebarMenuButton
-											isActive={selectedConv?.id === conv.id}
-											className="pr-2 rounded-none rounded-l-md flex-1"
-											onClick={() => handleSelectConversation(conv.id)}
-										>
-											<IconMessage size={16} />
-											<span className="truncate">{conv.title}</span>
-										</SidebarMenuButton>
-										<SidebarMenuButton
-											isActive={selectedConv?.id === conv.id}
-											className={cn(
-												"size-9 p-2.5 hover:bg-red-600/10 rounded-none rounded-r-md  group-hover/item:opacity-100",
-												selectedConv?.id !== conv.id && "opacity-0",
-											)}
-											onClick={() => handleDeleteConversation(conv.id)}
-										>
-											<IconTrash size={14} />
-										</SidebarMenuButton>
-									</SidebarMenuItem>
-								))
-							)}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-			</SidebarContent>
+						</SidebarMenuItem>
+					))
+				)}
+			</SidebarMenu>
 
 			<div className="mx-2 border-b" />
 

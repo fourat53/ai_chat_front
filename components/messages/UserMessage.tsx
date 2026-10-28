@@ -32,7 +32,7 @@ export function UserMessage({ message }: UserMessageProps) {
 								)
 							)}
 						</div>
-						<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-3.5 bg-sidebar shadow-sm border-2 rounded-2xl">
+						<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-3.5 bg-sidebar shadow-sm border rounded-2xl">
 							{message.content}
 						</div>
 					</div>

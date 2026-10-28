@@ -32,7 +32,7 @@ type FileBody = Omit<File, "id">;
 
 type ConvFile = Omit<FileBody, "fileSize" | "fileType" | "status">;
 
-type Attachment = Pick<File, "id"|"indexId" | "fileName" | "hash"> & {
+type Attachment = Pick<File, "id" | "indexId" | "fileName" | "hash"> & {
 	fileKey: string | null;
 	fileUrl: string | null;
 };

@@ -3,17 +3,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { saveConversationSelection } from "@/client/conversation.client";
 import Select from "@/components/selects/Select";
+import { useSession } from "@/lib/auth/auth-client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Model } from "@/types/model.type";
 
 export default function ModelsSelect() {
+	const { data: session } = useSession();
 	const {
 		models,
 		setModels,
 		selectedModel,
 		setSelectedModel,
 		selectedProvider,
+		selectedConv,
 	} = useChatStore(
 		useShallow((s) => ({
 			models: s.models,
@@ -21,6 +25,7 @@ export default function ModelsSelect() {
 			selectedModel: s.selectedModel,
 			setSelectedModel: s.setSelectedModel,
 			selectedProvider: s.selectedProvider,
+			selectedConv: s.selectedConv,
 		})),
 	);
 
@@ -49,13 +54,20 @@ export default function ModelsSelect() {
 			setSelectedModel(null);
 			return;
 		}
+		const remembered = selectedConv
+			? models.find((model) => model.id === selectedConv.modelId)
+			: undefined;
+		if (remembered) {
+			setSelectedModel(remembered);
+			return;
+		}
 		const currentModelExists = models.some(
 			(model) => model.id === selectedModel?.id,
 		);
 		if (!currentModelExists) {
 			setSelectedModel(models[0]);
 		}
-	}, [models, selectedModel, setSelectedModel]);
+	}, [models, selectedConv, selectedModel, setSelectedModel]);
 
 	if (isLoading || !selectedProvider)
 		return (
@@ -74,7 +86,11 @@ export default function ModelsSelect() {
 			items={models.map((model) => ({ value: model.id, label: model.name }))}
 			value={selectedModel?.id ?? null}
 			onValueChange={(id) => {
-				setSelectedModel(models.find((model) => model.id === id) ?? null);
+				const model = models.find((model) => model.id === id) ?? null;
+				setSelectedModel(model);
+				void saveConversationSelection(!!session?.user, {
+					modelId: model?.id ?? "",
+				});
 			}}
 			placeholder={models.length === 0 ? "No models" : "Model"}
 			searchable
