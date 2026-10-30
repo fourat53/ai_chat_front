@@ -3,7 +3,6 @@
 import {
 	IconCheck,
 	IconEye,
-	IconFiles,
 	IconFileText,
 	IconFileTypeCsv,
 	IconFileTypeDocx,
@@ -81,7 +80,6 @@ export default function FilesSelect() {
 		(file, index, self) =>
 			index === self.findIndex((f) => f.indexId === file.indexId),
 	);
-	const selectedCount = ragFiles.filter((file) => file.selected).length;
 
 	const handleRemoveFile = async (ragFile: ConvFile) => {
 		const conversationId = selectedConv?.id;
@@ -118,24 +116,22 @@ export default function FilesSelect() {
 
 	return (
 		<>
-			<div className="mx-px w-px h-4 bg-border" />
+			<div className="w-px h-4 mx-px max-sm:hidden bg-border" />
 
 			<DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
 				<DropdownMenuTrigger
 					render={
 						<Button
 							variant="ghost"
-							icon={<IconFiles className="text-muted-foreground" />}
-							className="h-8 w-26 text-xs font-normal"
+							icon={<IconFileText className="text-muted-foreground" />}
+							className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
 						/>
 					}
-				>
-					{selectedCount}/{ragFiles.length} files
-				</DropdownMenuTrigger>
+				/>
 				<DropdownMenuContent
 					side="top"
 					align="center"
-					className="w-66 p-2 shadow-xl border-border/60 backdrop-blur-md"
+					className="p-2 shadow-xl w-66 border-border/60 backdrop-blur-md"
 				>
 					<DropdownMenuGroup>
 						<DropdownMenuLabel className="mb-1.5 px-2 py-1.5 text-center text-xs text-muted-foreground font-medium">
@@ -182,13 +178,13 @@ export default function FilesSelect() {
 										>
 											{ragFile.fileName}
 										</span>
-										<div className="flex items-center gap-px opacity-80 group-hover/file-item:opacity-100 transition-opacity">
+										<div className="flex items-center gap-px transition-opacity opacity-80 group-hover/file-item:opacity-100">
 											<Button
 												variant="ghost"
 												size="icon"
 												type="button"
 												title="Preview file"
-												className="size-6 rounded-md hover:bg-sidebar hover:text-primary text-muted-foreground"
+												className="rounded-md size-6 hover:bg-sidebar hover:text-primary text-muted-foreground"
 												onClick={(event) => {
 													event.stopPropagation();
 													setMenuOpen(false);
@@ -203,7 +199,7 @@ export default function FilesSelect() {
 												size="icon"
 												type="button"
 												title="Remove file"
-												className="size-6 rounded-md hover:bg-destructive/15 hover:text-destructive text-muted-foreground"
+												className="rounded-md size-6 hover:bg-destructive/15 hover:text-destructive text-muted-foreground"
 												onClick={(event) => {
 													event.stopPropagation();
 													void handleRemoveFile(ragFile);

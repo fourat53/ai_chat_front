@@ -114,52 +114,49 @@ export default function ChatInput() {
 	};
 
 	return (
-		<div className="px-2 sm:px-4 md:px-0 lg:px-4 md:mx-auto md:max-w-2xl lg:max-w-3xl">
-			<form
-				onSubmit={handleSubmit}
-				className="rounded-3xl border shadow-xl transition-all bg-sidebar focus-within:ring-2 focus-within:ring-ring/50"
-			>
-				<textarea
-					value={input}
-					onChange={(e) => setInput(e.target.value)}
-					onKeyDown={handleKeyDown}
-					placeholder="Ask anything..."
-					className="w-full max-h-96 min-h-12 resize-none p-4 pb-2 outline-none text-sm placeholder:text-muted-foreground rounded-t-3xl"
-					rows={1}
-					style={{ height: "auto" }}
-					onInput={(e) => {
-						const target = e.target as HTMLTextAreaElement;
-						target.style.height = "auto";
-						target.style.height = `${target.scrollHeight}px`;
-					}}
-				/>
-
-				<div className="z-10 flex flex-wrap gap-1 sm:gap-2 justify-between items-center p-2 pt-0">
-					<div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-						<FilesButton />
-						<FilesSelect />
-					</div>
-					<div className="flex flex-wrap gap-1 sm:gap-2 items-center justify-end">
-						<ModelsSelect />
-						<div className="mx-px w-px h-4 bg-border" />
-						<Button
-							size="icon"
-							type="submit"
-							className="rounded-full size-8 sm:size-9"
-							disabled={
-								uploadingFile !== null ||
-								(!isLoading && (!input || input.trim() === ""))
-							}
-							icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
-							onClick={(event) => {
-								if (!isLoading) return;
-								event.preventDefault();
-								stop();
-							}}
-						/>
-					</div>
+		<form
+			onSubmit={handleSubmit}
+			className="max-w-3xl mx-auto transition-all border shadow-xl rounded-3xl bg-sidebar focus-within:ring-2 focus-within:ring-ring/50"
+		>
+			<textarea
+				value={input}
+				onChange={(e) => setInput(e.target.value)}
+				onKeyDown={handleKeyDown}
+				placeholder="Ask anything..."
+				className="w-full p-4 pb-2 text-sm outline-none resize-none max-h-96 min-h-12 placeholder:text-muted-foreground rounded-t-3xl"
+				rows={1}
+				style={{ height: "auto" }}
+				onInput={(e) => {
+					const target = e.target as HTMLTextAreaElement;
+					target.style.height = "auto";
+					target.style.height = `${target.scrollHeight}px`;
+				}}
+			/>
+			<div className="z-10 flex flex-wrap items-center justify-between p-2 pt-0 sm:gap-2">
+				<div className="flex flex-wrap items-center sm:gap-2">
+					<FilesButton />
+					<FilesSelect />
 				</div>
-			</form>
-		</div>
+				<div className="flex flex-wrap items-center justify-end sm:gap-2">
+					<ModelsSelect />
+					<div className="w-px h-4 mx-px max-sm:hidden bg-border" />
+					<Button
+						size="icon"
+						type="submit"
+						className="rounded-full size-8 sm:size-9"
+						disabled={
+							uploadingFile !== null ||
+							(!isLoading && (!input || input.trim() === ""))
+						}
+						icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
+						onClick={(event) => {
+							if (!isLoading) return;
+							event.preventDefault();
+							stop();
+						}}
+					/>
+				</div>
+			</div>
+		</form>
 	);
 }

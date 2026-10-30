@@ -38,7 +38,9 @@ export function LogoutButton({
 			loading={loading}
 			onClick={logout}
 		>
-			{variant === "default" ? "Logout" : !loading && <IconLogout />}
+			{variant === "default"
+				? "Logout"
+				: !loading && <IconLogout strokeWidth={2.5} />}
 		</Button>
 	);
 }

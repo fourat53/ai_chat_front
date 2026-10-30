@@ -45,11 +45,11 @@ export default function RegisterPage() {
 	};
 
 	return (
-		<div className="h-screen flex items-center justify-center p-4">
+		<div className="flex items-center justify-center p-4 h-svh">
 			<ThemeSwitch className="absolute top-4 right-4" />
 			<Card className="w-full max-w-md">
 				<CardHeader>
-					<CardTitle className="mb-2 text-center text-xl">
+					<CardTitle className="mb-2 text-xl text-center">
 						Create an account
 					</CardTitle>
 					<CardDescription className="-mb-2">
@@ -103,7 +103,7 @@ export default function RegisterPage() {
 							<span className="w-full border-t" />
 						</div>
 						<div className="relative flex justify-center text-xs uppercase">
-							<span className="bg-card px-2 text-muted-foreground">
+							<span className="px-2 bg-card text-muted-foreground">
 								Or continue with
 							</span>
 						</div>
@@ -126,7 +126,7 @@ export default function RegisterPage() {
 						</Button>
 					</div>
 
-					<div className="mt-6 text-center text-sm">
+					<div className="mt-6 text-sm text-center">
 						Already have an account?{" "}
 						<Link href="/login" className="text-primary hover:underline">
 							Sign in

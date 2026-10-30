@@ -1,8 +1,9 @@
 "use client";
 
 import {
-	IconKeyFilled,
-	IconMessageFilled,
+	IconBooks,
+	IconKey,
+	IconMessage,
 	IconPlus,
 	IconTrash,
 } from "@tabler/icons-react";
@@ -56,6 +57,7 @@ export default function ChatSidebar() {
 				useChatStore.getState().setLoadingConv(false);
 			}
 		} else if (error && useChatStore.getState().loadingConv) {
+			toast.error("Failed to load user conversations. Try to refresh.");
 			useChatStore.getState().setLoadingConv(false);
 		}
 	}, [data, error, setConversations]);
@@ -86,17 +88,21 @@ export default function ChatSidebar() {
 	};
 
 	return (
-		<Sidebar variant="inset" collapsible="offcanvas" className="p-0 pb-1.5 m-0">
-			<SidebarHeader className="gap-0 flex-row justify-between items-center">
-				<h2 className="w-full text-center font-bold text-xl tracking-tight truncate group-data-[collapsible=icon]:hidden">
+		<Sidebar
+			variant="inset"
+			collapsible="offcanvas"
+			className="p-2 pb-0 pr-0 m-0"
+		>
+			<SidebarHeader className="flex-row items-center justify-between gap-0 px-0 h-14">
+				<h2 className="w-full text-center font-bold text-[22px] tracking-tight truncate group-data-[collapsible=icon]:hidden">
 					Chat AI
 				</h2>
 				<ThemeSwitch className="group-data-[collapsible=icon]:hidden" />
 			</SidebarHeader>
 
-			<div className="mx-2 border-b" />
+			<div className="border-b" />
 
-			<div className="p-2 space-y-1.5">
+			<div className="py-2 space-y-1.5">
 				<SidebarMenuButton
 					variant="outline"
 					className={cn(
@@ -105,20 +111,24 @@ export default function ChatSidebar() {
 					)}
 					onClick={() => void handleNewChat()}
 				>
-					<IconPlus strokeWidth={2.5} />
+					<IconPlus strokeWidth={2.5} className="min-h-5 min-w-5" />
 					New Chat
 				</SidebarMenuButton>
 				<SidebarMenuButton>
-					<IconKeyFilled />
-					API Keys
+					<IconKey className="min-h-5 min-w-5" />
+					API keys
+				</SidebarMenuButton>
+				<SidebarMenuButton>
+					<IconBooks strokeWidth={1.5} className="min-h-5 min-w-5" />
+					Files library
 				</SidebarMenuButton>
 			</div>
 
-			<div className="mx-2 border-b" />
+			<div className="border-b" />
 
-			<SidebarMenu className="p-2 relative h-full overflow-y-auto">
+			<SidebarMenu className="relative h-full py-2 overflow-y-auto">
 				{sessionPending || isLoading ? (
-					<div className="flex flex-col gap-2.25 ">
+					<div className="flex flex-col gap-2.25">
 						{Array.from({ length: 3 }).map((_, index) => (
 							<Skeleton
 								key={index}
@@ -126,10 +136,6 @@ export default function ChatSidebar() {
 								style={{ animationDelay: `${index * 150}ms` }}
 							/>
 						))}
-					</div>
-				) : error ? (
-					<div className="p-4 pt-20 text-center text-sm text-foreground-muted">
-						Failed to load conversations
 					</div>
 				) : (
 					conversations.map((conv) => (
@@ -143,7 +149,7 @@ export default function ChatSidebar() {
 								onClick={() => handleSelectConversation(conv.id)}
 								className="group-hover/item:bg-background dark:group-hover/item:bg-sidebar-accent"
 							>
-								<IconMessageFilled />
+								<IconMessage />
 								<span className="truncate group-hover/item:max-w-3/4">
 									{conv.title}
 								</span>
@@ -161,7 +167,7 @@ export default function ChatSidebar() {
 				)}
 			</SidebarMenu>
 
-			<div className="mx-2 border-b" />
+			<div className="border-b" />
 
 			<FooterSidebar session={session} sessionPending={sessionPending} />
 		</Sidebar>

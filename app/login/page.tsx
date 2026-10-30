@@ -44,7 +44,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="flex justify-center items-center p-4 h-screen">
+		<div className="flex items-center justify-center p-4 h-svh">
 			<ThemeSwitch className="absolute top-4 right-4" />
 			<Card className="w-full max-w-md">
 				<CardHeader>
@@ -87,10 +87,10 @@ export default function LoginPage() {
 					</form>
 
 					<div className="relative my-6">
-						<div className="flex absolute inset-0 items-center">
+						<div className="absolute inset-0 flex items-center">
 							<span className="w-full border-t" />
 						</div>
-						<div className="flex relative justify-center text-xs uppercase">
+						<div className="relative flex justify-center text-xs uppercase">
 							<span className="px-2 bg-sidebar text-muted-foreground">
 								Or continue with
 							</span>

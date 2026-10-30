@@ -15,7 +15,7 @@ export function FileViewer({ file }: { file: DocType }) {
 			source={file}
 			theme={resolvedTheme}
 			loading={<MainLoader />}
-			style={{ height: "85vh" }}
+			style={{ height: "85svh" }}
 			onError={(err) => {
 				console.error(err);
 				toast.error("Could not preview this file.");

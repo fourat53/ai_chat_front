@@ -14,51 +14,47 @@ export default function FooterSidebar({
 	sessionPending: boolean;
 }) {
 	return (
-		<SidebarFooter className="px-4 py-2">
+		<SidebarFooter className="h-16! px-1">
 			{session ? (
-				<div className="h-12 flex flex-col gap-2 group-data-[collapsible=icon]:items-center">
-					<div className="h-full flex justify-between items-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
-						<div className="flex items-center gap-2 text-sm text-muted-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-							<div className="flex overflow-hidden justify-center items-center rounded-full size-9">
-								{session.user.image ? (
-									<Image
-										src={session.user.image}
-										alt="User avatar"
-										width={36}
-										height={36}
-									/>
-								) : (
-									session.user.name && (
-										<p className="flex justify-center items-center text-base font-bold rounded-full size-9 bg-primary/20 text-primary">
-											{session.user.name?.[0].toUpperCase()}
-										</p>
-									)
-								)}
-							</div>
-
-							<span className="truncate group-data-[collapsible=icon]:hidden">
-								{session.user.name || session.user.email}
-							</span>
-						</div>
-						<LogoutButton variant="icon" />
+				<div className="flex items-center justify-between w-full h-full">
+					<div className="flex items-center gap-1.5 justify-start w-full h-full">
+						{session.user.image ? (
+							<Image
+								src={session.user.image}
+								alt="User avatar"
+								width={200}
+								height={200}
+								className="border rounded-full size-10"
+							/>
+						) : (
+							session.user.name && (
+								<p className="flex items-center justify-center text-base font-bold rounded-full size-9 bg-primary/20 text-primary">
+									{session.user.name?.[0].toUpperCase()}
+								</p>
+							)
+						)}
+						<span className="text-sm truncate group-data-[collapsible=icon]:hidden">
+							{session.user.name || session.user.email}
+						</span>
 					</div>
+					<LogoutButton variant="icon" />
 				</div>
 			) : sessionPending ? (
 				<div
 					aria-hidden="true"
-					className="h-12 flex justify-center items-center gap-2 group-data-[collapsible=icon]:flex-col"
+					className="flex justify-center items-center gap-2 group-data-[collapsible=icon]:flex-col"
 				>
-					<Skeleton className="shrink-0 rounded-full size-9" />
+					<Skeleton className="rounded-full shrink-0 size-10" />
 					<Skeleton className="h-4 flex-1 group-data-[collapsible=icon]:hidden" />
 				</div>
 			) : (
-				<div className="pt-1 px-2 h-12 text-center flex flex-col justify-center gap-0.5 group-data-[collapsible=icon]:hidden">
+				<div className="px-2.5 text-center flex flex-col justify-center gap-0.5 group-data-[collapsible=icon]:hidden">
 					<Link href="/login" className="block">
 						<Button variant="secondary" className="w-full h-7.75">
 							Sign In
 						</Button>
 					</Link>
-					<p className="px-2 text-[11px] text-muted-foreground">
+					<p className="text-xs text-muted-foreground">
 						Sign in for access to chat history.
 					</p>
 				</div>

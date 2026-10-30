@@ -84,41 +84,41 @@ export default function ChatMessages() {
 				]
 			: messages;
 
-	return (
-		<div className="relative flex min-h-0 flex-1 flex-col bg-background lg:rounded-t-xl border border-b-0">
-			<div
-				ref={scrollRef}
-				className="overflow-y-auto flex-1 pt-8 pb-5 space-y-2"
-			>
-				{messages.length > 0 ? (
-					displayMessages.map((msg, index) => {
-						const message = mapToMessage(msg);
-						return msg.role === "user" ? (
-							<UserMessage key={msg.id} message={message} />
-						) : (
-							<AssistantMessage
-								key={msg.id}
-								status={status}
-								message={message}
-								isLast={index === displayMessages.length - 1}
-							/>
-						);
-					})
-				) : !isLoading ? (
-					<div className="flex flex-col justify-center items-center px-2 mx-auto space-y-4 max-w-md h-full text-center">
-						<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-							How can I help you today?
-						</h1>
-						<p className="text-muted-foreground">
-							Select a provider and a model, then type a message to start a new
-							conversation.
-						</p>
-					</div>
-				) : null}
+	if (isLoading)
+		return (
+			<div className="absolute inset-0 flex items-center justify-center w-full h-full">
+				<MainLoader />
 			</div>
-			{isLoading && (
-				<div className="bg-background lg:rounded-t-xl border-b-2 border-b-transparent absolute inset-0 flex items-center justify-center">
-					<MainLoader />
+		);
+
+	return (
+		<div
+			ref={scrollRef}
+			className="relative flex flex-col h-full pt-6 overflow-y-auto"
+		>
+			{messages.length > 0 ? (
+				displayMessages.map((msg, index) => {
+					const message = mapToMessage(msg);
+					return msg.role === "user" ? (
+						<UserMessage key={msg.id} message={message} />
+					) : (
+						<AssistantMessage
+							key={msg.id}
+							status={status}
+							message={message}
+							isLast={index === displayMessages.length - 1}
+						/>
+					);
+				})
+			) : (
+				<div className="flex flex-col items-center justify-center h-full max-w-md px-2 mx-auto space-y-4 text-center">
+					<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+						How can I help you today?
+					</h1>
+					<p className="text-muted-foreground">
+						Select a provider and a model, then type a message to start a new
+						conversation.
+					</p>
 				</div>
 			)}
 		</div>
