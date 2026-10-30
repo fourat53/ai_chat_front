@@ -1,4 +1,6 @@
 import { textOf } from "@/client/message.client";
+import { resolveUserApiKey } from "@/lib/api-keys/user-key";
+import { getUserIdOrNull } from "@/lib/auth/session";
 import type { Message } from "@/types/message.type";
 
 export const runtime = "nodejs";
@@ -57,6 +59,12 @@ export async function POST(req: Request) {
 				)
 			: [];
 
+		const userId = await getUserIdOrNull();
+		const userApiKey =
+			typeof provider === "string"
+				? await resolveUserApiKey(userId, provider)
+				: null;
+
 		let questionWithContext = question;
 		if (ragFiles.length > 0) {
 			try {
@@ -101,6 +109,7 @@ export async function POST(req: Request) {
 					question: questionWithContext,
 					history,
 					base_url: baseUrl,
+					api_key: userApiKey,
 				}),
 				signal: controller.signal,
 			});

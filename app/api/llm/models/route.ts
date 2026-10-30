@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { resolveUserApiKey } from "@/lib/api-keys/user-key";
+import { getUserIdOrNull } from "@/lib/auth/session";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);
@@ -17,11 +19,17 @@ export async function GET(req: NextRequest) {
 	}
 
 	try {
+		const userId = await getUserIdOrNull();
+		const userApiKey = await resolveUserApiKey(userId, providerId);
+
 		const response = await fetch(
 			`${process.env.RAG_URL}/models/${encodeURIComponent(providerId)}?base_url=${encodeURIComponent(baseUrl)}`,
 			{
 				method: "GET",
-				headers: { "Content-Type": "application/json" },
+				headers: {
+					"Content-Type": "application/json",
+					...(userApiKey ? { "X-Api-Key": userApiKey } : {}),
+				},
 				cache: "no-store",
 			},
 		);

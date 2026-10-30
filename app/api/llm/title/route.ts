@@ -1,14 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/config/db";
-import { ProviderModel } from "@/models/provider.model";
-import type { Provider } from "@/types/provider.type";
+import { PROVIDERS } from "@/types/provider.type";
 
 export const runtime = "nodejs";
 
 type TitleTurn = { role: "user" | "assistant"; content: string };
 
 const TITLE_TURN_LENGTH = 2000;
-const SUMMARY_PROVIDER_LABEL = "openrouter";
+const PROVIDER_ID = "openrouter";
 const AUTO_ROUTER_PATTERN = /auto[\s_-]*router/i;
 const AUTO_ROUTER_MODEL_ID = "openrouter/auto";
 const TITLE_MAX_LENGTH = 64;
@@ -71,12 +69,8 @@ export async function POST(req: NextRequest) {
 	];
 
 	try {
-		await connectDB();
-		const summaryProvider = (await ProviderModel.findOne({
-			label: SUMMARY_PROVIDER_LABEL,
-		}).lean()) as unknown as (Provider & { _id?: unknown }) | null;
-
-		if (!summaryProvider?.baseUrl) {
+		const summaryProvider = PROVIDERS.find((p) => p.id === PROVIDER_ID);
+		if (!summaryProvider) {
 			return NextResponse.json(
 				{ error: "Title summarizer provider is not configured" },
 				{ status: 404 },
@@ -84,7 +78,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		const modelsResponse = await fetch(
-			`${process.env.RAG_URL}/models/${encodeURIComponent(SUMMARY_PROVIDER_LABEL)}?base_url=${encodeURIComponent(summaryProvider.baseUrl)}`,
+			`${process.env.RAG_URL}/models/${encodeURIComponent(PROVIDER_ID)}?base_url=${encodeURIComponent(summaryProvider.baseUrl)}`,
 			{
 				method: "GET",
 				headers: { "Content-Type": "application/json" },
@@ -120,7 +114,7 @@ export async function POST(req: NextRequest) {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					provider: SUMMARY_PROVIDER_LABEL,
+					provider: PROVIDER_ID,
 					model: summarizerModel.id,
 					question: buildTitleInstruction(),
 					history: turns,

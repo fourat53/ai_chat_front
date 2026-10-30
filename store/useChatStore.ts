@@ -22,8 +22,6 @@ interface ChatState {
 	setLoadingConv: (loading: boolean) => void;
 
 	// Providers
-	providers: Provider[];
-	setProviders: (providers: Provider[]) => void;
 	selectedProvider: Provider | null;
 	setSelectedProvider: (provider: Provider | null) => void;
 
@@ -110,8 +108,6 @@ const useChatStore = create<ChatState>((set) => ({
 		),
 
 	// Providers
-	providers: [],
-	setProviders: (providers: Provider[]) => set({ providers }),
 	selectedProvider: null,
 	setSelectedProvider: (provider: Provider | null) =>
 		set((state) =>

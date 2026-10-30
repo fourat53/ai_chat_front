@@ -34,7 +34,7 @@ export default function ModelsSelect() {
 		queryFn: async () => {
 			if (!selectedProvider) return [];
 			const params = new URLSearchParams({
-				providerId: selectedProvider.label,
+				providerId: selectedProvider.id,
 				baseUrl: selectedProvider.baseUrl,
 			});
 			const response = await fetch(`/api/llm/models?${params.toString()}`);

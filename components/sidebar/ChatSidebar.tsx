@@ -8,6 +8,8 @@ import {
 	IconTrash,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -35,6 +37,7 @@ import FooterSidebar from "./FooterSidebar";
 
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
+	const pathname = usePathname();
 	const { setMessages, stop } = useChatContext();
 	const { conversations, setConversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
@@ -114,14 +117,21 @@ export default function ChatSidebar() {
 					<IconPlus strokeWidth={2.5} className="min-h-5 min-w-5" />
 					New Chat
 				</SidebarMenuButton>
-				<SidebarMenuButton>
-					<IconKey className="min-h-5 min-w-5" />
-					API keys
-				</SidebarMenuButton>
-				<SidebarMenuButton>
-					<IconBooks strokeWidth={1.5} className="min-h-5 min-w-5" />
-					Files library
-				</SidebarMenuButton>
+				{session && (
+					<>
+						<SidebarMenuButton
+							render={<Link href="/api-keys" />}
+							isActive={pathname === "/api-keys"}
+						>
+							<IconKey className="min-h-5 min-w-5" />
+							API keys
+						</SidebarMenuButton>
+						<SidebarMenuButton>
+							<IconBooks strokeWidth={1.5} className="min-h-5 min-w-5" />
+							Files library
+						</SidebarMenuButton>
+					</>
+				)}
 			</div>
 
 			<div className="border-b" />

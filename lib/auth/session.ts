@@ -19,4 +19,13 @@ async function getUserId(): Promise<string> {
 	return userId;
 }
 
-export { getUserId };
+async function getUserIdOrNull(): Promise<string | null> {
+	try {
+		const session = await auth.api.getSession({ headers: await headers() });
+		return session?.user?.id ?? null;
+	} catch {
+		return null;
+	}
+}
+
+export { getUserId, getUserIdOrNull };

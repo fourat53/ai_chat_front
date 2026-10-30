@@ -10,8 +10,14 @@ async function createConversation(data: {
 	modelId: string;
 }) {
 	const userId = await getUserId();
+	const { providerId, modelId, ...rest } = data;
 
-	const conv = await ConversationModel.create({ ...data, userId });
+	const conv = await ConversationModel.create({
+		...rest,
+		userId,
+		...(providerId ? { providerId } : {}),
+		...(modelId ? { modelId } : {}),
+	});
 	const serializedConv = JSON.parse(JSON.stringify(conv.toObject()));
 
 	return {
@@ -63,8 +69,13 @@ async function updateConversation(
 	},
 ) {
 	const userId = await getUserId();
+	const updates = Object.fromEntries(
+		Object.entries(data).filter(([, value]) => !!value && value !== ""),
+	);
 
-	await ConversationModel.updateOne({ _id, userId }, { $set: { ...data } });
+	if (Object.keys(updates).length > 0) {
+		await ConversationModel.updateOne({ _id, userId }, { $set: updates });
+	}
 
 	return { success: true };
 }

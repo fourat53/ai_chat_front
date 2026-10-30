@@ -83,7 +83,7 @@ export default function ChatInput() {
 				{ text },
 				{
 					body: {
-						provider: selectedProvider.label,
+						provider: selectedProvider.id,
 						model: selectedModel.id,
 						baseUrl: selectedProvider.baseUrl,
 						ragFiles: selectedRagFiles.length ? selectedRagFiles : undefined,
