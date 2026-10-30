@@ -132,6 +132,15 @@ async function ensureInitialSelection({
 	});
 }
 
+function clearChatSession({
+	setMessages,
+	stop,
+}: SelectConversationOptions): void {
+	useChatStore.getState().resetConversations();
+	void selectConversation(null, { setMessages, stop });
+	autoSelectionDone = false;
+}
+
 async function createNewConversation(
 	isSignedIn: boolean,
 ): Promise<Conversation | null> {
@@ -199,6 +208,7 @@ async function saveConversationSelection(
 }
 
 export {
+	clearChatSession,
 	createNewConversation,
 	ensureInitialSelection,
 	getHashConversationId,

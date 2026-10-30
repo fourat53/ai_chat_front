@@ -15,6 +15,7 @@ interface ChatState {
 	updateSelectedConv: (
 		fields: Partial<Omit<Conversation, "id" | "userId">>,
 	) => void;
+	resetConversations: () => void;
 	selectedConv: Conversation | null;
 	setSelectedConv: (conversation: Conversation | null) => void;
 	loadingConv: boolean;
@@ -87,6 +88,13 @@ const useChatStore = create<ChatState>((set) => ({
 				),
 				selectedConv: updated,
 			};
+		}),
+	resetConversations: () =>
+		set({
+			conversations: [],
+			selectedConv: null,
+			pendingMeta: null,
+			convFiles: {},
 		}),
 	selectedConv: null,
 	setSelectedConv: (conversation: Conversation | null) =>
