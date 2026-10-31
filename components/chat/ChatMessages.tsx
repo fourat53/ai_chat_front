@@ -84,12 +84,7 @@ export default function ChatMessages() {
 				]
 			: messages;
 
-	if (isLoading)
-		return (
-			<div className="absolute inset-0 flex items-center justify-center w-full h-full">
-				<MainLoader />
-			</div>
-		);
+	if (isLoading) return <MainLoader />;
 
 	return (
 		<div
