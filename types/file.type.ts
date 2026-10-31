@@ -37,6 +37,15 @@ type Attachment = Pick<File, "id" | "indexId" | "fileName" | "hash"> & {
 	fileUrl: string | null;
 };
 
+type UserFile = {
+	id: string;
+	fileName: string;
+	fileType: string;
+	fileSize: number;
+	fileUrl: string;
+	createdAt: string;
+};
+
 export {
 	type Attachment,
 	type ConvFile,
@@ -45,4 +54,5 @@ export {
 	FILE_STATUS,
 	type FileBody,
 	file,
+	type UserFile,
 };

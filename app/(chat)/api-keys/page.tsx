@@ -9,6 +9,7 @@ import {
 	getSavedApiKeys,
 	saveApiKey,
 } from "@/actions/api-key.action";
+import MainLoader from "@/components/loaders/MainLoader";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useSession } from "@/lib/auth/auth-client";
+import { useRequireSession } from "@/hooks/use-require-session";
 import type { ApiKeyStatus } from "@/types/api-key.type";
 import { PROVIDERS, type Provider } from "@/types/provider.type";
 
@@ -143,16 +144,18 @@ function ProviderKeyRow({ provider, status }: ProviderKeyRowProps) {
 }
 
 export default function ApiKeysPage() {
-	const { data: session } = useSession();
+	const signedIn = useRequireSession();
 	const keysQuery = useQuery({
 		queryKey: ["api-keys"],
 		queryFn: () => getSavedApiKeys(),
-		enabled: !!session?.user,
+		enabled: signedIn,
 	});
 
 	const savedKeysByProviderId = new Map(
 		(keysQuery.data ?? []).map((key) => [key.providerId, key]),
 	);
+
+	if (!signedIn) return <MainLoader />;
 
 	return (
 		<div className="flex items-center justify-center h-full">
@@ -181,7 +184,7 @@ export default function ApiKeysPage() {
 								key={p.id}
 								provider={p}
 								status={
-									keysQuery.isPending && session?.user
+									keysQuery.isPending
 										? undefined
 										: (savedKeysByProviderId.get(p.id) ?? null)
 								}

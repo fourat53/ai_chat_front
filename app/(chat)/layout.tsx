@@ -10,9 +10,9 @@ export default function SidebarLayout({
 }>) {
 	return (
 		<ChatProvider>
-			<SidebarProvider className="flex w-full overflow-hidden h-svh">
+			<SidebarProvider className="flex w-full overflow-hidden border-none shadow-none h-svh">
 				<ChatSidebar />
-				<SidebarInset className="relative flex flex-col flex-1 h-full">
+				<SidebarInset className="relative flex flex-col flex-1 h-full border-none shadow-none">
 					<ChatHeader />
 					<div className="h-full p-2">
 						<div className="z-10 flex flex-col flex-1 w-full h-full min-h-0 overflow-y-auto border rounded-xl bg-background">

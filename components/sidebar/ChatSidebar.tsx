@@ -9,7 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -38,6 +38,7 @@ import FooterSidebar from "./FooterSidebar";
 export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
 	const pathname = usePathname();
+	const router = useRouter();
 	const { setMessages, stop } = useChatContext();
 	const { conversations, setConversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
@@ -66,10 +67,16 @@ export default function ChatSidebar() {
 	}, [data, error, setConversations]);
 
 	const handleSelectConversation = (id: string) => {
+		if (pathname !== "/") {
+			router.push(`/#${id}`);
+		}
 		void selectConversation(id, { setMessages, stop });
 	};
 
 	const handleNewChat = () => {
+		if (pathname !== "/") {
+			router.push("/");
+		}
 		void selectConversation(null, { setMessages, stop });
 	};
 
@@ -126,7 +133,10 @@ export default function ChatSidebar() {
 							<IconKey className="min-h-5 min-w-5" />
 							API keys
 						</SidebarMenuButton>
-						<SidebarMenuButton>
+						<SidebarMenuButton
+							render={<Link href="/library" />}
+							isActive={pathname === "/library"}
+						>
 							<IconBooks strokeWidth={1.5} className="min-h-5 min-w-5" />
 							Files library
 						</SidebarMenuButton>

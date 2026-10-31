@@ -1,17 +1,6 @@
 "use client";
 
-import {
-	IconCheck,
-	IconEye,
-	IconFileText,
-	IconFileTypeCsv,
-	IconFileTypeDocx,
-	IconFileTypePdf,
-	IconFileTypePpt,
-	IconFileTypeTxt,
-	IconMarkdown,
-	IconX,
-} from "@tabler/icons-react";
+import { IconCheck, IconEye, IconFileText, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -33,26 +22,10 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { fileTypeVisual } from "@/lib/config/file-icons";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/useChatStore";
 import type { ConvFile } from "@/types/file.type";
-
-const FILE_TYPE_ICONS: Record<
-	string,
-	{ icon: typeof IconFileText; color: string }
-> = {
-	".pdf": { icon: IconFileTypePdf, color: "text-red-500" },
-	".docx": { icon: IconFileTypeDocx, color: "text-blue-500" },
-	".pptx": { icon: IconFileTypePpt, color: "text-orange-500" },
-	".txt": { icon: IconFileTypeTxt, color: "text-gray-500" },
-	".md": { icon: IconMarkdown, color: "text-purple-500" },
-	".csv": { icon: IconFileTypeCsv, color: "text-green-500" },
-};
-
-function fileTypeIcon(fileName: string) {
-	const extension = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
-	return FILE_TYPE_ICONS[extension] ?? IconFileText;
-}
 
 export default function FilesSelect() {
 	const {
@@ -139,7 +112,7 @@ export default function FilesSelect() {
 						</DropdownMenuLabel>
 						<div className="max-h-60 overflow-y-auto space-y-0.5">
 							{ragFiles.map((ragFile) => {
-								const { icon: TypeIcon, color: TypeColor } = fileTypeIcon(
+								const { icon: TypeIcon, color: TypeColor } = fileTypeVisual(
 									ragFile.fileName,
 								);
 								return (

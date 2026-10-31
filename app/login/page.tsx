@@ -44,7 +44,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="flex items-center justify-center p-4 h-svh">
+		<div className="flex items-center justify-center p-4 bg-background h-svh">
 			<ThemeSwitch className="absolute top-4 right-4" />
 			<Card className="w-full max-w-md">
 				<CardHeader>

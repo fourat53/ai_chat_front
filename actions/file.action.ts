@@ -3,7 +3,7 @@
 import { deleteFileData } from "@/client/file.client";
 import { getUserId } from "@/lib/auth/session";
 import { FileModel } from "@/models/file.model";
-import type { Attachment } from "@/types/file.type";
+import type { Attachment, UserFile } from "@/types/file.type";
 
 type ReserveFileInput = {
 	conversationId: string;
@@ -189,9 +189,55 @@ async function removeConversationFile(
 	return { deleted: false };
 }
 
+type UserFileDoc = {
+	_id: { toString(): string };
+	fileName?: string | null;
+	fileType?: string | null;
+	fileSize?: number | null;
+	fileUrl?: string | null;
+	createdAt?: Date | null;
+	updatedAt?: Date | null;
+};
+
+async function getUserFiles(): Promise<UserFile[]> {
+	const userId = await getUserId();
+
+	const docs = await FileModel.find(
+		{ userId, status: "ready" },
+		{
+			fileName: 1,
+			fileType: 1,
+			fileSize: 1,
+			fileUrl: 1,
+			createdAt: 1,
+			updatedAt: 1,
+		},
+	)
+		.sort({ updatedAt: -1 })
+		.lean();
+
+	return docs
+		.filter((file: UserFileDoc) => Boolean(file.fileUrl))
+		.map(
+			(file: UserFileDoc): UserFile => ({
+				id: file._id.toString(),
+				fileName: file.fileName ?? "",
+				fileType: file.fileType ?? "",
+				fileSize: file.fileSize ?? 0,
+				fileUrl: file.fileUrl ?? "",
+				createdAt: (
+					file.updatedAt ??
+					file.createdAt ??
+					new Date()
+				).toISOString(),
+			}),
+		);
+}
+
 export {
 	completeFileUpload,
 	getConversationFiles,
+	getUserFiles,
 	markFileReady,
 	removeConversationFile,
 	reserveConversationFile,
