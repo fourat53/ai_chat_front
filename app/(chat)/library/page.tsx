@@ -118,7 +118,7 @@ export default function LibraryPage() {
 
 	return (
 		<div className="h-full p-5">
-			<Card className="h-full rounded-lg">
+			<Card className="h-full bg-sidebar rounded-lg">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-lg">
 						<IconBooks className="size-5" />
@@ -129,7 +129,7 @@ export default function LibraryPage() {
 						it.
 					</CardDescription>
 				</CardHeader>
-				<CardContent className="flex flex-col gap-3">
+				<CardContent className="h-full flex flex-col gap-3">
 					<div className="flex flex-wrap items-center gap-2">
 						<div className="relative flex-1 min-w-48">
 							<Input
@@ -167,7 +167,7 @@ export default function LibraryPage() {
 					)}
 
 					{filesQuery.isPending ? (
-						<MainLoader />
+						<MainLoader className="scale-90" />
 					) : (files ?? []).length === 0 ? (
 						<div className="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 							<IconFileText className="size-8" />
