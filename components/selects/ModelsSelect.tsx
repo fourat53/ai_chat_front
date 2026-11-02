@@ -71,12 +71,12 @@ export default function ModelsSelect() {
 
 	if (isLoading || !selectedProvider)
 		return (
-			<div className="w-32 sm:w-48 h-7 text-xs bg-muted rounded-full animate-pulse" />
+			<div className="w-38 sm:w-52 h-7 text-xs bg-muted rounded-full animate-pulse" />
 		);
 
 	if (error)
 		return (
-			<div className="w-32 sm:w-48 h-7 text-xs text-foreground-muted flex items-center px-2">
+			<div className="w-38 sm:w-52 text-xs text-foreground-muted flex items-center px-2">
 				Failed to load models
 			</div>
 		);
@@ -98,7 +98,7 @@ export default function ModelsSelect() {
 			emptyText="No models found"
 			disabled={models.length === 0}
 			size="sm"
-			triggerClassName="w-40 sm:w-52 text-xs bg-transparent border-none shadow-none hover:bg-muted focus-visible:ring-0"
+			triggerClassName="w-38 sm:w-52 text-xs bg-transparent border-none shadow-none hover:bg-muted focus-visible:ring-0"
 		/>
 	);
 }

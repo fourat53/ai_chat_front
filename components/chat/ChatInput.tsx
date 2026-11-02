@@ -165,7 +165,7 @@ export default function ChatInput() {
 					<FilesButton />
 					<FilesSelect />
 				</div>
-				<div className="flex flex-wrap items-center justify-end sm:gap-2">
+				<div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
 					<ModelsSelect />
 					<div className="w-px h-4 mx-px max-sm:hidden bg-border" />
 					<Button

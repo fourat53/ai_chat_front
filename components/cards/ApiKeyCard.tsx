@@ -2,6 +2,7 @@
 
 import { IconEye, IconEyeOff, IconTrash } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { clsx } from "clsx";
 import { useState } from "react";
 import { toast } from "sonner";
 import { deleteApiKey, saveApiKey } from "@/actions/api-key.action";
@@ -11,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import type { ApiKeyStatus } from "@/types/api-key.type";
 import type { Provider } from "@/types/provider.type";
 import { Card } from "../ui/card";
-import { clsx } from "clsx";
 
 type ApiKeyCardProps = {
 	provider: Provider;
@@ -101,10 +101,10 @@ export default function ApiKeyCard({ provider, status }: ApiKeyCardProps) {
 							type="button"
 							aria-label={`Remove the saved ${provider.name} API key`}
 							title="Remove the saved key and go back to the default server key"
-							className="absolute -translate-y-1/2 cursor-pointer right-7.5 top-1/2 text-muted-foreground hover:text-white hover:bg-red-400 dark:hover:bg-red-900 p-1.25 rounded-full transition-colors"
+							className="absolute -translate-y-1/2 cursor-pointer right-7.5 top-1/2 text-muted-foreground hover:text-white hover:bg-red-400 dark:hover:bg-red-900 p-1.5 rounded-full transition-colors"
 							onClick={() => void handleRemove()}
 						>
-							<IconTrash className="size-4" />
+							<IconTrash className="size-3.75" />
 						</button>
 					)}
 

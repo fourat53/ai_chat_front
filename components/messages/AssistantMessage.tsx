@@ -32,18 +32,16 @@ export function AssistantMessage({
 					<AssistantContent content={message.content} />
 				)}
 			</div>
-			{message && (
-				<div className="shrink-0 -mt-2 pb-4 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity">
-					<Button
-						variant="ghost"
-						size="icon"
-						className="size-8 p-0.5 hover:bg-secondary/80 dark:hover:bg-secondary/70"
-						onClick={() => handleCopy(message.content)}
-					>
-						<IconCopy size={16} />
-					</Button>
-				</div>
-			)}
+			<div className="shrink-0 -mt-2 pb-4 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="size-8 p-0.5 hover:bg-sidebar/60"
+					onClick={() => handleCopy(message.content)}
+				>
+					<IconCopy />
+				</Button>
+			</div>
 		</div>
 	);
 }

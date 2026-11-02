@@ -16,6 +16,7 @@ export function FileViewer({ file }: { file: DocType }) {
 			theme={resolvedTheme}
 			loading={<MainLoader />}
 			style={{ height: "85svh" }}
+			initialViewMode="continuous"
 			onError={(err) => {
 				console.error(err);
 				toast.error("Could not preview this file.");

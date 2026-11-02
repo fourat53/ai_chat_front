@@ -137,7 +137,7 @@ export default function ChatMessages() {
 			ref={scrollRef}
 			className="relative flex flex-col h-full pt-6 overflow-y-auto"
 		>
-			<div className="px-4 sm:px-8 md:px-4 md:mx-auto md:max-w-3xl lg:max-w-4xl">
+			<div className="w-full px-4 sm:px-8 md:px-4 md:mx-auto md:max-w-3xl lg:max-w-4xl">
 				{displayMessages.map((msg, index) => {
 					const message = mapToMessage(msg);
 					return msg.role === "user" ? (
