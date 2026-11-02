@@ -19,7 +19,7 @@ export default function FileCard({ file, onPreview }: FileGridItemProps) {
 	return (
 		<Button
 			variant="outline"
-			className="flex-col items-start w-full h-auto gap-2 p-3 text-left border border-input bg-background/70 dark:bg-accent hover:bg-background dark:hover:bg-background/10 rounded-xl"
+			className="flex-col items-start w-full h-auto gap-2 p-3 text-left border border-border bg-background dark:bg-accent hover:bg-teal-950/5 dark:hover:bg-background/20 rounded-xl"
 			onClick={() => onPreview(file)}
 		>
 			<div className="flex items-center w-full min-w-0 gap-2">

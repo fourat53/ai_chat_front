@@ -90,7 +90,10 @@ export default function ApiKeyCard({ provider, status }: ApiKeyCardProps) {
 						onChange={(event) => setValue(event.target.value)}
 						autoComplete="off"
 						spellCheck={false}
-						className={clsx("bg-accent h-8 text-xs", status ? "pr-15" : "pr-9")}
+						className={clsx(
+							"bg-background dark:bg-accent h-8 text-xs",
+							status ? "pr-15" : "pr-9",
+						)}
 					/>
 
 					{status && (
@@ -119,7 +122,7 @@ export default function ApiKeyCard({ provider, status }: ApiKeyCardProps) {
 					</button>
 				</div>
 				<Button
-					variant="secondary"
+					variant="default"
 					size="sm"
 					loading={pending === "save"}
 					disabled={!value || pending === "remove"}

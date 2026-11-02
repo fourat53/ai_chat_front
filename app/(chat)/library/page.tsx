@@ -98,7 +98,7 @@ export default function LibraryPage() {
 							placeholder="Filter by name"
 							value={nameFilter}
 							onChange={(event) => setNameFilter(event.target.value)}
-							className="pr-9 bg-accent"
+							className="pr-9 bg-background dark:bg-accent"
 						/>
 						{nameFilter ? (
 							<Button
@@ -118,7 +118,7 @@ export default function LibraryPage() {
 						value={typeFilter}
 						onValueChange={(value) => setTypeFilter(value ?? ALL_TYPES)}
 						placeholder="All types"
-						triggerClassName="w-40 border-none bg-accent"
+						triggerClassName="w-40 border bg-background dark:bg-accent"
 					/>
 				</CardContent>
 			</Card>

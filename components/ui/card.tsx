@@ -17,7 +17,7 @@ function Card({
 			data-size={size}
 			className={cn(
 				"ring-foreground/10 text-card-foreground gap-6 overflow-hidden py-6 text-sm has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
-				variant === "default" && "rounded-2xl bg-card ring-2",
+				variant === "default" && "rounded-2xl bg-card border-2 border-border",
 				variant === "page" && "rounded-lg bg-sidebar border",
 				className,
 			)}

@@ -146,7 +146,7 @@ export default function ChatSidebar() {
 						{Array.from({ length: 3 }).map((_, index) => (
 							<Skeleton
 								key={index}
-								className="h-7.75 rounded-[10px]"
+								className="h-7.75 rounded-[10px] bg-background dark:bg-sidebar-accent"
 								style={{ animationDelay: `${index * 150}ms` }}
 							/>
 						))}

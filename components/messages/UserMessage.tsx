@@ -12,9 +12,9 @@ type UserMessageProps = {
 export function UserMessage({ message }: UserMessageProps) {
 	const { data: session } = useSession();
 	return (
-		<div className="flex flex-col gap-1 w-full rounded-2xl transition-colors group">
-			<div className="flex min-w-0 flex-1 flex-col items-end gap-2">
-				<div className="flex overflow-hidden justify-center items-center rounded-full size-8">
+		<div className="flex flex-col w-full gap-1 transition-colors rounded-2xl group">
+			<div className="flex flex-col items-end flex-1 min-w-0 gap-2">
+				<div className="flex items-center justify-center overflow-hidden rounded-full size-8">
 					{session?.user.image ? (
 						<Image
 							src={session.user.image}
@@ -24,17 +24,17 @@ export function UserMessage({ message }: UserMessageProps) {
 						/>
 					) : (
 						session?.user.name && (
-							<p className="flex justify-center items-center text-base font-bold rounded-full size-8 bg-primary/20 text-primary">
+							<p className="flex items-center justify-center text-base font-bold rounded-full size-8 bg-primary/20 text-primary">
 								{session.user.name?.[0].toUpperCase()}
 							</p>
 						)
 					)}
 				</div>
-				<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-3.5 bg-sidebar shadow-sm border rounded-2xl">
+				<div className="max-w-3/5 whitespace-pre-wrap px-4.5 py-2.75 bg-sidebar shadow-sm border-2 rounded-full">
 					{message.content}
 				</div>
 			</div>
-			<div className="shrink-0 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity">
+			<div className="flex items-center justify-end transition-opacity opacity-0 shrink-0 group-hover:opacity-100">
 				<Button
 					variant="ghost"
 					size="icon"
