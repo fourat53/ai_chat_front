@@ -6,6 +6,8 @@ import type { Message } from "@/types/message.type";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+type HistoryTurn = { role: "user" | "assistant"; content: string };
+
 export async function OPTIONS() {
 	return new Response(null, {
 		status: 200,
@@ -18,7 +20,6 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-	type HistoryTurn = { role: "user" | "assistant"; content: string };
 	try {
 		const body = await req.json();
 		const {
@@ -59,48 +60,49 @@ export async function POST(req: Request) {
 				)
 			: [];
 
+		if (!question.trim()) {
+			return new Response(JSON.stringify({ error: "No question provided" }), {
+				status: 400,
+				headers: { "Content-Type": "application/json" },
+			});
+		}
+
 		const userId = await getUserIdOrNull();
 		const userApiKey =
 			typeof provider === "string"
 				? await resolveUserApiKey(userId, provider)
 				: null;
 
-		let contextChunks: string[] = [];
-		let documentNames: string[] = [];
+		const endpoint = ragFiles.length > 0 ? "/rag/query" : "/llm/query";
+
+		const payload: {
+			provider: unknown;
+			model: unknown;
+			question: string;
+			history: HistoryTurn[];
+			base_url: unknown;
+			api_key: string | null;
+			index_ids?: string[];
+			document_names?: string[];
+		} = {
+			provider,
+			model,
+			question,
+			history,
+			base_url: baseUrl,
+			api_key: userApiKey,
+		};
 		if (ragFiles.length > 0) {
-			documentNames = [
+			payload.index_ids = ragFiles.map((f) => f.indexId);
+			const documentNames = [
 				...new Set(
 					ragFiles
 						.map((f) => f.fileName)
 						.filter((name): name is string => Boolean(name)),
 				),
 			];
-			try {
-				const ragResponse = await fetch(new URL("/api/rag/files", req.url), {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ question, ragFiles }),
-				});
-
-				if (ragResponse.ok) {
-					const ragData = (await ragResponse.json()) as {
-						chunks?: { content?: string }[];
-					};
-					contextChunks = (ragData.chunks ?? [])
-						.map((chunk) => chunk?.content ?? "")
-						.filter(Boolean);
-				} else {
-					console.error(
-						"RAG files API error:",
-						ragResponse.status,
-						await ragResponse.text(),
-					);
-				}
-			} catch (ragError) {
-				console.error(
-					"RAG retrieval failed, continuing without context:",
-					ragError,
-				);
+			if (documentNames.length > 0) {
+				payload.document_names = documentNames;
 			}
 		}
 
@@ -108,47 +110,20 @@ export async function POST(req: Request) {
 		const timeout = setTimeout(() => controller.abort(), 60000);
 
 		try {
-			const body: {
-				provider: unknown;
-				model: unknown;
-				question: string;
-				history: HistoryTurn[];
-				base_url: unknown;
-				api_key: string | null;
-				context_chunks?: string[];
-				document_names?: string[];
-			} = {
-				provider,
-				model,
-				question,
-				history,
-				base_url: baseUrl,
-				api_key: userApiKey,
-			};
-			if (contextChunks.length > 0) {
-				body.context_chunks = contextChunks;
-				body.document_names = documentNames;
-			}
-
-			const response = await fetch(`${process.env.RAG_URL}/llm/query`, {
+			const response = await fetch(`${process.env.RAG_URL}${endpoint}`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body),
+				body: JSON.stringify(payload),
 				signal: controller.signal,
 			});
 
 			clearTimeout(timeout);
 
 			if (!response.ok) {
-				const errorText = await response.text();
-				console.error("Backend API error:", response.status, errorText);
-				return new Response(
-					JSON.stringify({ error: "Backend API error", details: errorText }),
-					{
-						status: response.status,
-						headers: { "Content-Type": "application/json" },
-					},
-				);
+				return new Response(await response.text(), {
+					status: response.status,
+					headers: { "Content-Type": "application/json" },
+				});
 			}
 
 			return new Response(response.body, {
@@ -167,7 +142,7 @@ export async function POST(req: Request) {
 					headers: { "Content-Type": "application/json" },
 				});
 			}
-			console.error("RAG fetch failed:", fetchError);
+			console.error("RAG service fetch failed:", fetchError);
 			return new Response(
 				JSON.stringify({
 					error: "Could not reach RAG service",

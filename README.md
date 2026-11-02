@@ -42,8 +42,8 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request for review.
 
 Tasks to do:
-- When a file is linked, the chat should be able to answer question that are not related to it. if only says I don't know or similar if the file does not contain the answer and is mentioned by the user or the user clearly wants data from it.
 - Make sure you can ask a question and send it with files still processing. the request to the llm should wait until the file content is extracted and the chunks are ready to be searched with the user's message.
+- Add multiple rag file upload and no need to wait for previous upload to finish to add a new one.
 
 1. Add update query to User message bubble deleting all the next messages to the old updated query.
 2. MCP server (google calendar, docs, sheets, etc).
