@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-	--background: oklch(97.692% 0.01164 197.493);
+	--background: oklch(99.625% 0.00531 198.247);
 	--foreground: oklch(0.148 0.004 228.8);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.148 0.004 228.8);
@@ -28,7 +28,7 @@
 	--chart-4: oklch(0.511 0.096 186.391);
 	--chart-5: oklch(0.437 0.078 188.216);
 	--radius: 0.625rem;
-	--sidebar: oklch(90.241% 0.01923 197.113);
+	--sidebar: oklch(90.922% 0.01815 197.154);
 	--sidebar-foreground: oklch(0.148 0.004 228.8);
 	--sidebar-primary: oklch(0.6 0.118 184.704);
 	--sidebar-primary-foreground: oklch(0.984 0.014 180.72);

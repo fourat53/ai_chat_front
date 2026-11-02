@@ -23,18 +23,14 @@ export function AssistantMessage({
 		(status === "submitted" || status === "streaming") &&
 		!message.content;
 	return (
-		<div className="px-4 sm:px-8 md:px-4 lg:px-8 md:mx-auto md:max-w-2xl lg:max-w-3xl flex flex-col gap-1 w-full rounded-2xl transition-colors group">
-			<div className="flex-1 space-y-2 min-w-0">
-				<div className="max-w-none prose prose-sm dark:prose-invert prose-pre:p-0 prose-pre:bg-transparent prose-p:leading-relaxed">
-					<div className="w-full font-light">
-						<AssistantMeta message={message} isLast={isLast} />
-						{isWaiting ? (
-							<LoaderDots />
-						) : (
-							<AssistantContent content={message.content} />
-						)}
-					</div>
-				</div>
+		<div className="flex flex-col gap-1 w-full rounded-2xl transition-colors group">
+			<div className="min-w-0 flex-1 space-y-2 font-light prose prose-sm dark:prose-invert prose-pre:bg-transparent prose-pre:p-0 prose-p:leading-relaxed">
+				<AssistantMeta message={message} isLast={isLast} />
+				{isWaiting ? (
+					<LoaderDots />
+				) : (
+					<AssistantContent content={message.content} />
+				)}
 			</div>
 			{message && (
 				<div className="shrink-0 -mt-2 pb-4 flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity">

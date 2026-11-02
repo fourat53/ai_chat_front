@@ -1,72 +1,118 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useChat } from "@ai-sdk/react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { updateConversation } from "@/actions/conversation.action";
+import { chat } from "@/client/chat.client";
 import { mapToMessage } from "@/client/message.client";
 import MainLoader from "@/components/loaders/MainLoader";
 import { AssistantMessage } from "@/components/messages/AssistantMessage";
 import { UserMessage } from "@/components/messages/UserMessage";
-import { useChatContext } from "@/providers/chat-provider";
+import { useTitle } from "@/hooks/use-title";
+import { useSession } from "@/lib/auth/auth-client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
 
 export default function ChatMessages() {
-	const { messages, status } = useChatContext();
+	const { messages, status, setMessages } = useChat({ chat });
 	const loadingConv = useChatStore((s) => s.loadingConv);
-	const selectedConvId = useChatStore((s) => s.selectedConv?.id);
+	const selectedConv = useChatStore((s) => s.selectedConv);
+	const { data: session } = useSession();
 	const scrollRef = useRef<HTMLDivElement>(null);
-	const scrolledUserIdRef = useRef<string | undefined>(undefined);
-	const [scrolledForConvId, setScrolledForConvId] = useState<string | null>(
-		null,
-	);
+	const lastUserIdRef = useRef<string | undefined>(undefined);
+	const anchoredConvIdRef = useRef<string | null>(null);
+	const convRef = useRef<{ id: string; length: number }>({
+		id: "",
+		length: 0,
+	});
+	const selectedConvId = selectedConv?.id;
 
-	const hasUrlConv =
-		typeof window !== "undefined" &&
-		Boolean(window.location.hash.replace(/^#/, "").trim());
-
-	const isPendingScroll =
-		!loadingConv &&
-		!!selectedConvId &&
-		messages.length > 0 &&
-		scrolledForConvId !== selectedConvId;
-
-	const isLoading =
-		loadingConv || isPendingScroll || (hasUrlConv && !selectedConvId);
+	useTitle({ messages, status });
 
 	useEffect(() => {
 		if (status !== "submitted" && status !== "streaming") return;
 		const lastUserMessageId = messages.findLast(
 			(message) => message.role === "user",
 		)?.id;
-		if (!lastUserMessageId || scrolledUserIdRef.current === lastUserMessageId) {
+		if (!lastUserMessageId || lastUserIdRef.current === lastUserMessageId) {
 			return;
 		}
-		scrolledUserIdRef.current = lastUserMessageId;
+		lastUserIdRef.current = lastUserMessageId;
 		requestAnimationFrame(() => {
 			const container = scrollRef.current;
 			container?.scrollTo({ top: container.scrollHeight });
 		});
 	}, [messages, status]);
 
-	useEffect(() => {
-		if (!selectedConvId || messages.length === 0) {
-			setScrolledForConvId(null);
+	useLayoutEffect(() => {
+		if (loadingConv || messages.length === 0) {
+			if (messages.length === 0) {
+				anchoredConvIdRef.current = null;
+			}
 			return;
 		}
-		if (loadingConv) return;
-		if (scrolledForConvId === selectedConvId) return;
-
-		const container = scrollRef.current;
-		if (container) {
+		if (anchoredConvIdRef.current !== selectedConvId) {
+			anchoredConvIdRef.current = selectedConvId ?? null;
+			const container = scrollRef.current;
+			if (!container) return;
 			container.scrollTop = container.scrollHeight;
-		}
-		const frame = requestAnimationFrame(() => {
-			if (container) {
+			const frame = requestAnimationFrame(() => {
 				container.scrollTop = container.scrollHeight;
+			});
+			return () => cancelAnimationFrame(frame);
+		}
+	}, [loadingConv, messages.length, selectedConvId]);
+
+	useEffect(() => {
+		const run = async () => {
+			if (status !== "ready" || messages.length === 0 || !selectedConv) return;
+
+			const convId = selectedConv.id;
+			if (
+				convRef.current.id === convId &&
+				messages.length <= convRef.current.length
+			)
+				return;
+
+			if (convRef.current.id !== convId) {
+				if (messages.length <= 0) {
+					convRef.current = { id: convId, length: messages.length };
+					return;
+				}
 			}
-			setScrolledForConvId(selectedConvId);
-		});
-		return () => cancelAnimationFrame(frame);
-	}, [loadingConv, messages.length, selectedConvId, scrolledForConvId]);
+			convRef.current = { id: convId, length: messages.length };
+
+			const { selectedProvider, selectedModel, pendingMeta } =
+				useChatStore.getState();
+			const lastMessageIndex = messages.length - 1;
+			const mapped = messages.map((m, index) => {
+				const mappedMessage = mapToMessage(m);
+				if (
+					!pendingMeta ||
+					m.role !== "assistant" ||
+					index !== lastMessageIndex ||
+					(mappedMessage.providerName && mappedMessage.modelName)
+				) {
+					return mappedMessage;
+				}
+				return { ...mappedMessage, ...pendingMeta };
+			});
+
+			setMessages(mapped);
+
+			if (!session?.user) return;
+			try {
+				await updateConversation(convId, {
+					providerId: selectedProvider?.id ?? "",
+					modelId: selectedModel?.id ?? "",
+				});
+			} catch (err) {
+				console.error("Failed to update conversation:", err);
+			}
+		};
+
+		void run();
+	}, [selectedConv, setMessages, status, messages, session]);
 
 	const lastIsUser = messages[messages.length - 1]?.role === "user";
 	const displayMessages =
@@ -84,15 +130,15 @@ export default function ChatMessages() {
 				]
 			: messages;
 
-	if (isLoading) return <MainLoader />;
+	if (loadingConv) return <MainLoader />;
 
 	return (
 		<div
 			ref={scrollRef}
 			className="relative flex flex-col h-full pt-6 overflow-y-auto"
 		>
-			{messages.length > 0 ? (
-				displayMessages.map((msg, index) => {
+			<div className="px-4 sm:px-8 md:px-4 md:mx-auto md:max-w-3xl lg:max-w-4xl">
+				{displayMessages.map((msg, index) => {
 					const message = mapToMessage(msg);
 					return msg.role === "user" ? (
 						<UserMessage key={msg.id} message={message} />
@@ -104,18 +150,8 @@ export default function ChatMessages() {
 							isLast={index === displayMessages.length - 1}
 						/>
 					);
-				})
-			) : (
-				<div className="flex flex-col items-center justify-center h-full max-w-md px-2 mx-auto space-y-4 text-center">
-					<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-						How can I help you today?
-					</h1>
-					<p className="text-muted-foreground">
-						Select a provider and a model, then type a message to start a new
-						conversation.
-					</p>
-				</div>
-			)}
+				})}
+			</div>
 		</div>
 	);
 }

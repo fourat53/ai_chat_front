@@ -6,29 +6,13 @@ import {
 } from "@/actions/conversation.action";
 import { getConversationFiles } from "@/actions/file.action";
 import { getMessages } from "@/actions/message.action";
+import { chat } from "@/client/chat.client";
 import { toConvFile } from "@/client/file.client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Conversation } from "@/types/conversation.type";
 import type { Message } from "@/types/message.type";
 
 let selectionToken = 0;
-let autoSelectionDone = false;
-
-function setUrlHash(conversationId: string | null) {
-	if (typeof window === "undefined") return;
-	const hash = conversationId ? `#${conversationId}` : "";
-	if (window.location.hash === hash) return;
-	window.history.replaceState(
-		null,
-		"",
-		hash || window.location.pathname + window.location.search,
-	);
-}
-
-function getHashConversationId(): string | null {
-	if (typeof window === "undefined") return null;
-	return window.location.hash.replace(/^#/, "").trim() || null;
-}
 
 function toUiMessages(messages: Message[]): Message[] {
 	return messages.map((m) => ({
@@ -40,60 +24,50 @@ function toUiMessages(messages: Message[]): Message[] {
 	})) as unknown as Message[];
 }
 
-interface SelectConversationOptions {
-	setMessages: (messages: Message[]) => void;
-	stop?: () => void;
-}
-
-async function selectConversation(
-	id: string | null,
-	{ setMessages, stop }: SelectConversationOptions,
-): Promise<boolean> {
-	autoSelectionDone = true;
-	const {
-		conversations,
-		setSelectedConv,
-		setLoadingConv,
-		setPendingMeta,
-		setConvFiles,
-	} = useChatStore.getState();
+async function selectConversation(id: string | null): Promise<boolean> {
+	const { setSelectedConv, setLoadingConv, setPendingMeta, setConvFiles } =
+		useChatStore.getState();
 
 	if (!id) {
 		selectionToken++;
-		stop?.();
+		chat.stop();
+		setLoadingConv(false);
 		setSelectedConv(null);
 		setPendingMeta(null);
-		setUrlHash(null);
-		setMessages([]);
+		chat.messages = [];
 		return true;
 	}
 
 	if (useChatStore.getState().selectedConv?.id === id) return true;
 
-	const conversation = conversations.find((c) => c.id === id);
-	if (!conversation) {
-		setLoadingConv(false);
-		toast.error("Conversation not found.");
-		return false;
-	}
+	const conversation = useChatStore
+		.getState()
+		.conversations.find((c) => c.id === id);
 
 	const token = ++selectionToken;
-	stop?.();
+	chat.stop();
 	setLoadingConv(true);
 	setPendingMeta(null);
-	setSelectedConv(conversation);
-	setUrlHash(id);
-	setMessages([]);
+	if (conversation) {
+		setSelectedConv(conversation);
+	}
+	chat.messages = [];
 
 	try {
 		const full = await getConversation(id);
 		if (token !== selectionToken) return false;
 		const resolved = full ?? conversation;
+		if (!resolved) {
+			setSelectedConv(null);
+			chat.messages = [];
+			toast.error("Conversation not found.");
+			return false;
+		}
 		setSelectedConv(resolved);
 
 		const messages = await getMessages(id);
 		if (token !== selectionToken) return false;
-		setMessages(toUiMessages(messages));
+		chat.messages = toUiMessages(messages);
 
 		if (full) {
 			try {
@@ -116,29 +90,9 @@ async function selectConversation(
 	}
 }
 
-async function ensureInitialSelection({
-	setMessages,
-	stop,
-}: SelectConversationOptions): Promise<void> {
-	const { conversations, selectedConv } = useChatStore.getState();
-	if (autoSelectionDone || selectedConv || conversations.length === 0) return;
-	const hashId = getHashConversationId();
-	const target = hashId
-		? conversations.find((c) => c.id === hashId)
-		: undefined;
-	await selectConversation(target?.id ?? conversations[0].id, {
-		setMessages,
-		stop,
-	});
-}
-
-function clearChatSession({
-	setMessages,
-	stop,
-}: SelectConversationOptions): void {
+function clearChatSession(): void {
 	useChatStore.getState().resetConversations();
-	void selectConversation(null, { setMessages, stop });
-	autoSelectionDone = false;
+	void selectConversation(null);
 }
 
 async function createNewConversation(
@@ -185,7 +139,6 @@ async function createNewConversation(
 
 	setConversations([conversation, ...conversations]);
 	setSelectedConv(conversation);
-	setUrlHash(conversation.id);
 	return conversation;
 }
 
@@ -210,8 +163,6 @@ async function saveConversationSelection(
 export {
 	clearChatSession,
 	createNewConversation,
-	ensureInitialSelection,
-	getHashConversationId,
 	saveConversationSelection,
 	selectConversation,
 };

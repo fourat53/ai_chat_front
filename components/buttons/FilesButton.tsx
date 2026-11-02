@@ -1,6 +1,7 @@
 "use client";
 
 import { IconLoader2, IconPaperclip } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -29,6 +30,7 @@ import {
 } from "@/types/file.type";
 
 export default function FilesButton() {
+	const router = useRouter();
 	const { data: session } = useSession();
 	const {
 		selectedConv,
@@ -78,6 +80,9 @@ export default function FilesButton() {
 			const conversation =
 				selectedConv ?? (await createNewConversation(!!session?.user));
 			if (!conversation) return;
+			if (!selectedConv) {
+				router.replace(`/${conversation.id}`);
+			}
 			conversationId = conversation.id;
 			const signedIn = !!session?.user;
 			const hash = await computeFileHash(file);

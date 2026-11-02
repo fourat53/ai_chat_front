@@ -1,22 +1,29 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
 import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
-import { useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { createMessage } from "@/actions/message.action";
-import { createNewConversation } from "@/client/conversation.client";
+import { chat } from "@/client/chat.client";
+import {
+	createNewConversation,
+	selectConversation,
+} from "@/client/conversation.client";
 import FilesButton from "@/components/buttons/FilesButton";
 import FilesSelect from "@/components/selects/FilesSelect";
 import ModelsSelect from "@/components/selects/ModelsSelect";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth/auth-client";
-import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 
 export default function ChatInput() {
-	const { data: session } = useSession();
-	const { sendMessage, status, stop } = useChatContext();
+	const router = useRouter();
+	const pathname = usePathname();
+	const { data: session, isPending: sessionPending } = useSession();
+	const { sendMessage, status, stop } = useChat({ chat });
 	const {
 		selectedModel,
 		selectedProvider,
@@ -39,6 +46,24 @@ export default function ChatInput() {
 
 	const sendingRef = useRef(false);
 
+	useEffect(() => {
+		if (sessionPending) return;
+		if (pathname === "/") {
+			void selectConversation(null);
+			return;
+		}
+		const id = pathname.slice(1);
+		if (useChatStore.getState().selectedConv?.id === id) return;
+		if (
+			!session?.user &&
+			!useChatStore.getState().conversations.some((conv) => conv.id === id)
+		) {
+			useChatStore.getState().setLoadingConv(false);
+			return;
+		}
+		void selectConversation(id);
+	}, [pathname, session, sessionPending]);
+
 	const submitMessage = async () => {
 		if (sendingRef.current) return;
 		const text = input.trim();
@@ -50,6 +75,9 @@ export default function ChatInput() {
 			const conversation =
 				selectedConv ?? (await createNewConversation(!!session?.user));
 			if (!conversation) return;
+			if (!selectedConv) {
+				router.replace(`/${conversation.id}`);
+			}
 
 			const convFiles =
 				useChatStore.getState().convFiles[conversation.id] ?? [];
@@ -116,7 +144,7 @@ export default function ChatInput() {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="max-w-3xl mx-auto transition-all border shadow-xl rounded-3xl bg-sidebar focus-within:ring-2 focus-within:ring-ring/50"
+			className="md:max-w-3xl lg:max-w-4xl mx-auto transition-all border shadow-xl rounded-3xl bg-sidebar focus-within:ring-2 focus-within:ring-ring/50"
 		>
 			<textarea
 				value={input}

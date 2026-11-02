@@ -27,7 +27,7 @@ export default function AssistantMeta({ message, isLast }: AssistantMetaProps) {
 	return (
 		<div
 			title={`${meta.providerName} · ${meta.modelName}`}
-			className="pb-2 font-medium flex flex-wrap gap-1.5 items-center text-xs text-muted-foreground"
+			className="font-medium flex flex-wrap gap-1.5 items-center text-sm text-muted-foreground"
 		>
 			<span>{meta.providerName}</span>
 			<span className="text-lg font-semibold">·</span>

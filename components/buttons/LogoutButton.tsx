@@ -7,7 +7,6 @@ import { clearChatSession } from "@/client/conversation.client";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
-import { useChatContext } from "@/providers/chat-provider";
 
 export function LogoutButton({
 	className,
@@ -17,7 +16,6 @@ export function LogoutButton({
 	variant?: string;
 }) {
 	const router = useRouter();
-	const { setMessages, stop } = useChatContext();
 	const [loading, setLoading] = useState(false);
 
 	const logout = async () => {
@@ -25,7 +23,7 @@ export function LogoutButton({
 		await signOut({
 			fetchOptions: {
 				onSuccess: () => {
-					clearChatSession({ setMessages, stop });
+					clearChatSession();
 					router.refresh();
 				},
 			},

@@ -5,14 +5,20 @@ import { cn } from "@/lib/utils";
 function Card({
 	className,
 	size = "default",
+	variant = "page",
 	...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & {
+	size?: "default" | "sm";
+	variant?: "default" | "page";
+}) {
 	return (
 		<div
 			data-slot="card"
 			data-size={size}
 			className={cn(
-				"ring-foreground/10 bg-card text-card-foreground gap-6 overflow-hidden rounded-2xl py-6 text-sm ring-2 has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
+				"ring-foreground/10 text-card-foreground gap-6 overflow-hidden py-6 text-sm has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
+				variant === "default" && "rounded-2xl bg-card ring-2",
+				variant === "page" && "rounded-lg bg-sidebar border",
 				className,
 			)}
 			{...props}

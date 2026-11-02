@@ -47,7 +47,7 @@ export default function RegisterPage() {
 	return (
 		<div className="flex items-center justify-center p-4 bg-background h-svh">
 			<ThemeSwitch className="absolute top-4 right-4" />
-			<Card className="w-full max-w-md">
+			<Card variant="default" className="w-full max-w-md">
 				<CardHeader>
 					<CardTitle className="mb-2 text-xl text-center">
 						Create an account

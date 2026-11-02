@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
-import { useChatContext } from "@/providers/chat-provider";
 import { useChatStore } from "@/store/useChatStore";
 import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
@@ -39,7 +38,6 @@ export default function ChatSidebar() {
 	const { data: session, isPending: sessionPending } = useSession();
 	const pathname = usePathname();
 	const router = useRouter();
-	const { setMessages, stop } = useChatContext();
 	const { conversations, setConversations, selectedConv } = useChatStore(
 		useShallow((s) => ({
 			conversations: s.conversations,
@@ -50,34 +48,28 @@ export default function ChatSidebar() {
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["conversations"],
-		queryFn: () => getConversations(),
+		queryFn: getConversations,
 		enabled: !!session?.user,
 	});
 
 	useEffect(() => {
 		if (data) {
 			setConversations(data);
-			if (data.length === 0 && useChatStore.getState().loadingConv) {
-				useChatStore.getState().setLoadingConv(false);
-			}
-		} else if (error && useChatStore.getState().loadingConv) {
+		} else if (error) {
 			toast.error("Failed to load user conversations. Try to refresh.");
-			useChatStore.getState().setLoadingConv(false);
 		}
 	}, [data, error, setConversations]);
 
 	const handleSelectConversation = (id: string) => {
-		if (pathname !== "/") {
-			router.push(`/#${id}`);
-		}
-		void selectConversation(id, { setMessages, stop });
+		router.push(`/${id}`);
+		void selectConversation(id);
 	};
 
 	const handleNewChat = () => {
 		if (pathname !== "/") {
 			router.push("/");
 		}
-		void selectConversation(null, { setMessages, stop });
+		void selectConversation(null);
 	};
 
 	const handleDeleteConversation = async (id: string) => {
@@ -88,7 +80,10 @@ export default function ChatSidebar() {
 			}
 			setConversations(conversations.filter((c) => c.id !== id));
 			if (selectedConv?.id === id) {
-				void selectConversation(null, { setMessages, stop });
+				void selectConversation(null);
+			}
+			if (pathname === `/${id}`) {
+				router.push("/");
 			}
 			toast.success("Conversation deleted.");
 		} catch (error) {
@@ -117,7 +112,7 @@ export default function ChatSidebar() {
 					variant="outline"
 					className={cn(
 						"font-medium",
-						!selectedConv && "bg-primary hover:bg-primary",
+						pathname === "/" && "bg-primary hover:bg-primary",
 					)}
 					onClick={() => void handleNewChat()}
 				>
@@ -140,13 +135,12 @@ export default function ChatSidebar() {
 							<IconBooks strokeWidth={1.5} className="min-h-5 min-w-5" />
 							Files library
 						</SidebarMenuButton>
+						<div className="border-b" />
 					</>
 				)}
 			</div>
 
-			<div className="border-b" />
-
-			<SidebarMenu className="relative h-full py-2 overflow-y-auto">
+			<SidebarMenu className="relative h-full pb-2 overflow-y-auto">
 				{sessionPending || isLoading ? (
 					<div className="flex flex-col gap-2.25">
 						{Array.from({ length: 3 }).map((_, index) => (
@@ -165,7 +159,7 @@ export default function ChatSidebar() {
 							className="relative rounded-md group/item"
 						>
 							<SidebarMenuButton
-								isActive={selectedConv?.id === conv.id}
+								isActive={pathname === `/${conv.id}`}
 								onClick={() => handleSelectConversation(conv.id)}
 								className="group-hover/item:bg-background dark:group-hover/item:bg-sidebar-accent"
 							>
@@ -177,7 +171,7 @@ export default function ChatSidebar() {
 							<Button
 								onClick={() => handleDeleteConversation(conv.id)}
 								className={cn(
-									"hidden group-hover/item:block absolute right-0 top-0 size-9 p-2.5 rounded-none rounded-r-md hover:bg-[#4d1b1b] group-hover/item:bg-transparent border-none",
+									"hidden group-hover/item:block absolute right-0 top-0 size-9 p-2.5 rounded-none rounded-r-md hover:text-white group-hover/item:text-black dark:group-hover/item:text-white hover:bg-red-400 dark:hover:bg-red-900 group-hover/item:bg-transparent border-none",
 								)}
 							>
 								<IconTrash />

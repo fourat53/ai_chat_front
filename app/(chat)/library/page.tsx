@@ -9,6 +9,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getUserFiles } from "@/actions/file.action";
+import FileCard from "@/components/cards/FileCard";
 import MainLoader from "@/components/loaders/MainLoader";
 import Select from "@/components/selects/Select";
 import { Button } from "@/components/ui/button";
@@ -28,17 +29,10 @@ import {
 import { FileViewer } from "@/components/ui/doc-viewer";
 import { Input } from "@/components/ui/input";
 import { useRequireSession } from "@/hooks/use-require-session";
-import { fileExtension, fileTypeVisual } from "@/lib/config/file-icons";
-import { cn } from "@/lib/utils";
+import { fileExtension } from "@/lib/config/file-icons";
 import type { UserFile } from "@/types/file.type";
 
 const ALL_TYPES = "all";
-
-function formatFileSize(size: number): string {
-	if (size < 1024) return `${size} B`;
-	if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
-	return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 function buildTypeItems(extensions: string[]) {
 	return [
@@ -48,37 +42,6 @@ function buildTypeItems(extensions: string[]) {
 			label: `${extension.slice(1).toUpperCase()} (.${extension.slice(1)})`,
 		})),
 	];
-}
-
-type FileGridItemProps = {
-	file: UserFile;
-	onPreview: (file: UserFile) => void;
-};
-
-function FileGridItem({ file, onPreview }: FileGridItemProps) {
-	const { icon: TypeIcon, color: TypeColor } = fileTypeVisual(file.fileName);
-
-	return (
-		<Button
-			variant="outline"
-			className="flex-col items-start w-full h-auto gap-2 p-3 text-left rounded-xl"
-			onClick={() => onPreview(file)}
-		>
-			<div className="flex items-center w-full min-w-0 gap-2">
-				<TypeIcon className={cn("size-5 shrink-0", TypeColor)} />
-				<span
-					title={file.fileName}
-					className="flex-1 text-sm font-medium truncate"
-				>
-					{file.fileName}
-				</span>
-			</div>
-			<div className="w-full text-xs truncate text-muted-foreground">
-				{formatFileSize(file.fileSize)} ·{" "}
-				{new Date(file.createdAt).toLocaleDateString()}
-			</div>
-		</Button>
-	);
 }
 
 export default function LibraryPage() {
@@ -117,8 +80,8 @@ export default function LibraryPage() {
 	if (!signedIn) return <MainLoader />;
 
 	return (
-		<div className="h-full p-5">
-			<Card className="h-full bg-sidebar rounded-lg">
+		<div className="h-full p-5 space-y-5">
+			<Card>
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-lg">
 						<IconBooks className="size-5" />
@@ -129,45 +92,44 @@ export default function LibraryPage() {
 						it.
 					</CardDescription>
 				</CardHeader>
-				<CardContent className="h-full flex flex-col gap-3">
-					<div className="flex flex-wrap items-center gap-2">
-						<div className="relative flex-1 min-w-48">
-							<Input
-								placeholder="Filter by name"
-								value={nameFilter}
-								onChange={(event) => setNameFilter(event.target.value)}
-								className="pr-9"
-							/>
-							{nameFilter ? (
-								<Button
-									variant="ghost"
-									size="icon-sm"
-									icon={<IconX />}
-									aria-label="Clear name filter"
-									className="absolute -translate-y-1/2 right-1.5 top-1/2"
-									onClick={() => setNameFilter("")}
-								/>
-							) : (
-								<IconSearch className="absolute -translate-y-1/2 pointer-events-none size-4 right-3 top-1/2 text-muted-foreground" />
-							)}
-						</div>
-						<Select
-							items={typeItems}
-							value={typeFilter}
-							onValueChange={(value) => setTypeFilter(value ?? ALL_TYPES)}
-							placeholder="All types"
-							triggerClassName="w-40"
+				<CardContent className="flex flex-wrap items-center gap-2">
+					<div className="relative flex-1 min-w-48">
+						<Input
+							placeholder="Filter by name"
+							value={nameFilter}
+							onChange={(event) => setNameFilter(event.target.value)}
+							className="pr-9 bg-accent"
 						/>
+						{nameFilter ? (
+							<Button
+								variant="ghost"
+								size="icon-sm"
+								icon={<IconX />}
+								aria-label="Clear name filter"
+								className="absolute -translate-y-1/2 right-1.5 top-1/2"
+								onClick={() => setNameFilter("")}
+							/>
+						) : (
+							<IconSearch className="absolute -translate-y-1/2 pointer-events-none size-4 right-3 top-1/2 text-muted-foreground" />
+						)}
 					</div>
-
-					{filesQuery.error && (
+					<Select
+						items={typeItems}
+						value={typeFilter}
+						onValueChange={(value) => setTypeFilter(value ?? ALL_TYPES)}
+						placeholder="All types"
+						triggerClassName="w-40 border-none bg-accent"
+					/>
+				</CardContent>
+			</Card>
+			<Card className="min-h-3/4">
+				<CardContent className="h-full">
+					{filesQuery.isPending ? (
+						<MainLoader parentClass="h-83" />
+					) : filesQuery.error ? (
 						<p className="text-xs text-destructive">
 							Failed to load your files. Try to refresh.
 						</p>
-					)}
-
-					{filesQuery.isPending ? (
-						<MainLoader className="scale-90" />
 					) : (files ?? []).length === 0 ? (
 						<div className="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 							<IconFileText className="size-8" />
@@ -182,7 +144,7 @@ export default function LibraryPage() {
 					) : (
 						<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
 							{filteredFiles.map((file) => (
-								<FileGridItem
+								<FileCard
 									key={file.id}
 									file={file}
 									onPreview={setPreviewFile}
@@ -192,7 +154,6 @@ export default function LibraryPage() {
 					)}
 				</CardContent>
 			</Card>
-
 			<Dialog
 				open={previewFile !== null}
 				onOpenChange={(open) => {

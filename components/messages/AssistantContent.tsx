@@ -19,6 +19,7 @@ export default function AssistantContent({ content }: { content: string }) {
 		<ReactMarkdown
 			remarkPlugins={[remarkGfm]}
 			components={{
+				// Code blocks
 				pre({ children }) {
 					const codeEl = children as React.ReactElement;
 					const codeProps: ComponentPropsWithoutRef<"code"> =
@@ -50,7 +51,7 @@ export default function AssistantContent({ content }: { content: string }) {
 									customStyle={{
 										margin: 0,
 										padding: "1rem",
-										fontWeight: 100,
+										fontWeight: 300,
 										fontSize: "0.85rem",
 										background:
 											resolvedTheme === "dark" ? "#0c0f10" : "#eaf7f7",
@@ -71,28 +72,28 @@ export default function AssistantContent({ content }: { content: string }) {
 						</div>
 					);
 				},
+				// Inline code
 				code({
 					inline,
-					className,
 					children,
 					...rest
 				}: ComponentPropsWithoutRef<"code"> & {
 					inline?: boolean;
 					node?: unknown;
 				}) {
-					if (inline) {
-						return (
-							<code className={className} {...rest}>
-								{JSON.stringify(children)}
-							</code>
-						);
-					}
 					return (
-						<code className={className} {...rest}>
-							{JSON.stringify(children)}
+						<code
+							style={{
+								color: "var(--color-muted-foreground)",
+								fontWeight: 500,
+							}}
+							{...rest}
+						>
+							{children}
 						</code>
 					);
 				},
+				// Tables
 				table({ children }) {
 					return (
 						<div className="my-4 overflow-x-auto">
@@ -113,7 +114,61 @@ export default function AssistantContent({ content }: { content: string }) {
 					);
 				},
 				td({ children }) {
-					return <td className="border-r px-3 py-2">{children}</td>;
+					return (
+						<td className="bg-sidebar/40 border-r px-3 py-2">{children}</td>
+					);
+				},
+				// Line breaks
+				hr() {
+					return <hr className="mt-4 border-transparent" />;
+				},
+				// Headings
+				p({ children }) {
+					return <p className="my-2 leading-6 text-[16px]">{children}</p>;
+				},
+				h1({ children }) {
+					return (
+						<h1 className="mt-5 mb-3 text-xl font-bold tracking-tight">
+							{children}
+						</h1>
+					);
+				},
+				h2({ children }) {
+					return (
+						<h2 className="mt-4 mb-2 text-lg font-semibold tracking-tight">
+							{children}
+						</h2>
+					);
+				},
+				h3({ children }) {
+					return (
+						<h3 className="mt-3 mb-2 text-base font-semibold">{children}</h3>
+					);
+				},
+				// Lists
+				ul({ children }) {
+					return <ul className="my-2 ml-5 list-disc space-y-1">{children}</ul>;
+				},
+				ol({ children }) {
+					return (
+						<ol className="my-2 ml-5 list-decimal space-y-1">{children}</ol>
+					);
+				},
+				li({ children }) {
+					return <li className="pl-1 leading-7">{children}</li>;
+				},
+				//Links
+				a({ children, href }) {
+					return (
+						<a
+							href={href}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-block max-w-full overflow-hidden text-ellipsis whitespace-nowrap align-bottom text-muted-foreground font-normal underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-muted-foreground transition-colors"
+						>
+							{children}
+						</a>
+					);
 				},
 			}}
 		>
