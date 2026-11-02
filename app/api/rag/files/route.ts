@@ -66,55 +66,16 @@ export async function POST(req: Request) {
 			clearTimeout(timeout);
 
 			if (!searchResponse.ok) {
-				console.error(
-					"RAG search error:",
-					searchResponse.status,
-					await searchResponse.text(),
-				);
-				return new Response(JSON.stringify({ error: "RAG search failed" }), {
-					status: 502,
+				return new Response(await searchResponse.text(), {
+					status: searchResponse.status,
 					headers: { "Content-Type": "application/json" },
 				});
 			}
 
-			const searchData = (await searchResponse.json()) as {
-				chunks?: { content?: string }[];
-			};
-			const chunks = (searchData.chunks ?? [])
-				.map((chunk) => chunk?.content ?? "")
-				.filter(Boolean);
-
-			let questionWithContext = question;
-			if (chunks.length > 0) {
-				const documentNames = [
-					...new Set(
-						ragFiles
-							.map((f) => f.fileName)
-							.filter((name): name is string => Boolean(name)),
-					),
-				].join(", ");
-				questionWithContext = [
-					`You are answering based on the provided document context${documentNames ? ` (from: ${documentNames})` : ""}.`,
-					"Answer using ONLY the information in the document context. Synthesize the relevant information across chunks into a clear, natural, human-like answer. Avoid lists, bullet points, markdown formatting, symbols, or emphasis markers.",
-					'If the context does not contain the answer or any part of it, respond exactly with: "I do not have enough information to answer the question."',
-					"",
-					"Document context:",
-					chunks.join("\n\n"),
-					"",
-					`Question: ${question}`,
-				].join("\n");
-			}
-
-			return new Response(
-				JSON.stringify({
-					questionWithContext,
-					chunkCount: chunks.length,
-				}),
-				{
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				},
-			);
+			return new Response(await searchResponse.text(), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
 		} catch (fetchError) {
 			clearTimeout(timeout);
 			if (fetchError instanceof Error && fetchError.name === "AbortError") {

@@ -65,8 +65,16 @@ export async function POST(req: Request) {
 				? await resolveUserApiKey(userId, provider)
 				: null;
 
-		let questionWithContext = question;
+		let contextChunks: string[] = [];
+		let documentNames: string[] = [];
 		if (ragFiles.length > 0) {
+			documentNames = [
+				...new Set(
+					ragFiles
+						.map((f) => f.fileName)
+						.filter((name): name is string => Boolean(name)),
+				),
+			];
 			try {
 				const ragResponse = await fetch(new URL("/api/rag/files", req.url), {
 					method: "POST",
@@ -76,11 +84,11 @@ export async function POST(req: Request) {
 
 				if (ragResponse.ok) {
 					const ragData = (await ragResponse.json()) as {
-						questionWithContext?: string;
+						chunks?: { content?: string }[];
 					};
-					if (ragData?.questionWithContext) {
-						questionWithContext = ragData.questionWithContext;
-					}
+					contextChunks = (ragData.chunks ?? [])
+						.map((chunk) => chunk?.content ?? "")
+						.filter(Boolean);
 				} else {
 					console.error(
 						"RAG files API error:",
@@ -100,17 +108,32 @@ export async function POST(req: Request) {
 		const timeout = setTimeout(() => controller.abort(), 60000);
 
 		try {
+			const body: {
+				provider: unknown;
+				model: unknown;
+				question: string;
+				history: HistoryTurn[];
+				base_url: unknown;
+				api_key: string | null;
+				context_chunks?: string[];
+				document_names?: string[];
+			} = {
+				provider,
+				model,
+				question,
+				history,
+				base_url: baseUrl,
+				api_key: userApiKey,
+			};
+			if (contextChunks.length > 0) {
+				body.context_chunks = contextChunks;
+				body.document_names = documentNames;
+			}
+
 			const response = await fetch(`${process.env.RAG_URL}/llm/query`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					provider,
-					model,
-					question: questionWithContext,
-					history,
-					base_url: baseUrl,
-					api_key: userApiKey,
-				}),
+				body: JSON.stringify(body),
 				signal: controller.signal,
 			});
 
