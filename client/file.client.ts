@@ -139,6 +139,29 @@ async function deleteFileData(
 	}
 }
 
+const pendingIngests = new Map<string, Promise<unknown>>();
+
+function trackIngest<T>(indexId: string, run: () => Promise<T>): Promise<T> {
+	const tracked = run().then((result) => {
+		pendingIngests.delete(indexId);
+		return result;
+	});
+	pendingIngests.set(indexId, tracked);
+	tracked.catch(() => null);
+	return tracked;
+}
+
+async function waitForIngest(indexId: string): Promise<boolean> {
+	const tracked = pendingIngests.get(indexId);
+	if (!tracked) return true;
+	try {
+		await tracked;
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 export {
 	computeFileHash,
 	createRagIndexId,
@@ -148,4 +171,6 @@ export {
 	ingestDocument,
 	isAcceptedRagFile,
 	toConvFile,
+	trackIngest,
+	waitForIngest,
 };

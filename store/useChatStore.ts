@@ -43,11 +43,6 @@ interface ChatState {
 	setConvFiles: (conversationId: string, files: ConvFile[]) => void;
 	removeConvFile: (conversationId: string, indexId: string) => void;
 	toggleConvFileSelected: (conversationId: string, indexId: string) => void;
-	// RAG files upload
-	uploadingFile: File | null;
-	setUploadingFile: (file: File | null) => void;
-	uploadPhase: "uploading" | "processing";
-	setUploadPhase: (phase: "uploading" | "processing") => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
@@ -199,17 +194,6 @@ const useChatStore = create<ChatState>((set) => ({
 				),
 			},
 		})),
-	// RAG files upload
-	uploadingFile: null,
-	setUploadingFile: (file) =>
-		set((state) =>
-			state.uploadingFile === file ? state : { uploadingFile: file },
-		),
-	uploadPhase: "uploading",
-	setUploadPhase: (phase) =>
-		set((state) =>
-			state.uploadPhase === phase ? state : { uploadPhase: phase },
-		),
 }));
 
 export { useChatStore };

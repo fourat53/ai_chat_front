@@ -30,7 +30,9 @@ const file = z.object({
 type File = z.infer<typeof file>;
 type FileBody = Omit<File, "id">;
 
-type ConvFile = Omit<FileBody, "fileSize" | "fileType" | "status">;
+type ConvFile = Omit<FileBody, "fileSize" | "fileType" | "status"> & {
+	pending?: boolean;
+};
 
 type Attachment = Pick<File, "id" | "indexId" | "fileName" | "hash"> & {
 	fileKey: string | null;

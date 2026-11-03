@@ -1,15 +1,13 @@
 import { Chat } from "@ai-sdk/react";
-import { TextStreamChatTransport } from "ai";
 import { toast } from "sonner";
 import { createMessage } from "@/actions/message.action";
+import { createChatTransport } from "@/client/chat.transport";
 import { mapToMessage } from "@/client/message.client";
 import { useChatStore } from "@/store/useChatStore";
 import type { Message } from "@/types/message.type";
 
 export const chat = new Chat<Message>({
-	transport: new TextStreamChatTransport({
-		api: "/api/llm/query",
-	}),
+	transport: createChatTransport(),
 	onFinish: async ({ message, isAbort, isDisconnect, isError }) => {
 		if (isAbort || isDisconnect || isError) return;
 

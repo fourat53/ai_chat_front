@@ -1,10 +1,10 @@
 "use client";
 
-import { IconLoader2, IconPaperclip } from "@tabler/icons-react";
+import { IconPaperclip } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { useShallow } from "zustand/react/shallow";
+import type { ClientUploadedFileData } from "uploadthing/types";
 import {
 	completeFileUpload,
 	markFileReady,
@@ -18,6 +18,7 @@ import {
 	ingestDocument,
 	isAcceptedRagFile,
 	toConvFile,
+	trackIngest,
 } from "@/client/file.client";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth/auth-client";
@@ -25,161 +26,189 @@ import { useUploadThing } from "@/lib/config/uploadthing";
 import { useChatStore } from "@/store/useChatStore";
 import {
 	type Attachment,
+	type ConvFile,
 	FILE_EXTENSIONS,
 	FILE_MAX_SIZE,
 } from "@/types/file.type";
 
-export default function FilesButton() {
-	const router = useRouter();
-	const { data: session } = useSession();
-	const {
-		selectedConv,
-		addConvFile,
-		uploadingFile,
-		setUploadingFile,
-		setUploadPhase,
-	} = useChatStore(
-		useShallow((state) => ({
-			selectedConv: state.selectedConv,
-			addConvFile: state.addConvFile,
-			uploadingFile: state.uploadingFile,
-			setUploadingFile: state.setUploadingFile,
-			setUploadPhase: state.setUploadPhase,
-		})),
-	);
-	const { startUpload, isUploading } = useUploadThing("ragDocument");
-	const fileInputRef = useRef<HTMLInputElement>(null);
+type UploadedAsset = ClientUploadedFileData<unknown>;
 
-	const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		e.target.value = "";
-		if (!file) return;
+type StartUploadFn = (files: File[]) => Promise<UploadedAsset[] | undefined>;
 
+type FilePipelineContext = {
+	file: File;
+	conversationId: string;
+	signedIn: boolean;
+	startUpload: StartUploadFn;
+};
+
+function filterUploadableFiles(fileList: FileList | null): File[] {
+	return Array.from(fileList ?? []).filter((file) => {
 		if (!isAcceptedRagFile(file)) {
 			toast.error(
 				`Unsupported file type. Allowed: ${FILE_EXTENSIONS.join(", ")}`,
 			);
-			return;
+			return false;
 		}
 		if (file.size === 0) {
 			toast.error("The selected file is empty.");
-			return;
+			return false;
 		}
 		if (file.size > FILE_MAX_SIZE) {
 			toast.error("File exceeds the 15 MB size limit.");
+			return false;
+		}
+		return true;
+	});
+}
+
+function createPendingFile(
+	attachment: Attachment,
+	file: File,
+	hash: string,
+): ConvFile {
+	return {
+		...(attachment.id ? { attachmentId: attachment.id } : {}),
+		indexId: attachment.indexId,
+		fileName: file.name,
+		fileUrl: "",
+		fileKey: "",
+		selected: true,
+		hash,
+		pending: true,
+	};
+}
+
+async function processFile({
+	file,
+	conversationId,
+	signedIn,
+	startUpload,
+}: FilePipelineContext) {
+	let attachment: Attachment | null = null;
+	try {
+		const hash = await computeFileHash(file);
+		const { addConvFile, toggleConvFileSelected, convFiles } =
+			useChatStore.getState();
+		const alreadyAdded = (convFiles[conversationId] ?? []).find(
+			(f) =>
+				(f.hash && f.hash === hash) || (f.fileName === file.name && f.fileUrl),
+		);
+		if (alreadyAdded) {
+			if (!alreadyAdded.selected) {
+				toggleConvFileSelected(conversationId, alreadyAdded.indexId);
+			}
+			toast.info("This file is already added to the conversation.");
 			return;
 		}
 
-		setUploadingFile(file);
-		setUploadPhase("uploading");
-
-		let attachment: Attachment | null = null;
-		let conversationId: string | null = null;
-
-		try {
-			const conversation =
-				selectedConv ?? (await createNewConversation(!!session?.user));
-			if (!conversation) return;
-			if (!selectedConv) {
-				router.replace(`/${conversation.id}`);
-			}
-			conversationId = conversation.id;
-			const signedIn = !!session?.user;
-			const hash = await computeFileHash(file);
-
-			const currentFiles =
-				useChatStore.getState().convFiles[conversationId] ?? [];
-			const alreadyAdded = currentFiles.find(
-				(f) =>
-					(f.hash && f.hash === hash) ||
-					(f.fileName === file.name && f.fileUrl),
-			);
-			if (alreadyAdded) {
-				if (!alreadyAdded.selected) {
-					useChatStore
-						.getState()
-						.toggleConvFileSelected(conversationId, alreadyAdded.indexId);
-				}
-				toast.info("This file is already added to the conversation.");
+		if (signedIn) {
+			const reserved = await reserveConversationFile({
+				conversationId,
+				hash,
+				fileName: file.name,
+				fileType: file.type,
+				fileSize: file.size,
+			});
+			if (reserved.reused) {
+				addConvFile(conversationId, {
+					...toConvFile(reserved.attachment),
+					hash,
+				});
+				toast.info(
+					"This file is already in your library and was added to the conversation.",
+				);
 				return;
 			}
+			attachment = reserved.attachment;
+		} else {
+			attachment = {
+				id: "",
+				indexId: createRagIndexId(conversationId),
+				fileName: file.name,
+				fileKey: null,
+				fileUrl: null,
+			};
+		}
 
-			if (signedIn) {
-				const reserved = await reserveConversationFile({
-					conversationId,
-					hash,
-					fileName: file.name,
-					fileType: file.type,
-					fileSize: file.size,
-				});
+		const indexId = attachment.indexId;
+		const attachmentId = attachment.id;
+		const pendingFile = createPendingFile(attachment, file, hash);
+		addConvFile(conversationId, pendingFile);
 
-				if (reserved.reused) {
-					addConvFile(conversationId, {
-						...toConvFile(reserved.attachment),
-						hash,
-					});
-					toast.info(
-						"This file is already in your library and was added to the conversation.",
-					);
-					return;
-				}
-				attachment = reserved.attachment;
-			} else {
-				attachment = {
-					id: "",
-					indexId: createRagIndexId(conversationId),
-					fileName: file.name,
-					fileKey: null,
-					fileUrl: null,
-				};
-			}
-
-			let fileName = file.name;
-			let fileKey: string | null = null;
-			let fileUrl: string | null = null;
-
-			const results = await startUpload([file]);
-			const uploaded = results?.[0];
+		const fileName = await trackIngest(indexId, async () => {
+			const uploaded = (await startUpload([file]))?.[0];
 			if (!uploaded) throw new Error("File upload to UploadThing failed");
 
-			fileKey = uploaded.key;
-			fileUrl = uploaded.ufsUrl;
-			fileName = uploaded.name;
-			setUploadPhase("processing");
-
-			if (signedIn && attachment.id) {
-				await completeFileUpload(attachment.id, { fileKey, fileUrl });
+			if (signedIn && attachmentId) {
+				await completeFileUpload(attachmentId, {
+					fileKey: uploaded.key,
+					fileUrl: uploaded.ufsUrl,
+				});
+			}
+			await ingestDocument(uploaded.ufsUrl, uploaded.name, indexId);
+			if (signedIn && attachmentId) {
+				await markFileReady(attachmentId);
 			}
 
-			await ingestDocument(fileUrl, fileName, attachment.indexId);
-
-			if (signedIn && attachment.id) {
-				await markFileReady(attachment.id);
-			}
-
-			addConvFile(conversationId, {
-				...(attachment.id ? { attachmentId: attachment.id } : {}),
-				indexId: attachment.indexId,
-				fileName,
-				fileUrl,
-				fileKey: fileKey ?? "",
-				selected: true,
-				hash,
+			useChatStore.getState().addConvFile(conversationId, {
+				...pendingFile,
+				fileName: uploaded.name,
+				fileUrl: uploaded.ufsUrl,
+				fileKey: uploaded.key,
+				pending: false,
 			});
-			toast.success(`${fileName} added to the conversation.`);
-		} catch (error) {
-			toast.error(
-				error instanceof Error ? error.message : "Upload failed. Try again.",
-			);
-			if (attachment?.id && conversationId) {
-				try {
-					await removeConversationFile(attachment.id, conversationId);
-				} catch (cleanupError) {
-					console.error("Failed to roll back file upload:", cleanupError);
-				}
+			return uploaded.name;
+		});
+		toast.success(`${fileName} added to the conversation.`);
+	} catch (error) {
+		if (attachment) {
+			useChatStore
+				.getState()
+				.removeConvFile(conversationId, attachment.indexId);
+		}
+		toast.error(
+			error instanceof Error ? error.message : "Upload failed. Try again.",
+		);
+		if (attachment?.id) {
+			try {
+				await removeConversationFile(attachment.id, conversationId);
+			} catch (cleanupError) {
+				console.error("Failed to roll back file upload:", cleanupError);
 			}
-		} finally {
-			setUploadingFile(null);
+		}
+	}
+}
+
+export default function FilesButton() {
+	const router = useRouter();
+	const { data: session } = useSession();
+	const selectedConv = useChatStore((state) => state.selectedConv);
+	const { startUpload } = useUploadThing("ragDocument");
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const handleFilesSelected = async (
+		e: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const files = filterUploadableFiles(e.target.files);
+		e.target.value = "";
+		if (!files.length) return;
+
+		const conversation =
+			selectedConv ?? (await createNewConversation(!!session?.user));
+		if (!conversation) return;
+		if (!selectedConv) {
+			router.replace(`/${conversation.id}`);
+		}
+		const signedIn = !!session?.user;
+
+		for (const file of files) {
+			void processFile({
+				file,
+				conversationId: conversation.id,
+				signedIn,
+				startUpload,
+			});
 		}
 	};
 
@@ -189,22 +218,18 @@ export default function FilesButton() {
 				ref={fileInputRef}
 				type="file"
 				accept={FILE_EXTENSIONS.join(",")}
+				multiple
 				className="hidden"
-				onChange={handleFileSelected}
+				onChange={handleFilesSelected}
 			/>
 			<Button
 				variant="ghost"
 				size="icon"
 				type="button"
-				disabled={uploadingFile !== null || isUploading}
 				className="rounded-full size-8 sm:size-9 text-muted-foreground hover:text-foreground"
 				onClick={() => fileInputRef.current?.click()}
 			>
-				{uploadingFile !== null || isUploading ? (
-					<IconLoader2 className="animate-spin" size={20} />
-				) : (
-					<IconPaperclip size={20} />
-				)}
+				<IconPaperclip size={20} />
 			</Button>
 		</>
 	);

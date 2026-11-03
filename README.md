@@ -42,7 +42,7 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request for review.
 
 Tasks to do:
-- Make sure you can ask a question and send it with files still processing. the request to the llm should wait until the file content is extracted and the chunks are ready to be searched with the user's message.
+- Make sure you can ask a question and send it with files still processing. the request to the llm should wait until the file rag pipline finishs before providing the context to the llm.
 - Add multiple rag file upload and no need to wait for previous upload to finish to add a new one.
 
 1. Add update query to User message bubble deleting all the next messages to the old updated query.

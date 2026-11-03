@@ -30,9 +30,9 @@ export default function ApiKeysPage() {
 
 	return (
 		<div className="w-full h-full p-5 space-y-5">
-			<Card>
-				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-lg">
+			<Card className="p-4">
+				<CardHeader className="p-0">
+					<CardTitle className="flex items-center gap-1.5 text-lg">
 						<IconKey className="size-5" />
 						API keys
 					</CardTitle>
@@ -43,24 +43,24 @@ export default function ApiKeysPage() {
 					</CardDescription>
 				</CardHeader>
 			</Card>
-			<div className="grid lg:grid-cols-2 gap-5 overflow-auto">
-				{keysQuery.error && (
+			<div className="grid lg:grid-cols-2 gap-5 overflow-y-auto">
+				{keysQuery.error ? (
 					<p className="text-xs text-destructive">
 						Failed to load your saved keys. Try to refresh.
 					</p>
+				) : (
+					PROVIDERS.map((p) => (
+						<ApiKeyCard
+							key={p.id}
+							provider={p}
+							status={
+								keysQuery.isPending
+									? undefined
+									: (savedKeysByProviderId.get(p.id) ?? null)
+							}
+						/>
+					))
 				)}
-
-				{PROVIDERS.map((p) => (
-					<ApiKeyCard
-						key={p.id}
-						provider={p}
-						status={
-							keysQuery.isPending
-								? undefined
-								: (savedKeysByProviderId.get(p.id) ?? null)
-						}
-					/>
-				))}
 			</div>
 		</div>
 	);

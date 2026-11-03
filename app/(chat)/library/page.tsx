@@ -81,8 +81,8 @@ export default function LibraryPage() {
 
 	return (
 		<div className="h-full p-5 space-y-5">
-			<Card>
-				<CardHeader>
+			<Card className="p-4">
+				<CardHeader className="p-0">
 					<CardTitle className="flex items-center gap-2 text-lg">
 						<IconBooks className="size-5" />
 						Files library
@@ -92,13 +92,13 @@ export default function LibraryPage() {
 						it.
 					</CardDescription>
 				</CardHeader>
-				<CardContent className="flex flex-wrap items-center gap-2">
-					<div className="relative flex-1 min-w-48">
+				<CardContent className="w-full p-0 flex flex-wrap items-center gap-2">
+					<div className="relative flex-1">
 						<Input
 							placeholder="Filter by name"
 							value={nameFilter}
 							onChange={(event) => setNameFilter(event.target.value)}
-							className="pr-9 bg-background dark:bg-accent"
+							className="w-full pr-9 bg-background dark:bg-accent"
 						/>
 						{nameFilter ? (
 							<Button

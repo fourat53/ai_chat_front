@@ -31,7 +31,6 @@ export default function ChatInput() {
 		setPendingMeta,
 		input,
 		setInput,
-		uploadingFile,
 	} = useChatStore(
 		useShallow((state) => ({
 			selectedModel: state.selectedModel,
@@ -40,7 +39,6 @@ export default function ChatInput() {
 			setPendingMeta: state.setPendingMeta,
 			input: state.input,
 			setInput: state.setInput,
-			uploadingFile: state.uploadingFile,
 		})),
 	);
 
@@ -81,7 +79,7 @@ export default function ChatInput() {
 
 			const convFiles =
 				useChatStore.getState().convFiles[conversation.id] ?? [];
-			const selectedRagFiles = convFiles.filter((file) => file.selected);
+			const ragFiles = convFiles.filter((file) => file.selected);
 
 			if (session?.user) {
 				try {
@@ -114,7 +112,7 @@ export default function ChatInput() {
 						provider: selectedProvider.id,
 						model: selectedModel.id,
 						baseUrl: selectedProvider.baseUrl,
-						ragFiles: selectedRagFiles.length ? selectedRagFiles : undefined,
+						ragFiles: ragFiles.length ? ragFiles : undefined,
 					},
 				},
 			);
@@ -172,10 +170,7 @@ export default function ChatInput() {
 						size="icon"
 						type="submit"
 						className="rounded-full size-8 sm:size-9"
-						disabled={
-							uploadingFile !== null ||
-							(!isLoading && (!input || input.trim() === ""))
-						}
+						disabled={!isLoading && (!input || input.trim() === "")}
 						icon={isLoading ? <IconPlayerStopFilled /> : <IconSend />}
 						onClick={(event) => {
 							if (!isLoading) return;

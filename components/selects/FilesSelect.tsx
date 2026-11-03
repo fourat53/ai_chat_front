@@ -1,6 +1,12 @@
 "use client";
 
-import { IconCheck, IconEye, IconFileText, IconX } from "@tabler/icons-react";
+import {
+	IconCheck,
+	IconEye,
+	IconFileText,
+	IconLoader2,
+	IconX,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -152,27 +158,41 @@ export default function FilesSelect() {
 											{ragFile.fileName}
 										</span>
 										<div className="flex items-center gap-px transition-opacity opacity-80 group-hover/file-item:opacity-100">
+											{ragFile.pending ? (
+												<div className="size-6 flex items-center justify-center">
+													<IconLoader2
+														className="animate-spin text-muted-foreground"
+														size={13}
+													/>
+												</div>
+											) : (
+												<Button
+													variant="ghost"
+													size="icon"
+													type="button"
+													title="Preview file"
+													className="rounded-md size-6 hover:bg-sidebar hover:text-primary text-muted-foreground"
+													onKeyDown={(event) => event.stopPropagation()}
+													onClick={(event) => {
+														event.stopPropagation();
+														setMenuOpen(false);
+														setPreviewFile(ragFile);
+													}}
+												>
+													<IconEye size={13} />
+												</Button>
+											)}
 											<Button
 												variant="ghost"
 												size="icon"
 												type="button"
-												title="Preview file"
-												className="rounded-md size-6 hover:bg-sidebar hover:text-primary text-muted-foreground"
-												onClick={(event) => {
-													event.stopPropagation();
-													setMenuOpen(false);
-													setPreviewFile(ragFile);
-												}}
-												onKeyDown={(event) => event.stopPropagation()}
-											>
-												<IconEye size={13} />
-											</Button>
-											<Button
-												variant="ghost"
-												size="icon"
-												type="button"
-												title="Remove file"
+												disabled={Boolean(ragFile.pending)}
 												className="rounded-md size-6 hover:bg-destructive/15 hover:text-destructive text-muted-foreground"
+												title={
+													ragFile.pending
+														? "File is being processed"
+														: "Remove file"
+												}
 												onClick={(event) => {
 													event.stopPropagation();
 													void handleRemoveFile(ragFile);

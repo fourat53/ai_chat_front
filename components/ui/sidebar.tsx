@@ -8,7 +8,6 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
 import {
 	Sheet,
 	SheetContent,
@@ -25,8 +24,6 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state";
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "15rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
@@ -67,8 +64,9 @@ function SidebarProvider({
 	onOpenChange?: (open: boolean) => void;
 }) {
 	const isMobile = useIsMobile();
-	const [openMobile, setOpenMobile] = React.useState(false);
-	const [_open, _setOpen] = React.useState(defaultOpen);
+	const [openMobile, setOpenMobile] = React.useState<boolean>(false);
+	const [_open, _setOpen] = React.useState<boolean>(defaultOpen);
+
 	const open = openProp ?? _open;
 	const setOpen = React.useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
@@ -78,8 +76,6 @@ function SidebarProvider({
 			} else {
 				_setOpen(openState);
 			}
-
-			document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 		},
 		[setOpenProp, open],
 	);
@@ -176,7 +172,7 @@ function Sidebar({
 					data-sidebar="sidebar"
 					data-slot="sidebar"
 					data-mobile="true"
-					className="w-(--sidebar-width) bg-sidebar text-sidebar-foreground [&>button]:hidden"
+					className="w-(--sidebar-width) bg-sidebar px-2 text-sidebar-foreground [&>button]:hidden"
 					style={
 						{
 							"--sidebar-width": SIDEBAR_WIDTH_MOBILE,
