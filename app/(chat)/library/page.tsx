@@ -80,9 +80,9 @@ export default function LibraryPage() {
 	if (!signedIn) return <MainLoader />;
 
 	return (
-		<div className="h-full p-5 space-y-5">
+		<div className="relative h-full p-5 space-y-5">
 			<Card className="p-4">
-				<CardHeader className="p-0">
+				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-lg">
 						<IconBooks className="size-5" />
 						Files library
@@ -92,7 +92,7 @@ export default function LibraryPage() {
 						it.
 					</CardDescription>
 				</CardHeader>
-				<CardContent className="w-full p-0 flex flex-wrap items-center gap-2">
+				<CardContent className="w-full flex flex-wrap items-center gap-2">
 					<div className="relative flex-1">
 						<Input
 							placeholder="Filter by name"
@@ -122,10 +122,10 @@ export default function LibraryPage() {
 					/>
 				</CardContent>
 			</Card>
-			<Card className="min-h-3/4">
+			<Card className="h-[calc(100vh-17.5rem)] sm:h-[calc(100vh-16.5rem)] overflow-y-auto">
 				<CardContent className="h-full">
 					{filesQuery.isPending ? (
-						<MainLoader parentClass="h-83" />
+						<MainLoader parentClass="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 					) : filesQuery.error ? (
 						<p className="text-xs text-destructive">
 							Failed to load your files. Try to refresh.
@@ -142,13 +142,9 @@ export default function LibraryPage() {
 							No files match your filters.
 						</p>
 					) : (
-						<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-							{filteredFiles.map((file) => (
-								<FileCard
-									key={file.id}
-									file={file}
-									onPreview={setPreviewFile}
-								/>
+						<div className="pb-3 sm:pb-4 grid gap-1.5 sm:gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+							{filteredFiles.map((file, index) => (
+								<FileCard key={index} file={file} onPreview={setPreviewFile} />
 							))}
 						</div>
 					)}

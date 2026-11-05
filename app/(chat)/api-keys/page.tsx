@@ -29,9 +29,9 @@ export default function ApiKeysPage() {
 	if (!signedIn) return <MainLoader />;
 
 	return (
-		<div className="w-full h-full p-5 space-y-5">
+		<div className="h-[calc(100svh-60px)] overflow-y-auto w-full p-5 space-y-5">
 			<Card className="p-4">
-				<CardHeader className="p-0">
+				<CardHeader>
 					<CardTitle className="flex items-center gap-1.5 text-lg">
 						<IconKey className="size-5" />
 						API keys
@@ -43,7 +43,7 @@ export default function ApiKeysPage() {
 					</CardDescription>
 				</CardHeader>
 			</Card>
-			<div className="grid lg:grid-cols-2 gap-5 overflow-y-auto">
+			<div className="grid lg:grid-cols-2 gap-5">
 				{keysQuery.error ? (
 					<p className="text-xs text-destructive">
 						Failed to load your saved keys. Try to refresh.
